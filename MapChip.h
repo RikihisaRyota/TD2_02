@@ -57,7 +57,7 @@ private:
 	// マップチップの種類
 	uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
-	std::vector<Model*> blockModels_[kMaxHeightBlockNum][kMaxWidthBlockNum];
+	std::vector<Model*> blockModels_;
 	// ブロックのワールドトランスフォーム
 	WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// CSVの名前保存

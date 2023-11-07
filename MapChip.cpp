@@ -20,18 +20,18 @@ void MapChip::Initialize() {
 	};
 
 	auto modelManager = ModelManager::GetInstance();
+	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount)-1; i++) {
+		blockModels_.emplace_back(modelManager->GetBlockModel(i));
+	}
 	for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 		for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
-			for (size_t models = 0; models < modelManager->GetBlockModelSize(); models++) {
-				blockModels_[y][x].emplace_back(modelManager->GetBlockModel(models));
-				blockWorldTransform_[y][x].Initialize();
-				blockWorldTransform_[y][x].translation_ = Vector3(
-					float(x * kBlockSize) + float(kBlockSize) * 0.5f,
-					float((kMaxHeightBlockNum - y) * kBlockSize) + float(kBlockSize) * 0.5f,
-					0.0f
-				);
-				blockWorldTransform_[y][x].UpdateMatrix();
-			}
+			blockWorldTransform_[y][x].Initialize();
+			blockWorldTransform_[y][x].translation_ = Vector3(
+				float(x * kBlockSize) + float(kBlockSize) * 0.5f,
+				float((kMaxHeightBlockNum - y) * kBlockSize) + float(kBlockSize) * 0.5f,
+				0.0f
+			);
+			blockWorldTransform_[y][x].UpdateMatrix();
 		}
 	}
 }
@@ -108,11 +108,11 @@ void MapChip::SaveCSV(std::string fileName) {
 }
 
 void MapChip::Draw(const ViewProjection& viewProjection) {
-	int32_t xMin = int32_t(int32_t(viewProjection.translation_.x) / int32_t(kBlockSize)-int32_t(kMaxScreenWidthBlockNum) / 2)-1;
+	int32_t xMin = int32_t(int32_t(viewProjection.translation_.x) / int32_t(kBlockSize) - int32_t(kMaxScreenWidthBlockNum) / 2) - 1;
 	if (xMin < 0) {
 		xMin = 0;
 	}
-	int32_t xMax = int32_t(int32_t(viewProjection.translation_.x) / int32_t(kBlockSize) + int32_t(kMaxScreenWidthBlockNum) / 2)+1;
+	int32_t xMax = int32_t(int32_t(viewProjection.translation_.x) / int32_t(kBlockSize) + int32_t(kMaxScreenWidthBlockNum) / 2) + 1;
 	if (xMax < 0) {
 		xMax = 0;
 	}
@@ -122,12 +122,12 @@ void MapChip::Draw(const ViewProjection& viewProjection) {
 			switch (blockType) {
 			case static_cast<size_t>(MapChip::Blocks::kBlock):
 			{
-				blockModels_[y][x].at(static_cast<size_t>(MapChip::Blocks::kBlock) - 1)->Draw(blockWorldTransform_[y][x], viewProjection);
+				blockModels_.at(static_cast<size_t>(MapChip::Blocks::kBlock)-1)->Draw(blockWorldTransform_[y][x], viewProjection);
 			}
 			break;
 			case static_cast<size_t>(MapChip::Blocks::kRedBlock):
 			{
-				blockModels_[y][x].at(static_cast<size_t>(MapChip::Blocks::kRedBlock) - 1)->Draw(blockWorldTransform_[y][x], viewProjection);
+				blockModels_.at(static_cast<size_t>(MapChip::Blocks::kRedBlock)-1)->Draw(blockWorldTransform_[y][x], viewProjection);
 			}
 			break;
 			case static_cast<size_t>(MapChip::Blocks::kNone):
@@ -169,5 +169,5 @@ void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 	float cameraPosX = 32.08f;
 	uint32_t difference = uint32_t((viewProjection_->translation_.x - cameraPosX) / float(kBlockSize));
 	uint32_t y = uint32_t(pos.y / kBlockScreenSize);
-	map_[y][x+difference] = blockType;
+	map_[y][x + difference] = blockType;
 }

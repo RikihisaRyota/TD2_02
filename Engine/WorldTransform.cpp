@@ -44,13 +44,13 @@ void WorldTransform::TransferMatrix()
 void WorldTransform::UpdateMatrix()
 {
 	Matrix4x4 matScale, matRot, matTrans;
+	matScale = MakeIdentity4x4();
+	matRot = MakeIdentity4x4();
+	matTrans = MakeIdentity4x4();
 
 	// スケール、回転、平行移動行列の計算
 	matScale = MakeScaleMatrix(scale_);
-	matRot = MakeIdentity4x4();
-	matRot *= MakeRotateZMatrix(rotation_.z);
-	matRot *= MakeRotateXMatrix(rotation_.x);
-	matRot *= MakeRotateYMatrix(rotation_.y);
+	matRot *= MakeRotateXYZMatrix(rotation_);
 	matTrans = MakeTranslateMatrix(translation_);
 
 	// ワールド行列の合成
