@@ -15,6 +15,7 @@
 #include "SphereRenderer.h"
 #include "Sprite.h"
 
+#include "ParticleGraphicsPipline.h"
 #include "MapChip.h"
 #include "MapChipEditor.h"
 

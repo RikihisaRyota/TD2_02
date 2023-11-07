@@ -8,19 +8,19 @@
 using namespace Microsoft::WRL;
 
 // 静的メンバ変数の実体化
-ID3D12Device* ParticleGraphicsPipline::sDevice = nullptr;
+ID3D12Device* ParticleGraphicsPipeline::sDevice = nullptr;
 
-void ParticleGraphicsPipline::SetDevice(ID3D12Device* device) {
+void ParticleGraphicsPipeline::SetDevice(ID3D12Device* device) {
 	assert(device);
 	sDevice = device;
 }
 
-void ParticleGraphicsPipline::InitializeGraphicsPipeline() {
+void ParticleGraphicsPipeline::InitializeGraphicsPipeline() {
 	CreateState();
 	CreatePSO();
 }
 
-void ParticleGraphicsPipline::CreateState() {
+void ParticleGraphicsPipeline::CreateState() {
 	CreateRootsignature();
 	CreateInputLayout();
 	CreateBlendState();
@@ -29,7 +29,7 @@ void ParticleGraphicsPipline::CreateState() {
 	CreateShaderCompile();
 }
 
-void ParticleGraphicsPipline::CreateRootsignature() {
+void ParticleGraphicsPipeline::CreateRootsignature() {
 	HRESULT hr = S_FALSE;
 	// Rootsignature設定
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -99,7 +99,7 @@ void ParticleGraphicsPipline::CreateRootsignature() {
 	assert(SUCCEEDED(hr));
 }
 
-void ParticleGraphicsPipline::CreateInputLayout() {
+void ParticleGraphicsPipeline::CreateInputLayout() {
 	//InputLayout
 	inputLayout_[0] =
 	{// xyz座標(1行で書いたほうが見やすい)
@@ -118,19 +118,19 @@ void ParticleGraphicsPipline::CreateInputLayout() {
 	};
 }
 
-void ParticleGraphicsPipline::CreateBlendState() {
+void ParticleGraphicsPipeline::CreateBlendState() {
 	//全ての色要素を書き込む
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
-void ParticleGraphicsPipline::CreateRasiterzerState() {
+void ParticleGraphicsPipeline::CreateRasiterzerState() {
 	//裏面（時計回り）を表示しない
 	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
 	//三角形の中を塗りつぶす
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
-void ParticleGraphicsPipline::CreateShaderCompile() {
+void ParticleGraphicsPipeline::CreateShaderCompile() {
 	//Shaderをコンパイルする
 	vertexShaderBlob_ = ShaderCompiler::Compile(
 		L"Resources/Shaders/Particle.VS.hlsl",
@@ -143,7 +143,7 @@ void ParticleGraphicsPipline::CreateShaderCompile() {
 	assert(pixelShaderBlob_ != nullptr);
 }
 
-void ParticleGraphicsPipline::CreateDepthStencil() {
+void ParticleGraphicsPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
 	depthStencilDesc_.DepthEnable = true;
 	// 書き込みをする
@@ -152,7 +152,7 @@ void ParticleGraphicsPipline::CreateDepthStencil() {
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 }
 
-void ParticleGraphicsPipline::CreatePSO() {
+void ParticleGraphicsPipeline::CreatePSO() {
 	HRESULT hr = S_FALSE;
 	//PSO生成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicPipelineStateDesc{};

@@ -49,7 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	LineGraphicsPipline::SetDevice(dxCommon->GetDevice());
 
 	// ParticleGraphicsPipelineの静的初期化
-	//ParticleGraphicsPipline::SetDevice(dxCommon->GetDevice());
+	ParticleGraphicsPipeline::SetDevice(dxCommon->GetDevice());
 
 	// PostEffectPipeLine
 	//PostEffectGraphicsPipeline::SetDevice(dxCommon->GetDevice());
@@ -88,7 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	audio->Initialize();
 
 	// パーティクル
-	//Particle::SetDevice(dxCommon->GetDevice());
+	Particle::SetDevice(dxCommon->GetDevice());
 
 	// モデル
 	ModelManager::GetInstance()->LoadBlockModel(

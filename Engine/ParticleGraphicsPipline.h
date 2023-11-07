@@ -9,7 +9,7 @@
 
 #pragma comment(lib,"dxcompiler.lib")
 
-class ParticleGraphicsPipline {
+class ParticleGraphicsPipeline {
 public:
 	enum class ROOT_PARAMETER_TYP {
 		WORLDTRANSFORM,
