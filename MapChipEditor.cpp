@@ -72,7 +72,7 @@ void MapChipEditor::Update() {
 #ifdef _DEBUG
 		ImGui::Begin("Debug");
 		if (ImGui::TreeNode("MapChipEditor")) {
-			ImGui::Text("block:%d", blockCount_);
+			ImGui::Text("ブロックタイプ:%d", blockCount_);
 			// ドロップダウンメニューの表示
 			static const char* stage[] = { "stage_1", "stage_2", "stage_3", "stage_4","stage_5","stage_6","stage_7","stage_8" };
 			int currenStage = mapChip_->GetCurrentStage();

@@ -9,9 +9,9 @@
 const static uint32_t kBlockSize = 2;
 const static uint32_t kBlockScreenSize = 40;
 const static uint32_t kMaxWidthBlockNum = 400;
-const static uint32_t kMaxHeightBlockNum = 18;
+const static uint32_t kMaxHeightBlockNum = 36;
 const static uint32_t kMaxScreenWidthBlockNum = 32;
-const static uint32_t kMaxScreenHeightBlockNum = kMaxHeightBlockNum;
+const static uint32_t kMaxScreenHeightBlockNum = 18;
 const static uint32_t kMaxWidth = kBlockSize * kMaxWidthBlockNum;
 const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
