@@ -115,10 +115,10 @@ private:
 	float parameters_[FloatParameterNames::kCountFloatParameter];
 
 	std::string floatParameterItemNames[FloatParameterNames::kCountFloatParameter] = {
-		"kMoveSpeed", // 移動スピード
-		"kJumpInitialVelocity", // ジャンプ時の初速
-		"kGravity", // 重力加速度
-		"kFallingGravity", // 降下中の重力加速
+		"移動スピード", // 移動スピード
+		"ジャンプ時の初速", // ジャンプ時の初速
+		"重力加速度", // 重力加速度
+		"降下中の重力加速", // 降下中の重力加速
 	};
 
 	// 今の状態
@@ -128,6 +128,6 @@ private:
 	std::optional<Status> statusRequest_ = std::nullopt;
 
 	// グローバル変数のグループネーム
-	const std::string groupName_ = "Player";
+	const std::string groupName_ = "プレイヤー";
 
 };
