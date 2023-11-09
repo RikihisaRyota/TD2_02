@@ -5,6 +5,8 @@
 #include "TextureManager.h"
 #include "ImGuiManager.h"
 
+#include "Collision/Collision.h"
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
@@ -37,7 +39,8 @@ void GameScene::Initialize() {
 	mapChipEditor_->Initialize();
 #pragma endregion
 
-
+	player_ = std::make_unique<Player>();
+	player_->Initialize();
 
 }
 
@@ -47,6 +50,12 @@ void GameScene::Update() {
 	}
 	// マップチップエディター
 	mapChipEditor_->Update();
+
+	player_->Update();
+
+	CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
+	player_->UpdateMatrix();
+
 	if (!isDebug_) {
 		// デバックカメラ
 		debugCamera_->Update(&viewProjection_);
@@ -82,6 +91,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	mapChip_->Draw(viewProjection_);
+	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 	PrimitiveDrawer::Draw();

@@ -91,6 +91,11 @@ float Distance(const Vector3& v1, const Vector3& v2) {
 
 float Dot(const Vector3& a, const Vector3& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 
+float Outer(const Vector2& v1, const Vector2& v2)
+{
+	return v1.x * v2.y - v1.y * v2.x;
+}
+
 Vector3 Subtract(const Vector3& v1, const Vector3& v2) {
 	return {(v1.x - v2.x), (v1.y - v2.y), (v1.z - v2.z)};
 }
@@ -460,7 +465,7 @@ Matrix4x4 MakeViewMatrix(const Vector3& rotation, const Vector3& translation) {
 
 Matrix4x4 MakeViewProjectMatrixMatrix(const ViewProjection& viewProjection) {
 	Matrix4x4 viewMatrix = Inverse(MakeAffineMatrix(
-	    Vector3(1.0f, 1.0f, 1.0f), viewProjection.rotation_, viewProjection.translation_));
+	    Vector3(1.0f, 1.0f, 1.0f), viewProjection.rotation_, viewProjection.translate_));
 	return Mul(viewMatrix, viewProjection.matProjection_);
 }
 
@@ -585,7 +590,7 @@ Matrix4x4 MakeMatWolrd(const WorldTransform& worldtransform) {
 	result = MakeAffineMatrix(
 		worldtransform.scale_, 
 		worldtransform.rotation_, 
-		worldtransform.translation_
+		worldtransform.translate_
 	); 
 	return result;
 }

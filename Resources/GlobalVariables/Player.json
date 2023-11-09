@@ -1,0 +1,8 @@
+{
+    "Player": {
+        "kFallingGravity": -0.07999999821186066,
+        "kGravity": -0.20000000298023224,
+        "kJumpInitialVelocity": 1.25,
+        "kMoveSpeed": 0.3199999928474426
+    }
+}

@@ -34,6 +34,18 @@
     <Filter Include="engine\shader">
       <UniqueIdentifier>{1051ea7a-f4c8-4161-8f7b-3b54fbd78626}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{98316372-b59a-463e-abb6-3549b091690f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{91539f47-f81c-4ed7-a8f9-59da0461b29f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Player">
+      <UniqueIdentifier>{3a9a2098-b730-438d-8f4e-30e2ceb2011a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GlobalVariables">
+      <UniqueIdentifier>{b4c023ea-01f9-4adb-a284-747cc0983bab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -156,6 +168,15 @@
     </ClCompile>
     <ClCompile Include="Engine\PostEffectPipeline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Collision.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Player\Player.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalVariables\GlobalVariables.cpp">
+      <Filter>GlobalVariables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,6 +341,15 @@
     </ClInclude>
     <ClInclude Include="Engine\PostEffectPipeline.h">
       <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Collision.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Player\Player.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVariables\GlobalVariables.h">
+      <Filter>GlobalVariables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -20,10 +20,10 @@ void MapChipEditor::Update() {
 	if (isDebug_) {
 #pragma region カメラ移動
 		if (input_->PushKey(DIK_D)) {
-			viewProjection_->translation_.x += 2.0f;
+			viewProjection_->translate_.x += 2.0f;
 		}
 		if (input_->PushKey(DIK_A)) {
-			viewProjection_->translation_.x -= 2.0f;
+			viewProjection_->translate_.x -= 2.0f;
 		}
 		viewProjection_->UpdateMatrix();
 #pragma endregion
