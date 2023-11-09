@@ -128,6 +128,6 @@ private:
 	std::optional<Status> statusRequest_ = std::nullopt;
 
 	// グローバル変数のグループネーム
-	const std::string groupName_ = "プレイヤー";
+	const std::string groupName_ = "Player";
 
 };
