@@ -67,7 +67,6 @@ void MapChipEditor::Update() {
 				screenMousePos.y >= 0.0f &&
 				screenMousePos.y <= 720.0f) {
 				mapChip_->SetBlocks(screenMousePos, blockCount_);
-				mapChip_->SaveCSV();
 			}
 		}
 #ifdef _DEBUG
@@ -87,6 +86,9 @@ void MapChipEditor::Update() {
 					}
 				}
 				ImGui::EndCombo();
+			}
+			if (ImGui::Button("Save")) {
+				mapChip_->SaveCSV();
 			}
 			ImGui::TreePop();
 		}
