@@ -133,12 +133,12 @@ void ParticleGraphicsPipeline::CreateRasiterzerState() {
 void ParticleGraphicsPipeline::CreateShaderCompile() {
 	//Shaderをコンパイルする
 	vertexShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/Particle.VS.hlsl",
+		L"Resources/Shaders/ParticleManager.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob_ != nullptr);
 
 	pixelShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/Particle.PS.hlsl",
+		L"Resources/Shaders/ParticleManager.PS.hlsl",
 		L"ps_6_0");
 	assert(pixelShaderBlob_ != nullptr);
 }
