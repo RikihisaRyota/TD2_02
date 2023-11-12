@@ -18,13 +18,13 @@ void ParticleManager::Update() {
 		(*it)->particle->Update();
 		(*it)->currentInstance = (*it)->particle->GetAliveParticle();
 		for (size_t i = 0; i < (*it)->currentInstance; i++) {
-			(*it)->instancingDate[i].world = MakeIdentity4x4();
-			(*it)->instancingDate[i].world.m[3][0]=i*0.1f;
-			(*it)->instancingDate[i].world.m[3][1]=i*0.1f;
-			(*it)->instancingDate[i].world.m[3][2]=i*0.1f;
-			(*it)->instancingDate[i].color = {1.0f,1.0f,1.0f,1.0f};
-			//(*it)->instancingDate[i].world = (*it)->particle->GetParticleWorldTransform(i);
-			//(*it)->instancingDate[i].color = (*it)->particle->GetColor(i);
+			//(*it)->instancingDate[i].world = MakeIdentity4x4();
+			//(*it)->instancingDate[i].world.m[3][0]=i*0.1f;
+			//(*it)->instancingDate[i].world.m[3][1]=i*0.1f;
+			//(*it)->instancingDate[i].world.m[3][2]=i*0.1f;
+			//(*it)->instancingDate[i].color = {1.0f,1.0f,1.0f,1.0f};
+			(*it)->instancingDate[i].world = (*it)->particle->GetParticleWorldTransform(i);
+			(*it)->instancingDate[i].color = (*it)->particle->GetColor(i);
 		}
 		if (!(*it)->particle->GetIsAlive()) {
 			// パーティクルの解放

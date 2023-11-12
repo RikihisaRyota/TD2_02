@@ -24,6 +24,8 @@ void Particle::Update() {
 			particle->color = emitter_->color;
 			particle->motion.isAlive = true;
 			// ワールドトランスフォーム
+			particle->scale = emitter_->scale;
+			particle->rotate = emitter_->rotate;
 			particle->transform = emitter_->position;
 			particle->UpdateMatrix();
 			particleWorldTransform_.emplace_back(std::move(particle));

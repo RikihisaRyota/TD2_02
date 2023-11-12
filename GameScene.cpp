@@ -55,7 +55,7 @@ void GameScene::Update() {
 		emitter->aliveTime = 1;
 		emitter->createParticle = 10;
 		emitter->color = { 1.0f,1.0f,1.0f,1.0f };
-		emitter->position = { 1280.0f*0.5f,720.0f*0.5f,0.0f };
+		emitter->position = { 4.0f,4.0f,0.0f };
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
 		particleMotion->velocity = { 1.0f,1.0f,0.0f };

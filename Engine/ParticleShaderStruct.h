@@ -6,8 +6,10 @@
 #include "Vector4.h"
 
 struct Emitter {
+    Vector3 scale = {1.0f,1.0f,1.0f};
+    Vector3 rotate = {0.0f,0.0f,0.0f};
     Vector3 position;
-    Vector4 color;
+    Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
     int32_t createParticle;
     int32_t aliveTime;
     bool isAlive;
