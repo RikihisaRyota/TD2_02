@@ -3,6 +3,7 @@
 #include "GameScene.h"
 #include "ImGuiManager.h"
 #include "TextureManager.h"
+#include "ParticleManager.h"
 #include "ModelManager.h"
 #include "./Engine/ShaderCompiler.h"
 
@@ -88,7 +89,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	audio->Initialize();
 
 	// パーティクル
-	//Particle::SetDevice(dxCommon->GetDevice());
+	ParticleManager::GetInstance()->Initialize();
 
 	// モデル
 	ModelManager::GetInstance()->LoadBlockModel(
@@ -136,6 +137,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// モデル
 	ModelManager::GetInstance()->Shutdown();
+
+	// パーティクル
+	ParticleManager::GetInstance()->Shutdown();
 
 	// スプライト
 	Sprite::Release();

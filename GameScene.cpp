@@ -5,6 +5,9 @@
 #include "TextureManager.h"
 #include "ImGuiManager.h"
 
+#include "ParticleManager.h"
+#include "ParticleShaderStruct.h"
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
@@ -25,7 +28,6 @@ void GameScene::Initialize() {
 #pragma region 生成
 	mapChip_ = std::make_unique<MapChip>();
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
-
 #pragma endregion
 
 #pragma region 初期化
@@ -36,9 +38,6 @@ void GameScene::Initialize() {
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
 #pragma endregion
-
-
-
 }
 
 void GameScene::Update() {
@@ -51,6 +50,20 @@ void GameScene::Update() {
 		// デバックカメラ
 		debugCamera_->Update(&viewProjection_);
 	}
+	if (input_->TriggerKey(DIK_SPACE)) {
+  		Emitter* emitter = new Emitter();
+		emitter->aliveTime = 1;
+		emitter->createParticle = 10;
+		emitter->color = { 1.0f,1.0f,1.0f,1.0f };
+		emitter->position = { 1280.0f*0.5f,720.0f*0.5f,0.0f };
+		emitter->isAlive = true;
+		ParticleMotion* particleMotion = new ParticleMotion();
+		particleMotion->velocity = { 1.0f,1.0f,0.0f };
+		particleMotion->aliveTime = 20;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion,0);
+	}
+	ParticleManager::GetInstance()->Update();
 }
 
 void GameScene::Draw() {
@@ -84,6 +97,9 @@ void GameScene::Draw() {
 	mapChip_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
+
+	ParticleManager::GetInstance()->Draw(viewProjection_);
+
 	PrimitiveDrawer::Draw();
 	// 3Dオブジェクト描画後処理
 	PlaneRenderer::PostDraw();

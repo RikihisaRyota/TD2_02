@@ -3,6 +3,7 @@
 #include <d3dx12.h>
 #include <vector>
 
+#include "Particle.h"
 #include "ParticleGraphicsPipline.h"
 #include "ParticleShaderStruct.h"
 #include "cMaterial.h"
@@ -12,36 +13,38 @@
 
 class ParticleManager {
 public:
-	struct TransformationMatrix {
-		Matrix4x4 World;
+	struct ParticleForGPU {
+		Matrix4x4 world;
+		Vector4 color;
+	};
+	struct Instancing {
+		uint32_t textureHandle;
+		Particle* particle;
+		uint32_t maxInstance = 1024;
+		uint32_t currentInstance;
+		// ワールドトランスフォームマトリックスリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuff;
+		// ワールドトランスフォーム
+		ParticleForGPU* instancingDate = nullptr;
+		D3D12_CPU_DESCRIPTOR_HANDLE instancingSRVCPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE instancingSRVGPUHandle;
+		// マテリアルリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff;
+		// マテリアル
+		cMaterial* material = nullptr;
 	};
 public:
-	static void SetDevice(ID3D12Device* device);
-	static void PreDraw(ID3D12GraphicsCommandList* cmdList);
-	static void PostDraw();
-	static ParticleManager* Create();
-	
-	void Update();
-	
-	void Draw(
-		const ViewProjection& viewProjection,
-		uint32_t textureHadle = 0u);
-	void SetMaterial(const cMaterial& material);
-private:
+	static ParticleManager* GetInstance();
 	void Initialize();
-	void BasicDraw(
-		const ViewProjection& viewProjection,
-		uint32_t textureHadle);
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
+	void Update();
+	void Draw(const ViewProjection& viewProjection);
+	void Shutdown();
+	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle);
 private:
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 #pragma region DirectX関連
-	// デバイス
-	static ID3D12Device* sDevice;
-	// コマンドリスト
-	static Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> cmdList_;
 	// グラフィックパイプライン
-	std::unique_ptr<ParticleGraphicsPipeline> basicGraphicsPipeline_ = nullptr;
-
+	ParticleGraphicsPipeline* basicGraphicsPipeline_ = nullptr;
 #pragma region 頂点バッファ
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
@@ -58,22 +61,8 @@ private:
 	// 頂点インデックスデータ
 	std::vector<uint16_t> indices_;
 #pragma endregion
-#pragma region マテリアル
-	// マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff_;
-	// マテリアル
-	cMaterial* material_ = nullptr;
+#pragma region 
+	std::vector<Instancing*> instancing_;
 #pragma endregion
-#pragma region ワールドトランスフォーム
-	const uint32_t kNumInstance_ = 10;
-	uint32_t descriptorSizeSRV = 0u;
-	// ワールドトランスフォームマトリックスリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuff_;
-	// ワールドトランスフォーム
-	TransformationMatrix* instancingDate_ = nullptr;
-	D3D12_CPU_DESCRIPTOR_HANDLE instancingSRVCPUHandle_;
-	D3D12_GPU_DESCRIPTOR_HANDLE instancingSRVGPUHandle_;
-#pragma endregion
-
 };
 

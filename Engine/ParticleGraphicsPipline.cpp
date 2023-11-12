@@ -133,12 +133,12 @@ void ParticleGraphicsPipeline::CreateRasiterzerState() {
 void ParticleGraphicsPipeline::CreateShaderCompile() {
 	//Shaderをコンパイルする
 	vertexShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/ParticleManager.VS.hlsl",
+		L"Resources/Shaders/Particle.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob_ != nullptr);
 
 	pixelShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/ParticleManager.PS.hlsl",
+		L"Resources/Shaders/Particle.PS.hlsl",
 		L"ps_6_0");
 	assert(pixelShaderBlob_ != nullptr);
 }
@@ -147,7 +147,7 @@ void ParticleGraphicsPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
 	depthStencilDesc_.DepthEnable = true;
 	// 書き込みをする
-	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	// 比較関数はLessEqual。つまり、近ければ描画される
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 }

@@ -6,56 +6,79 @@
 
 using namespace Microsoft::WRL;
 
-// 静的メンバ変数の実体化
-ID3D12Device* ParticleManager::sDevice = nullptr;
-Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> ParticleManager::cmdList_;
-
-void ParticleManager::SetDevice(ID3D12Device* device) {
-	// nullptrチェック
-	assert(device);
-
-	sDevice = device;
-}
-
-void ParticleManager::PreDraw(ID3D12GraphicsCommandList* cmdList) {
-	// PreDrawとPostDrawがペアで呼ばれていなければエラー
-	assert(cmdList_ == nullptr);
-	// コマンドリストをセット
-	cmdList_ = cmdList;
-}
-void ParticleManager::PostDraw() {
-	// コマンドリストの解除
-	cmdList_ = nullptr;
-}
-
-ParticleManager* ParticleManager::Create() {
-	// Particleのインスタンスを生成
-	ParticleManager* particle = new ParticleManager();
-	assert(particle);
-	// パイプライン初期化
-	particle->basicGraphicsPipeline_ = std::make_unique<ParticleGraphicsPipeline>();
-
-	particle->basicGraphicsPipeline_->InitializeGraphicsPipeline();
-	// 初期化
-	particle->Initialize();
-	return particle;
+ParticleManager* ParticleManager::GetInstance() {
+	static ParticleManager instance;
+	return &instance;
 }
 
 void ParticleManager::Update() {
+	size_t count = 0;
+
+	for (auto it = instancing_.begin(); it != instancing_.end();) {
+		(*it)->particle->Update();
+		(*it)->currentInstance = (*it)->particle->GetAliveParticle();
+		for (size_t i = 0; i < (*it)->currentInstance; i++) {
+			(*it)->instancingDate[i].world = MakeIdentity4x4();
+			(*it)->instancingDate[i].world.m[3][0]=i*0.1f;
+			(*it)->instancingDate[i].world.m[3][1]=i*0.1f;
+			(*it)->instancingDate[i].world.m[3][2]=i*0.1f;
+			(*it)->instancingDate[i].color = {1.0f,1.0f,1.0f,1.0f};
+			//(*it)->instancingDate[i].world = (*it)->particle->GetParticleWorldTransform(i);
+			//(*it)->instancingDate[i].color = (*it)->particle->GetColor(i);
+		}
+		if (!(*it)->particle->GetIsAlive()) {
+			// パーティクルの解放
+			delete (*it)->particle;
+
+			// リソースの解放
+			(*it)->instancingBuff.Reset();
+			(*it)->materialBuff.Reset();
+			it = instancing_.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
-void ParticleManager::Draw(const ViewProjection& viewProjection, uint32_t textureHadle) {
-	BasicDraw( viewProjection, textureHadle);
-}
+void ParticleManager::Draw(const ViewProjection& viewProjection) {
+	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+	// ルートシグネチャの設定
+	commandList->SetGraphicsRootSignature(basicGraphicsPipeline_->GetRootSignature());
 
-void ParticleManager::SetMaterial(const cMaterial& material) {
-	material_->color_ = material.color_;
-	material_->enableLightint_ = material.enableLightint_;
-	material_->uvTransform_ = material.uvTransform_;
-}
+	// パイプラインステートの設定
+	commandList->SetPipelineState(basicGraphicsPipeline_->GetPipelineState());
 
+	// プリミティブ形状を設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 頂点バッファの設定
+	commandList->IASetVertexBuffers(0, 1, &vbView_);
+
+	// インデックスバッファの設定
+	commandList->IASetIndexBuffer(&ibView_);
+
+	// CBVをセット（ビュープロジェクション行列）
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
+	for (auto& instancing : instancing_) {
+		// instancing用のStructuredBuffをSRVにセット
+		commandList->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
+
+		// CBVをセット（Material）
+		commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), instancing->materialBuff->GetGPUVirtualAddress());
+
+		// SRVをセット
+		TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), instancing->textureHandle);
+
+		// 描画コマンド
+		commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), instancing->currentInstance, 0, 0, 0);
+	}
+}
 
 void ParticleManager::Initialize() {
+	// パイプライン生成
+	basicGraphicsPipeline_ = new ParticleGraphicsPipeline();
+	basicGraphicsPipeline_->InitializeGraphicsPipeline();
 	HRESULT result = S_FALSE;
 
 	vertices_ = {
@@ -104,73 +127,27 @@ void ParticleManager::Initialize() {
 	ibView_.Format = DXGI_FORMAT_R16_UINT;
 	ibView_.SizeInBytes = sizeIB; // 修正: インデックスバッファのバイトサイズを代入
 #pragma endregion インデックスバッファ
-#pragma region マテリアルバッファ
-	materialBuff_ = CreateBuffer(sizeof(cMaterial));
-	// マテリアルへのデータ転送
-	result = materialBuff_->Map(0, nullptr, reinterpret_cast<void**>(&material_));
-	material_->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	// Lightingを有効化
-	material_->enableLightint_ = 0;
-	material_->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
-#pragma endregion
-#pragma region ワールドトランスフォームバッファ
-	instancingBuff_ = CreateBuffer(sizeof(TransformationMatrix) * kNumInstance_);
-	instancingBuff_->Map(0, nullptr,reinterpret_cast<void**>(&instancingDate_));
-	// 単位行列
-	for (size_t i = 0; i < kNumInstance_; i++) {
-		instancingDate_[i].World = MakeIdentity4x4();
-		instancingDate_[i].World.m[3][0] = i * 0.1f;
-		instancingDate_[i].World.m[3][1] = i * 0.1f;
-		instancingDate_[i].World.m[3][2] = i * 0.1f;
-	}
-	// シェーダーリソースビュー
-	D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
-	desc.Format = DXGI_FORMAT_UNKNOWN;
-	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	desc.Buffer.FirstElement = 0;
-	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	desc.Buffer.NumElements = kNumInstance_;
-	desc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
-	descriptorSizeSRV = sDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	DirectXCommon::GetInstance()->GetCPUGPUHandle(instancingSRVCPUHandle_, instancingSRVGPUHandle_);
-	sDevice->CreateShaderResourceView(instancingBuff_.Get(),&desc, instancingSRVCPUHandle_);
-#pragma endregion
 }
 
-void ParticleManager::BasicDraw(const ViewProjection& viewProjection, uint32_t textureHadle) {
-	// ルートシグネチャの設定
-	cmdList_->SetGraphicsRootSignature(basicGraphicsPipeline_->GetRootSignature());
+void ParticleManager::Shutdown() {
+	// インスタンシングの解放
+	for (auto& instancing : instancing_) {
+		// パーティクルの解放
+		delete instancing->particle;
 
-	// パイプラインステートの設定
-	cmdList_->SetPipelineState(basicGraphicsPipeline_->GetPipelineState());
-
-	// プリミティブ形状を設定
-	cmdList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// 頂点バッファの設定
-	cmdList_->IASetVertexBuffers(0, 1, &vbView_);
-
-	// インデックスバッファの設定
-	cmdList_->IASetIndexBuffer(&ibView_);
-
-	// instancing用のStructuredBuffをSRVにセット
-	cmdList_->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancingSRVGPUHandle_);
-	
-	// CBVをセット（ビュープロジェクション行列）
-	cmdList_->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
-
-	// CBVをセット（Material）
-	cmdList_->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), materialBuff_->GetGPUVirtualAddress());
-
-	// SRVをセット
-	TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(cmdList_.Get(), static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), textureHadle);
-
-	// 描画コマンド
-	cmdList_->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), kNumInstance_, 0, 0, 0);
+		// リソースの解放
+		instancing->instancingBuff.Reset();
+		instancing->materialBuff.Reset();
+	}
+	// メンバー変数のリセット
+	instancing_.clear();
+	vertBuff_.Reset();
+	idxBuff_.Reset();
+	delete basicGraphicsPipeline_;
 }
 
 ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
+	auto device = DirectXCommon::GetInstance()->GetDevice();
 	HRESULT result = S_FALSE;
 	// ヒーププロパティ
 	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -179,9 +156,47 @@ ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
 
 	// バッファ生成
 	ComPtr<ID3D12Resource> buffer;
-	result = sDevice->CreateCommittedResource(
+	result = device->CreateCommittedResource(
 		&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&buffer));
 	assert(SUCCEEDED(result));
 	return buffer;
+}
+
+void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle) {
+	auto device = DirectXCommon::GetInstance()->GetDevice();
+
+	Instancing* instancing = new Instancing();
+#pragma region マテリアルバッファ
+	instancing->materialBuff = CreateBuffer(sizeof(cMaterial));
+	// マテリアルへのデータ転送
+	instancing->materialBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->material));
+	instancing->material->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	// Lightingを有効化
+	instancing->material->enableLightint_ = 0;
+	instancing->material->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+#pragma endregion
+
+	// パーティクル
+	instancing->particle = new Particle();
+	instancing->particle->Initialize(emitter, particleMotion);
+
+	instancing->textureHandle = textureHandle;
+
+	instancing->instancingBuff = CreateBuffer(sizeof(ParticleForGPU) * instancing->maxInstance);
+	instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->instancingDate));
+
+	// シェーダーリソースビュー
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	desc.Buffer.FirstElement = 0;
+	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	desc.Buffer.NumElements = instancing->maxInstance;
+	desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
+	DirectXCommon::GetInstance()->GetCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
+	device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
+
+	instancing_.emplace_back(instancing);
 }

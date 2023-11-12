@@ -3,11 +3,14 @@
 #include <cstdint>
 
 #include "Vector3.h"
+#include "Vector4.h"
 
 struct Emitter {
     Vector3 position;
-    int32_t aliveTime;
+    Vector4 color;
     int32_t createParticle;
+    int32_t aliveTime;
+    bool isAlive;
 };
 
 struct ParticleMotion {
@@ -15,4 +18,5 @@ struct ParticleMotion {
     Vector3 velocity;
     Vector3 acceleration;
     int32_t aliveTime;
+    bool isAlive;
 };
