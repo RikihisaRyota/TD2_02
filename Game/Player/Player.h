@@ -16,6 +16,7 @@ public:
 		kNormal, // 通常時
 		kJump, // ジャンプ時
 		kGripWall, // 壁に張り付いている時
+		kWallJump, 
 	};
 
 	Player();
@@ -94,6 +95,10 @@ private:
 	void GripWallInitialize();
 
 	void GripWallUpdate();
+
+	void WallJumpInitialize();
+
+	void WallJumpUpdate();
 	
 private:
 
@@ -116,6 +121,8 @@ private:
 	bool isJump_;
 	// 右向きか
 	bool isRight_;
+
+	int countFrame_;
 
 	enum FloatParameterNames {
 		kMoveSpeed, // 移動スピード
@@ -149,6 +156,18 @@ private:
 
 	std::string v3ParameterItemNames[V3ParameterNames::kCountV3Parameter] = {
 		"初期座標",
+	};
+
+	enum IParameterNames {
+		kGripStayTime, // 壁に捕まって動かないフレーム数
+		kCountIParameter, // 末尾
+	};
+
+	// 定数パラメータ配列
+	int iParameters_[IParameterNames::kCountIParameter];
+
+	std::string iParameterItemNames[IParameterNames::kCountIParameter] = {
+		"壁に捕まって動かないフレーム数",
 	};
 
 	Vector3 preInitialPos_;

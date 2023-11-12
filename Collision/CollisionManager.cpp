@@ -174,6 +174,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 					else {
 						sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
 					}
+					velocity.x = 0.0f;
 
 					finishFlag = true;
 					break;
@@ -210,6 +211,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 								// x軸から先に修正する
 
 								sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+								velocity.x = 0.0f;
 
 								//sub.UpdateMatrix();
 								nextX -= 1;
@@ -273,6 +275,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
@@ -291,6 +294,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
@@ -328,6 +332,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 								// x軸から先に修正する
 
 								sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+								velocity.x = 0.0f;
 
 								//sub.UpdateMatrix();
 								nextX -= 1;
@@ -390,6 +395,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
@@ -408,6 +414,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
@@ -459,6 +466,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 								// x軸から先に修正する
 
 								sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+								velocity.x = 0.0f;
 
 								//sub.UpdateMatrix();
 								nextX += 1;
@@ -518,6 +526,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
@@ -534,8 +543,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 										// めり込み処理する
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = 0.0f;
-											sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
+											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
@@ -558,6 +567,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+												velocity.x = 0.0f;
 											}
 										}
 									}
@@ -593,6 +603,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 								// x軸から先に修正する
 
 								sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+								velocity.x = 0.0f;
 
 								//sub.UpdateMatrix();
 								nextX += 1;
@@ -670,6 +681,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
@@ -688,6 +700,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+											velocity.x = 0.0f;
 										}
 									}
 									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {

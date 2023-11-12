@@ -70,7 +70,21 @@ void Player::UpdateMatrix()
 
 void Player::OnCollision()
 {
-
+	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
+		StatusRequest(Status::kNormal);
+	}
+	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
+		StatusRequest(Status::kGripWall);
+		if (velocity_.x > 0) {
+			isRight_ = true;
+		}
+		else if (velocity_.x < 0) {
+			isRight_ = false;
+		}
+	}
+	else {
+		StatusRequest(Status::kNormal);
+	}
 	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
 
@@ -79,7 +93,6 @@ void Player::OnCollision()
 
 	UpdateMatrix();
 
-	StatusRequest(Status::kNormal);
 }
 
 void Player::SetCollider()
@@ -102,6 +115,10 @@ void Player::SetGlobalVariable()
 		globalVariables->AddItem(groupName_, v3ParameterItemNames[i], v3Parameters_[i]);
 	}
 
+	for (int i = 0; i < IParameterNames::kCountIParameter; i++) {
+		globalVariables->AddItem(groupName_, iParameterItemNames[i], iParameters_[i]);
+	}
+
 	ApplyGlobalVariable();
 }
 
@@ -115,6 +132,10 @@ void Player::ApplyGlobalVariable()
 
 	for (int i = 0; i < V3ParameterNames::kCountV3Parameter; i++) {
 		v3Parameters_[i] = globalVariables->GetVector3Value(groupName_, v3ParameterItemNames[i]);
+	}
+
+	for (int i = 0; i < IParameterNames::kCountIParameter; i++) {
+		iParameters_[i] = globalVariables->GetIntValue(groupName_, iParameterItemNames[i]);
 	}
 
 	if (preInitialPos_ != v3Parameters_[V3ParameterNames::kInitialPos]) {
@@ -203,16 +224,20 @@ void Player::JumpUpdate()
 void Player::GripWallInitialize()
 {
 	velocity_ = {};
-
+	countFrame_ = 0;
 }
 
 void Player::GripWallUpdate()
 {
 
+	countFrame_++;
+
+	if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	}
+
 	if (isRight_) {
 		// 右の壁
-
-
 
 	}
 	else {
@@ -220,6 +245,57 @@ void Player::GripWallUpdate()
 
 	}
 
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::kA)) {
+		StatusRequest(Status::kWallJump);
+	}
+
+	worldTransform_.translate_ += velocity_;
+}
+
+void Player::WallJumpInitialize()
+{
+	velocity_ = {};
+
+	if (isRight_) {
+		// 右の壁
+		velocity_.x -= parameters_[FloatParameterNames::kJumpInitialVelocity];
+	}
+	else {
+		// 左の壁
+		velocity_.x += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	}
+	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+}
+
+void Player::WallJumpUpdate()
+{
+
+	if (isRight_) {
+		// 右の壁
+		if (velocity_.x >= 0) {
+			velocity_.x -= parameters_[FloatParameterNames::kFallingGravity];
+		}
+		else {
+			velocity_.x -= parameters_[FloatParameterNames::kGravity];
+		}
+	}
+	else {
+		// 左の壁
+		if (velocity_.x <= 0) {
+			velocity_.x += parameters_[FloatParameterNames::kFallingGravity];
+		}
+		else {
+			velocity_.x += parameters_[FloatParameterNames::kGravity];
+		}
+	}
+	/*if (velocity_.y <= 0) {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	}
+	else {
+		velocity_.y += parameters_[FloatParameterNames::kGravity];
+	}*/
+	velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	worldTransform_.translate_ += velocity_;
 }
 
 void Player::Update()
@@ -243,6 +319,9 @@ void Player::Update()
 		case Player::Status::kGripWall:
 			GripWallInitialize();
 			break;
+		case Player::Status::kWallJump:
+			WallJumpInitialize();
+			break;
 
 		default:
 			break;
@@ -264,7 +343,9 @@ void Player::Update()
 	case Player::Status::kGripWall:
 		GripWallUpdate();
 		break;
-
+	case Player::Status::kWallJump:
+		WallJumpUpdate();
+		break;
 	default:
 		break;
 	}

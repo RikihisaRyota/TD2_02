@@ -60,6 +60,7 @@ void GameScene::Update() {
 	}
 	// マップチップエディター
 	mapChipEditor_->Update();
+	mapChip_->Update();
 
 	player_->Update();
 
