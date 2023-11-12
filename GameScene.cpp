@@ -39,12 +39,22 @@ void GameScene::Initialize() {
 	mapChipEditor_->Initialize();
 #pragma endregion
 
+	followCamera_ = std::make_unique<FollowCamera>();
+
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
+	followCamera_->SetTarget(player_->GetWorldTransform());
+	followCamera_->Initialize();
+
+	collisionManager_ = std::make_unique<CollisionManager>();
+
+	collisionManager_->Init();
 }
 
 void GameScene::Update() {
+	collisionManager_->Clear();
+
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
 	}
@@ -53,8 +63,15 @@ void GameScene::Update() {
 
 	player_->Update();
 
-	CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
-	player_->UpdateMatrix();
+	/*CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
+	player_->UpdateMatrix();*/
+	collisionManager_->SetCollider(player_.get());
+	collisionManager_->SetCollider(mapChip_.get());
+
+	collisionManager_->CheckCollision();
+
+	followCamera_->Update();
+	viewProjection_ = followCamera_->GetViewProjection();
 
 	if (!isDebug_) {
 		// デバックカメラ

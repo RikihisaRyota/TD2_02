@@ -46,6 +46,12 @@
     <Filter Include="GlobalVariables">
       <UniqueIdentifier>{b4c023ea-01f9-4adb-a284-747cc0983bab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\FollowCamera">
+      <UniqueIdentifier>{a86cadd5-5453-4434-84ee-e1f68c7c8b6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision\ColliderShape">
+      <UniqueIdentifier>{919406c5-a45d-4085-b1f4-1a61a25ae5fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -177,6 +183,24 @@
     </ClCompile>
     <ClCompile Include="GlobalVariables\GlobalVariables.cpp">
       <Filter>GlobalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\FollowCamera\FollowCamera.cpp">
+      <Filter>Game\FollowCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\BaseColliderShapeType.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\CollisionManager.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\ColliderShapes\ColliderShapeMapChip2D.cpp">
+      <Filter>Collision\ColliderShape</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp">
+      <Filter>Collision\ColliderShape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +375,27 @@
     <ClInclude Include="GlobalVariables\GlobalVariables.h">
       <Filter>GlobalVariables</Filter>
     </ClInclude>
+    <ClInclude Include="Game\FollowCamera\FollowCamera.h">
+      <Filter>Game\FollowCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\BaseColliderShapeType.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\CollisionConfig.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\CollisionManager.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\ColliderShapes\ColliderShapeBox2D.h">
+      <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h">
+      <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -441,5 +486,6 @@
     <None Include="Resources\Shaders\Pera.hlsli">
       <Filter>engine\shader</Filter>
     </None>
+    <None Include=".editorconfig" />
   </ItemGroup>
 </Project>

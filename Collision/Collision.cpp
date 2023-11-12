@@ -64,7 +64,12 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 						else {
 							sub.translate_.y = mapchip[y][x].worldPos_.y + mapchip[y][x].scale_.y + sub.scale_.y + 0.001f;
 						}
-						velocity->y = 0.0f;
+						if (velocity->y >= 0.0f) {
+							velocity->y = -0.001f;
+						}
+						else {
+							velocity->y = 0.0f;
+						}
 						finishFlag = true;
 						break;
 					}
@@ -244,7 +249,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 											break;
 										case 1:
 											if (IsCollisionXY(sub, mapchip[y][nextX])) {
-												velocity->y = 0.0f;
+												velocity->y = -0.001f;
 												sub.translate_.y = chipPos.y - mapchip[y][nextX].scale_.y - sub.scale_.y - 0.001f;
 											}
 											break;
@@ -265,7 +270,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 											break;
 										case 1:
 											if (IsCollisionXY(sub, mapchip[nextY][nextX])) {
-												velocity->y = 0.0f;
+												velocity->y = -0.001f;
 												sub.translate_.y = mapchip[nextY][nextX].worldPos_.y - mapchip[nextY][nextX].scale_.y - sub.scale_.y - 0.001f;
 											}
 											break;
@@ -283,7 +288,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 								else {
 									// y軸から修正する
 
-									velocity->y = 0.0f;
+									velocity->y = -0.001f;
 									sub.translate_.y = chipPos.y - mapchip[y][nextX].scale_.y - sub.scale_.y - 0.001f;
 
 									sub.UpdateMatrix();
@@ -338,8 +343,8 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 
 							if (velocity->y < 0) {
 								// yが負の方向に移動する場合
-								if (beforePos.x > chipPos.x + mapchip[y][x].scale_.x + sub.scale_.x) {
-									if (beforePos.y < chipPos.y + mapchip[y][x].scale_.y + sub.scale_.y) {
+								if (beforePos.x >= chipPos.x + mapchip[y][x].scale_.x + sub.scale_.x) {
+									if (beforePos.y <= chipPos.y + mapchip[y][x].scale_.y + sub.scale_.y) {
 										isFirstX = true;
 									}
 									else {
@@ -440,10 +445,27 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 										}
 									}
 									else {
-										nextX -= 1;
+										//nextX -= 1;
 
 										switch (type[nextY][nextX]) {
 										case 0:
+											nextX--;
+											switch (type[nextY][nextX]) {
+											case 0:
+												break;
+											case 1:
+												if (IsCollisionXY(sub, mapchip[nextY][nextX])) {
+													sub.translate_.x = mapchip[nextY][nextX].worldPos_.x + mapchip[nextY][nextX].scale_.x + sub.scale_.x + 0.001f;
+												}
+												break;
+											case 2:
+												isJump = true;
+
+												break;
+
+											default:
+												break;
+											}
 											break;
 										case 1:
 											if (IsCollisionXY(sub, mapchip[nextY][nextX])) {
@@ -466,8 +488,8 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 							}
 							else {
 								// yが正の方向に移動する場合
-								if (beforePos.x > chipPos.x + mapchip[y][x].scale_.x + sub.scale_.x) {
-									if (beforePos.y > chipPos.y - mapchip[y][x].scale_.y - sub.scale_.y) {
+								if (beforePos.x >= chipPos.x + mapchip[y][x].scale_.x + sub.scale_.x) {
+									if (beforePos.y >= chipPos.y - mapchip[y][x].scale_.y - sub.scale_.y) {
 										isFirstX = true;
 									}
 									else {
@@ -498,7 +520,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 											break;
 										case 1:
 											if (IsCollisionXY(sub, mapchip[y][nextX])) {
-												velocity->y = 0.0f;
+												velocity->y = -0.001f;
 												sub.translate_.y = chipPos.y - mapchip[y][nextX].scale_.y - sub.scale_.y - 0.001f;
 											}
 											break;
@@ -525,7 +547,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 												break;
 											case 1:
 												if (IsCollisionXY(sub, mapchip[nextY][nextX])) {
-													velocity->y = 0.0f;
+													velocity->y = -0.001f;
 													sub.translate_.y = mapchip[nextY][nextX].worldPos_.y - mapchip[nextY][nextX].scale_.y - sub.scale_.y - 0.001f;
 												}
 												break;
@@ -541,7 +563,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 											break;
 										case 1:
 											if (IsCollisionXY(sub, mapchip[nextY][nextX])) {
-												velocity->y = 0.0f;
+												velocity->y = -0.001f;
 												sub.translate_.y = mapchip[nextY][nextX].worldPos_.y - mapchip[nextY][nextX].scale_.y - sub.scale_.y - 0.001f;
 											}
 											break;
@@ -559,7 +581,7 @@ void CollisionEdit(const std::vector<std::vector<WorldTransform>>& mapchip, cons
 								else {
 									// y軸から修正する
 
-									velocity->y = 0.0f;
+									velocity->y = -0.001f;
 									sub.translate_.y = chipPos.y - mapchip[y][nextX].scale_.y - sub.scale_.y - 0.001f;
 
 									sub.UpdateMatrix();

@@ -5,15 +5,17 @@
 #include "ViewProjection.h"
 #include <optional>
 
-class Player
+#include "Collision/Collider.h"
+
+class Player : public Collider
 {
 public:
 
 	// 状態
 	enum class Status {
 		kNormal, // 通常時
-		
-
+		kJump, // ジャンプ時
+		kGripWall, // 壁に張り付いている時
 	};
 
 	Player();
@@ -62,6 +64,10 @@ public:
 
 private:
 
+	void OnCollision() override;
+
+	void SetCollider();
+
 	/// <summary>
 	/// jsonファイルへの書き込み
 	/// </summary>
@@ -81,6 +87,13 @@ private:
 	/// </summary>
 	void NormalUpdate();
 
+	void JumpInitialize();
+
+	void JumpUpdate();
+
+	void GripWallInitialize();
+
+	void GripWallUpdate();
 	
 private:
 
@@ -101,13 +114,14 @@ private:
 	Vector3 velocity_;
 	// ジャンプ中か
 	bool isJump_;
+	// 右向きか
+	bool isRight_;
 
 	enum FloatParameterNames {
 		kMoveSpeed, // 移動スピード
 		kJumpInitialVelocity, // ジャンプ時の初速
 		kGravity, // 重力加速度
 		kFallingGravity, // 降下中の重力加速
-
 		kCountFloatParameter, // 末尾
 	};
 
@@ -120,6 +134,20 @@ private:
 		"重力加速度", // 重力加速度
 		"降下中の重力加速", // 降下中の重力加速
 	};
+
+	enum V3ParameterNames {
+		kInitialPos, // 初期座標
+		kCountV3Parameter, // 末尾
+	};
+
+	// 定数パラメータ配列
+	Vector3 v3Parameters_[V3ParameterNames::kCountV3Parameter];
+
+	std::string v3ParameterItemNames[V3ParameterNames::kCountV3Parameter] = {
+		"初期座標",
+	};
+
+	Vector3 preInitialPos_;
 
 	// 今の状態
 	Status status_ = Status::kNormal;

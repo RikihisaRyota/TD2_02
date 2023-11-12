@@ -6,6 +6,8 @@
 #include "Model.h"
 #include "ViewProjection.h"
 
+#include "Collision/Collider.h"
+
 const static uint32_t kBlockSize = 2;
 const static uint32_t kBlockScreenSize = 40;
 const static uint32_t kMaxWidthBlockNum = 400;
@@ -15,7 +17,7 @@ const static uint32_t kMaxScreenHeightBlockNum = 18;
 const static uint32_t kMaxWidth = kBlockSize * kMaxWidthBlockNum;
 const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
-class MapChip {
+class MapChip : public Collider{
 public:
 	enum class Blocks {
 		kNone,
@@ -25,6 +27,11 @@ public:
 		kCount,
 	};
 public:
+
+	void OnCollision() override;
+	void SetCollider();
+	void Update();
+
 	MapChip();
 	void Initialize();
 	void Draw(const ViewProjection& viewProjection);

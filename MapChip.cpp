@@ -9,6 +9,23 @@
 
 #include <Windows.h>
 
+#include "Collision/ColliderShapes/ColliderShapeMapChip2D.h"
+#include "Collision/CollisionConfig.h"
+
+void MapChip::OnCollision()
+{
+}
+
+void MapChip::SetCollider()
+{
+	shapeType_->mapChip2D_.SetMapChip(map_);
+}
+
+void MapChip::Update()
+{
+	SetCollider();
+}
+
 MapChip::MapChip() {
 	for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 		blockWorldTransform_.push_back(std::vector<WorldTransform>());
@@ -18,6 +35,21 @@ MapChip::MapChip() {
 			map_[y].push_back(uint32_t());
 		}
 	}
+
+	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
+	collisionAttribute_ = 0x00000000;
+	collisionMask_ = 0x00000000;
+
+	/*for (int i = 0; i < EditInfo::EditEnumV2::V2COUNT; i++) {
+		editInfo_.v2Paras_.push_back(Vector2());
+	}*/
+
+	SetCollisionAttribute(kCollisionAttributeBlock);
+	SetCollisionMask(kCollisionAttributePlayer);
+
+	//shapeType_->mapChip2D_.SetNoCollider(0);
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
 }
 
 void MapChip::Initialize() {
@@ -49,6 +81,21 @@ void MapChip::Initialize() {
 			blockWorldTransform_[y][x].UpdateMatrix();
 		}
 	}
+
+	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
+	collisionAttribute_ = 0x00000000;
+	collisionMask_ = 0x00000000;
+
+	/*for (int i = 0; i < EditInfo::EditEnumV2::V2COUNT; i++) {
+		editInfo_.v2Paras_.push_back(Vector2());
+	}*/
+
+	SetCollisionAttribute(kCollisionAttributeBlock);
+	SetCollisionMask(kCollisionAttributePlayer);
+
+	//shapeType_->mapChip2D_.SetNoCollider(0);
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
 }
 
 void MapChip::LoadCSV() {
