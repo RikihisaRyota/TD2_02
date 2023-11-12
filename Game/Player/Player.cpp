@@ -78,6 +78,8 @@ void Player::OnCollision()
 	velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
 
 	UpdateMatrix();
+
+	StatusRequest(Status::kNormal);
 }
 
 void Player::SetCollider()
@@ -139,15 +141,23 @@ void Player::NormalUpdate()
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
 	if (input->PressedGamePadButton(Input::GamePadButton::kA) && !isJump_) {
-		isJump_ = true;
-		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
-	}
 
-	if (velocity_.y <= 0.0f) {
+		/*isJump_ = true;
+		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
+		StatusRequest(Status::kJump);
+	}
+	else if (velocity_.y <= 0.0f) {
 		move.y += parameters_[FloatParameterNames::kFallingGravity];
 	}
 	else {
 		move.y += parameters_[FloatParameterNames::kGravity];
+	}
+
+	if (move.x > 0) {
+		isRight_ = true;
+	}
+	else if (move.x < 0) {
+		isRight_ = false;
 	}
 
 	velocity_.x = 0.0f;
@@ -160,15 +170,34 @@ void Player::NormalUpdate()
 void Player::JumpInitialize()
 {
 	velocity_ = {};
+	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
 
 }
 
 void Player::JumpUpdate()
 {
 
+	if (isRight_) {
+		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
+		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+		}
+	}
+	else {
+		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
+		if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+		}
+	}
+	
+	if (velocity_.y <= 0) {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	}
+	else {
+		velocity_.y += parameters_[FloatParameterNames::kGravity];
+	}
 
-
-
+	worldTransform_.translate_ += velocity_;
 }
 
 void Player::GripWallInitialize()
@@ -182,6 +211,7 @@ void Player::GripWallUpdate()
 
 	if (isRight_) {
 		// 右の壁
+
 
 
 	}
@@ -206,6 +236,14 @@ void Player::Update()
 			NormalInitialize();
 			break;
 		
+		case Player::Status::kJump:
+			JumpInitialize();
+			break;
+
+		case Player::Status::kGripWall:
+			GripWallInitialize();
+			break;
+
 		default:
 			break;
 		}
@@ -218,7 +256,15 @@ void Player::Update()
 	case Player::Status::kNormal:
 		NormalUpdate();
 		break;
-	
+
+	case Player::Status::kJump:
+		JumpUpdate();
+		break;
+
+	case Player::Status::kGripWall:
+		GripWallUpdate();
+		break;
+
 	default:
 		break;
 	}

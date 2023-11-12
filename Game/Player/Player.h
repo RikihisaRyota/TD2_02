@@ -42,7 +42,7 @@ public:
 	/// 状態のリクエスト
 	/// </summary>
 	/// <param name="status">したい状態</param>
-	void StatusRequest(Status status) { status_ = status; }
+	void StatusRequest(Status status) { statusRequest_ = status; }
 
 	/// <summary>
 	/// 今の状態の確認。あたり判定のフラグに使用。
@@ -122,6 +122,8 @@ private:
 		kJumpInitialVelocity, // ジャンプ時の初速
 		kGravity, // 重力加速度
 		kFallingGravity, // 降下中の重力加速
+		kJumpAccelerationX, // ジャンプの横の加速度
+		kJumpMaxSpeedX, // ジャンプのx軸の最大の速度
 		kCountFloatParameter, // 末尾
 	};
 
@@ -133,6 +135,8 @@ private:
 		"ジャンプ時の初速", // ジャンプ時の初速
 		"重力加速度", // 重力加速度
 		"降下中の重力加速", // 降下中の重力加速
+		"ジャンプのx軸の加速度",
+		"ジャンプのx軸の最大の速度",
 	};
 
 	enum V3ParameterNames {
