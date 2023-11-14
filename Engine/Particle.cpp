@@ -16,14 +16,14 @@ void Particle::Initialize(Emitter* emitter, ParticleMotion* particleMotion) {
 void Particle::Update() {
 	// 生成
 	if (emitter_->aliveTime > 0) {
-		for (size_t i = 0; i < emitter_->createParticle; i++) {
+		for (size_t i = 0; i < emitter_->inOnce; i++) {
 			// パーティクル
 			ParticleWorldTransform* particle = new ParticleWorldTransform();
 			particle->motion = *originalParticle_;
 			particle->motion.position = emitter_->position;
-			particle->color = emitter_->color;
 			particle->motion.isAlive = true;
 			// ワールドトランスフォーム
+			particle->constantDate.color = emitter_->color.startColor;
 			particle->scale = emitter_->scale;
 			particle->rotate = emitter_->rotate;
 			particle->transform = emitter_->position;
@@ -73,8 +73,8 @@ void Particle::ParticleWorldTransform::UpdateMatrix() {
 	matTrans = MakeTranslateMatrix(transform);
 
 	// ワールド行列の合成
-	matWorld = MakeIdentity4x4(); // 変形をリセット
-	matWorld *= matScale;          // ワールド行列にスケーリングを反映
-	matWorld *= matRot;            // ワールド行列に回転を反映
-	matWorld *= matTrans;          // ワールド行列に平行移動を反映
+	constantDate.matWorld = MakeIdentity4x4(); // 変形をリセット
+	constantDate.matWorld *= matScale;          // ワールド行列にスケーリングを反映
+	constantDate.matWorld *= matRot;            // ワールド行列に回転を反映
+	constantDate.matWorld *= matTrans;          // ワールド行列に平行移動を反映
 }

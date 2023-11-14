@@ -6,11 +6,8 @@
 #include "Vector4.h"
 
 struct Emitter {
-    Vector3 scale = {1.0f,1.0f,1.0f};
-    Vector3 rotate = {0.0f,0.0f,0.0f};
     Vector3 position;
-    Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
-    int32_t createParticle;
+    int32_t inOnce;
     int32_t aliveTime;
     bool isAlive;
 };
@@ -18,7 +15,44 @@ struct Emitter {
 struct ParticleMotion {
     Vector3 position;
     Vector3 velocity;
+    Angel angle;
+    Color color;
+    Scale scale;
     Vector3 acceleration;
-    int32_t aliveTime;
+    uint32_t aliveTime;
     bool isAlive;
+    ParticleForGPU 
+};
+
+struct ParticleForGPU {
+    Matrix4x4 matWorld;
+    Vector4 color;
+};
+
+struct Scale {
+    Vector4 startScale;
+    Vector4 endScale;
+    Vector4 scale;
+};
+
+struct Color {
+    Vector4 startColor;
+    Vector4 endColor;
+    Vector4 color;
+};
+
+struct Angel {
+    float start;
+    float end;
+};
+
+struct AliveTime {
+    int32_t time;
+    int32_t randomRange;
+};
+
+struct Velocity {
+    Vector3 velocity;
+    Vector3 randomRange;
+
 };

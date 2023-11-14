@@ -13,10 +13,6 @@
 
 class ParticleManager {
 public:
-	struct ParticleForGPU {
-		Matrix4x4 world;
-		Vector4 color;
-	};
 	struct Instancing {
 		uint32_t textureHandle;
 		Particle* particle;

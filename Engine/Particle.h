@@ -8,11 +8,10 @@
 class Particle {
 	struct ParticleWorldTransform {
 		ParticleMotion motion;
-		Vector4 color;
 		Vector3 scale;
 		Vector3 rotate;
 		Vector3 transform;
-		Matrix4x4 matWorld;
+		ParticleForGPU constantDate;
 		void UpdateMatrix();
 	};
 public:
@@ -20,9 +19,8 @@ public:
 	void Initialize(Emitter* emitter ,ParticleMotion* particleMotion);
 	void Update();
 
-	Matrix4x4 GetParticleWorldTransform(size_t num) { return particleWorldTransform_.at(num)->matWorld; }
+	ParticleForGPU GetParticleForGPU(size_t num) { return particleWorldTransform_.at(num)->constantDate; }
 	uint32_t GetAliveParticle() {return numAliveParticle_;}
-	Vector4 GetColor(size_t num) { return particleWorldTransform_.at(num)->color; }
 	bool GetIsAlive() { return isAlive_; }
 private:
 	bool isAlive_;
