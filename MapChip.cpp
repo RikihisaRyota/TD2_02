@@ -12,6 +12,8 @@
 #include "Collision/ColliderShapes/ColliderShapeMapChip2D.h"
 #include "Collision/CollisionConfig.h"
 
+#include "WinApp.h"
+
 void MapChip::OnCollision()
 {
 }
@@ -171,20 +173,25 @@ void MapChip::SaveCSV(std::string fileName) {
 
 void MapChip::Draw(const ViewProjection& viewProjection) {
 
-	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - int32_t(kMaxScreenWidthBlockNum) / 2) - 1;
+	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
+
+	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
+	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
+
+	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
 	if (xMin < 0) {
 		xMin = 0;
 	}
-	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + int32_t(kMaxScreenWidthBlockNum) / 2) + 1;
+	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
 	if (xMax < 0) {
 		xMax = 0;
 	}
-	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + int32_t(kMaxScreenHeightBlockNum) / 2) + 1;
+	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
 	yMin = kMaxHeightBlockNum - yMin;
 	if (yMin < 0) {
 		yMin = 0;
 	}
-	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - int32_t(kMaxScreenHeightBlockNum) / 2) - 1;
+	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
 	yMax = kMaxHeightBlockNum - yMax;
 	yMax = std::max(yMax, int32_t(kMaxHeightBlockNum - 1));
 	if (yMax > kMaxHeightBlockNum) {
