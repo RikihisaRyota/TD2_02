@@ -146,7 +146,7 @@ void Player::ApplyGlobalVariable()
 
 void Player::NormalInitialize()
 {
-
+	worldTransform_.rotation_ = {};
 }
 
 void Player::NormalUpdate()
@@ -155,6 +155,9 @@ void Player::NormalUpdate()
 
 	if (velocity_.y == 0.0f) {
 		isJump_ = false;
+	}
+	else {
+		isJump_ = true;
 	}
 
 	Vector3 move = { input->GetGamePadLStick().x,0.0f,0.0f };
@@ -203,16 +206,22 @@ void Player::JumpUpdate()
 		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
 			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
 		}
+
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	else {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
 		if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
 			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
 		}
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	
 	if (velocity_.y <= 0) {
 		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+		if (velocity_.y <= -1.5f) {
+			velocity_.y = -1.5f;
+		}
 	}
 	else {
 		velocity_.y += parameters_[FloatParameterNames::kGravity];
@@ -223,6 +232,7 @@ void Player::JumpUpdate()
 
 void Player::GripWallInitialize()
 {
+	worldTransform_.rotation_ = {};
 	velocity_ = {};
 	countFrame_ = 0;
 }
@@ -236,6 +246,10 @@ void Player::GripWallUpdate()
 		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
 	}
 
+	Input* input = Input::GetInstance();
+
+	Vector2 move = input->GetGamePadLStick();
+
 	if (isRight_) {
 		// 右の壁
 
@@ -245,8 +259,55 @@ void Player::GripWallUpdate()
 
 	}
 
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::kA)) {
-		StatusRequest(Status::kWallJump);
+	if (input->PressedGamePadButton(Input::GamePadButton::kA)) {
+
+		if (isRight_) {
+			// 右の壁
+
+			if (move.y >= 0.0f) {
+				if (move.x <= -0.3f) {
+					// 左上
+					isRight_ = false;
+					StatusRequest(Status::kWallSideJump);
+				}
+				else {
+					// 上
+					StatusRequest(Status::kWallJump);
+				}
+			}
+			else if (move.y <= -0.4f){
+				// 左下
+				isRight_ = false;
+				StatusRequest(Status::kWallDownJump);
+			}
+			else {
+				StatusRequest(Status::kWallJump);
+			}
+
+		}
+		else {
+			// 左の壁
+
+			if (move.y >= 0.0f) {
+				if (move.x >= 0.3f) {
+					// 右上
+					isRight_ = true;
+					StatusRequest(Status::kWallSideJump);
+				}
+				else {
+					// 上
+					StatusRequest(Status::kWallJump);
+				}
+			}
+			else if (move.y <= -0.4f) {
+				// 右下
+				isRight_ = true;
+				StatusRequest(Status::kWallDownJump);
+			}
+			else {
+				StatusRequest(Status::kWallJump);
+			}
+		}
 	}
 
 	worldTransform_.translate_ += velocity_;
@@ -258,13 +319,13 @@ void Player::WallJumpInitialize()
 
 	if (isRight_) {
 		// 右の壁
-		velocity_.x -= parameters_[FloatParameterNames::kJumpInitialVelocity];
+		velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
 	}
 	else {
 		// 左の壁
-		velocity_.x += parameters_[FloatParameterNames::kJumpInitialVelocity];
+		velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
 	}
-	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
 }
 
 void Player::WallJumpUpdate()
@@ -274,27 +335,124 @@ void Player::WallJumpUpdate()
 		// 右の壁
 		if (velocity_.x >= 0) {
 			velocity_.x -= parameters_[FloatParameterNames::kFallingGravity];
+			if (velocity_.x > parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+				velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+			}
 		}
 		else {
 			velocity_.x -= parameters_[FloatParameterNames::kGravity];
 		}
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	else {
 		// 左の壁
 		if (velocity_.x <= 0) {
 			velocity_.x += parameters_[FloatParameterNames::kFallingGravity];
+			if (velocity_.x < parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+				velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+			}
 		}
 		else {
 			velocity_.x += parameters_[FloatParameterNames::kGravity];
 		}
+
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
-	/*if (velocity_.y <= 0) {
-		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	if (velocity_.y <= 0) {
+		velocity_.y += parameters_[FloatParameterNames::kGravity];
+		if (velocity_.y < -1.5f) {
+			velocity_.y = -1.5f;
+		}
 	}
 	else {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	}
+
+	worldTransform_.translate_ += velocity_;
+}
+
+void Player::WallSideJumpInitialize()
+{
+	velocity_ = {};
+	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+}
+
+void Player::WallSideJumpUpdate()
+{
+	if (isRight_) {
+		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
+		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+		}
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+	else {
+		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
+		if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+		}
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+
+	velocity_.y += parameters_[FloatParameterNames::kGravity];
+	if (velocity_.y <= -1.5f) {
+		velocity_.y = -1.5f;
+	}
+
+	/*if (velocity_.y <= 0) {
 		velocity_.y += parameters_[FloatParameterNames::kGravity];
+		if (velocity_.y <= -1.5f) {
+			velocity_.y = -1.5f;
+		}
+	}
+	else {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
 	}*/
-	velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+
+	worldTransform_.translate_ += velocity_;
+}
+
+void Player::WallDownJumpInitialize()
+{
+	velocity_ = {};
+
+	if (isRight_) {
+		// 右の壁
+		velocity_.x += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	}
+	else {
+		// 左の壁
+		velocity_.x -= parameters_[FloatParameterNames::kJumpInitialVelocity];
+	}
+}
+
+void Player::WallDownJumpUpdate()
+{
+	if (isRight_) {
+		velocity_.x -= parameters_[FloatParameterNames::kJumpAccelerationX];
+		if (velocity_.x <= 0.2f) {
+			velocity_.x = 0.2f;
+		}
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+	else {
+		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
+		if (velocity_.x >= -0.2f) {
+			velocity_.x = -0.2f;
+		}
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+
+	if (velocity_.y <= 0) {
+		velocity_.y += parameters_[FloatParameterNames::kGravity];
+		if (velocity_.y <= -1.5f) {
+			velocity_.y = -1.5f;
+		}
+	}
+	else {
+		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+	}
+
 	worldTransform_.translate_ += velocity_;
 }
 
@@ -322,7 +480,12 @@ void Player::Update()
 		case Player::Status::kWallJump:
 			WallJumpInitialize();
 			break;
-
+		case Player::Status::kWallSideJump:
+			WallSideJumpInitialize();
+			break;
+		case Player::Status::kWallDownJump:
+			WallDownJumpInitialize();
+			break;
 		default:
 			break;
 		}
@@ -345,6 +508,12 @@ void Player::Update()
 		break;
 	case Player::Status::kWallJump:
 		WallJumpUpdate();
+		break;
+	case Player::Status::kWallSideJump:
+		WallSideJumpUpdate();
+		break;
+	case Player::Status::kWallDownJump:
+		WallDownJumpUpdate();
 		break;
 	default:
 		break;

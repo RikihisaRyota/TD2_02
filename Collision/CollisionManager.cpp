@@ -2,6 +2,7 @@
 #include "ColliderShapes/ColliderShapeBox2D.h"
 #include "ColliderShapes/ColliderShapeMapChip2D.h"
 #include "MyMath.h"
+#include <functional>
 
 void CollisionManager::Init()
 {
@@ -120,6 +121,22 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 		int y = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y + scale.y - bottomLeft.y) / (mapChipScale.y * 2));
 		int x = static_cast<int>((worldPos.x -scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
+		std::function<void()> editXY = [&]() {
+			if (y < 0) {
+				y = 0;
+			}
+			else if (y >= int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM])){
+				y = int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) - 1;
+			}
+
+			if (x < 0) {
+				x = 0;
+			}
+			else if (x >= int(b->shapeType_->mapChip2D_.mapChip_[y].size())) {
+				x = int(b->shapeType_->mapChip2D_.mapChip_[y].size()) - 1;
+			}
+		};
+
 		for (int i = 0; i < 4; i++) {
 
 			if (i == 1) {
@@ -133,8 +150,26 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 				x++;
 			}
 
+			editXY();
+
 			int nextY = y;
 			int nextX = x;
+
+			std::function<void()> editNextXY = [&]() {
+				if (nextY < 0) {
+					nextY = 0;
+				}
+				else if (nextY >= int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM])) {
+					nextY = int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) - 1;
+				}
+
+				if (nextX < 0) {
+					nextX = 0;
+				}
+				else if (nextX >= int(b->shapeType_->mapChip2D_.mapChip_[nextY].size())) {
+					nextX = int(b->shapeType_->mapChip2D_.mapChip_[nextY].size()) - 1;
+				}
+			};
 
 			if (b->shapeType_->mapChip2D_.IsCollider(y, x)) {
 				result = true;

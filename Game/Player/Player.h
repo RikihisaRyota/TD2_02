@@ -17,6 +17,8 @@ public:
 		kJump, // ジャンプ時
 		kGripWall, // 壁に張り付いている時
 		kWallJump, 
+		kWallSideJump,
+		kWallDownJump,
 	};
 
 	Player();
@@ -99,6 +101,14 @@ private:
 	void WallJumpInitialize();
 
 	void WallJumpUpdate();
+
+	void WallSideJumpInitialize();
+
+	void WallSideJumpUpdate();
+
+	void WallDownJumpInitialize();
+
+	void WallDownJumpUpdate();
 	
 private:
 
@@ -131,6 +141,9 @@ private:
 		kFallingGravity, // 降下中の重力加速
 		kJumpAccelerationX, // ジャンプの横の加速度
 		kJumpMaxSpeedX, // ジャンプのx軸の最大の速度
+		kWallJumpInitialVelocityX, // 壁キック時のx軸の初速
+		kWallJumpInitialVelocityY, // 壁キック時のy軸の初速
+		kJumpRotateSpeed, // ジャンプ時のプレイヤーの回転スピード
 		kCountFloatParameter, // 末尾
 	};
 
@@ -144,6 +157,10 @@ private:
 		"降下中の重力加速", // 降下中の重力加速
 		"ジャンプのx軸の加速度",
 		"ジャンプのx軸の最大の速度",
+		"壁キック時のx軸の初速",
+		"壁キック時のy軸の初速",
+		"ジャンプ時のプレイヤーの回転スピード",
+
 	};
 
 	enum V3ParameterNames {
@@ -157,6 +174,17 @@ private:
 	std::string v3ParameterItemNames[V3ParameterNames::kCountV3Parameter] = {
 		"初期座標",
 	};
+
+	//enum V2ParameterNames {
+	//	kCountV2Parameter, // 末尾
+	//};
+
+	//// 定数パラメータ配列
+	//Vector2 v2Parameters_[V2ParameterNames::kCountV2Parameter];
+
+	//std::string v2ParameterItemNames[V2ParameterNames::kCountV2Parameter] = {
+	//	
+	//};
 
 	enum IParameterNames {
 		kGripStayTime, // 壁に捕まって動かないフレーム数
