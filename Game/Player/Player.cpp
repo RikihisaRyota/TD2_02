@@ -263,24 +263,13 @@ void Player::GripWallUpdate()
 
 		if (isRight_) {
 			// 右の壁
-
-			if (move.y >= 0.0f) {
-				if (move.x <= -0.3f) {
-					// 左上
-					isRight_ = false;
-					StatusRequest(Status::kWallSideJump);
-				}
-				else {
-					// 上
-					StatusRequest(Status::kWallJump);
-				}
-			}
-			else if (move.y <= -0.4f){
-				// 左下
+			if (move.x <= -0.3f) {
+				// 左上
 				isRight_ = false;
-				StatusRequest(Status::kWallDownJump);
+				StatusRequest(Status::kWallSideJump);
 			}
 			else {
+				// 上
 				StatusRequest(Status::kWallJump);
 			}
 
@@ -288,26 +277,64 @@ void Player::GripWallUpdate()
 		else {
 			// 左の壁
 
-			if (move.y >= 0.0f) {
-				if (move.x >= 0.3f) {
-					// 右上
-					isRight_ = true;
-					StatusRequest(Status::kWallSideJump);
-				}
-				else {
-					// 上
-					StatusRequest(Status::kWallJump);
-				}
-			}
-			else if (move.y <= -0.4f) {
-				// 右下
+			if (move.x >= 0.3f) {
+				// 右上
 				isRight_ = true;
-				StatusRequest(Status::kWallDownJump);
+				StatusRequest(Status::kWallSideJump);
 			}
 			else {
+				// 上
 				StatusRequest(Status::kWallJump);
 			}
 		}
+
+		//if (isRight_) {
+		//	// 右の壁
+
+		//	if (move.y >= 0.0f) {
+		//		if (move.x <= -0.3f) {
+		//			// 左上
+		//			isRight_ = false;
+		//			StatusRequest(Status::kWallSideJump);
+		//		}
+		//		else {
+		//			// 上
+		//			StatusRequest(Status::kWallJump);
+		//		}
+		//	}
+		//	else if (move.y <= -0.4f){
+		//		// 左下
+		//		isRight_ = false;
+		//		StatusRequest(Status::kWallDownJump);
+		//	}
+		//	else {
+		//		StatusRequest(Status::kWallJump);
+		//	}
+
+		//}
+		//else {
+		//	// 左の壁
+
+		//	if (move.y >= 0.0f) {
+		//		if (move.x >= 0.3f) {
+		//			// 右上
+		//			isRight_ = true;
+		//			StatusRequest(Status::kWallSideJump);
+		//		}
+		//		else {
+		//			// 上
+		//			StatusRequest(Status::kWallJump);
+		//		}
+		//	}
+		//	else if (move.y <= -0.4f) {
+		//		// 右下
+		//		isRight_ = true;
+		//		StatusRequest(Status::kWallDownJump);
+		//	}
+		//	else {
+		//		StatusRequest(Status::kWallJump);
+		//	}
+		//}
 	}
 
 	worldTransform_.translate_ += velocity_;
