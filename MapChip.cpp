@@ -241,8 +241,12 @@ void MapChip::SetBlocks(const Vector3& pos, uint32_t blockType) {
 void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 	uint32_t x = uint32_t(pos.x / kBlockScreenSize);
 	// カメラの初期値
-	float cameraPosX = 32.08f;
-	uint32_t difference = uint32_t((viewProjection_->translate_.x - cameraPosX) / float(kBlockSize));
+	float cameraPosX = viewProjection_->kInitializeTranslate_.x;
+	uint32_t differenceX = uint32_t((viewProjection_->translate_.x - cameraPosX) / float(kBlockSize));
+	// 697
 	uint32_t y = uint32_t(pos.y / kBlockScreenSize);
-	map_[y][x + difference] = blockType;
+	float cameraPosY = viewProjection_->kInitializeTranslate_.y;
+	uint32_t differenceY = uint32_t((viewProjection_->translate_.y - cameraPosY) / float(kBlockSize));
+	differenceY = kMaxScreenHeightBlockNum - differenceY;
+	map_[y + differenceY][x + differenceX] = blockType;
 }

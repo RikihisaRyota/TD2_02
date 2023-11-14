@@ -57,9 +57,15 @@ void GameScene::Update() {
 
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
+		if (isDebug_) {
+			viewProjection_.translate_.x = std::max(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / kBlockSize, viewProjection_.kInitializeTranslate_.x);
+			viewProjection_.translate_.y = std::max(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / kBlockSize, viewProjection_.kInitializeTranslate_.y);
+			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
+			viewProjection_.UpdateMatrix();
+		}
+
 	}
-	// マップチップエディター
-	mapChipEditor_->Update();
+
 	mapChip_->Update();
 
 	player_->Update();
@@ -71,12 +77,14 @@ void GameScene::Update() {
 
 	collisionManager_->CheckCollision();
 
-	followCamera_->Update();
-	viewProjection_ = followCamera_->GetViewProjection();
 
 	if (!isDebug_) {
-		// デバックカメラ
-		debugCamera_->Update(&viewProjection_);
+		followCamera_->Update();
+		viewProjection_ = followCamera_->GetViewProjection();
+	}
+	else {
+		// マップチップエディター
+		mapChipEditor_->Update();
 	}
 }
 

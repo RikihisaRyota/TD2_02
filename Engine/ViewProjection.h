@@ -22,6 +22,7 @@ struct ViewProjection
 	Vector3 rotation_ = { 0.0f, 0.0f, 0.0f };
 	// ローカル座標
 	Vector3 translate_ = { 32.08f, 20.0f, -44.5f };
+	Vector3 kInitializeTranslate_ = { 32.08f, 20.0f, -44.5f };
 #pragma endregion ビュー行列の設定
 
 #pragma region 射影行列の設定
