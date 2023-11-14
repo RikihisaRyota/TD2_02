@@ -118,8 +118,13 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 		bool finishFlag = false;
 
+		float edit = 0.001f;
+
 		int y = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y + scale.y - bottomLeft.y) / (mapChipScale.y * 2));
 		int x = static_cast<int>((worldPos.x -scale.x - bottomLeft.x) / (mapChipScale.x * 2));
+
+		int endY = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y - scale.y - bottomLeft.y) / (mapChipScale.y * 2));
+		int endX = static_cast<int>((worldPos.x + scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
 		std::function<void()> editXY = [&]() {
 			if (y < 0) {
@@ -137,354 +142,89 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 			}
 		};
 
-		for (int i = 0; i < 4; i++) {
+		for (int row = y; row <= endY; row++) {
+			for (int column = x; column <= endX; column++) {
 
-			if (i == 1) {
-				x++;
-			}
-			else if (i == 2) {
-				x--;
-				y++;
-			}
-			else if (i == 3) {
-				x++;
-			}
+	
+				int nextY = row;
+				int nextX = column;
 
-			editXY();
-
-			int nextY = y;
-			int nextX = x;
-
-			std::function<void()> editNextXY = [&]() {
-				if (nextY < 0) {
-					nextY = 0;
-				}
-				else if (nextY >= int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM])) {
-					nextY = int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) - 1;
-				}
-
-				if (nextX < 0) {
-					nextX = 0;
-				}
-				else if (nextX >= int(b->shapeType_->mapChip2D_.mapChip_[nextY].size())) {
-					nextX = int(b->shapeType_->mapChip2D_.mapChip_[nextY].size()) - 1;
-				}
-			};
-
-			if (b->shapeType_->mapChip2D_.IsCollider(y, x)) {
-				result = true;
-				// あたり判定があり
-
-
-			}
-			else if (b->shapeType_->mapChip2D_.IsRigitBody(y, x)) {
-				result = true;
-				// めり込み処理する
-
-				Vector2 chipPos = { x * mapChipScale.x * 2 + mapChipScale.x + bottomLeft.x,
-					(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - y) * mapChipScale.y * 2 + mapChipScale.y };
-
-				if (velocity.x == 0 && velocity.y != 0) {
-					// x軸方向の移動がない場合
-					if (velocity.y > 0) {
-						sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
+				std::function<void()> editNextXY = [&]() {
+					if (nextY < 0) {
+						nextY = 0;
 					}
-					else {
-						sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
+					else if (nextY >= int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM])) {
+						nextY = int(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) - 1;
 					}
-					if (velocity.y >= 0.0f) {
-						velocity.y = -0.001f;
+
+					if (nextX < 0) {
+						nextX = 0;
 					}
-					else {
-						velocity.y = 0.0f;
+					else if (nextX >= int(b->shapeType_->mapChip2D_.mapChip_[nextY].size())) {
+						nextX = int(b->shapeType_->mapChip2D_.mapChip_[nextY].size()) - 1;
 					}
-					finishFlag = true;
-					break;
+				};
+
+				if (b->shapeType_->mapChip2D_.IsCollider(row, column)) {
+					result = true;
+					// あたり判定があり
+
+
 				}
-				else if (velocity.y == 0 && velocity.x != 0) {
-					// y軸方向の移動がない場合
-					if (velocity.x > 0) {
-						sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-					}
-					else {
-						sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-					}
-					velocity.x = 0.0f;
+				else if (b->shapeType_->mapChip2D_.IsRigitBody(row, column)) {
+					result = true;
+					// めり込み処理する
 
-					finishFlag = true;
-					break;
-				}
-				else {
-					// 他のすべての場合
-					bool isFirstX = false;
+					Vector2 chipPos = { column * mapChipScale.x * 2 + mapChipScale.x + bottomLeft.x,
+						(b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - row) * mapChipScale.y * 2 + mapChipScale.y };
 
-					Vector2 beforePos = { sub.x - velocity.x , sub.y - velocity.y };
-
-					if (velocity.x > 0) {
-						// xが正の方向に移動する場合
-						if (velocity.y < 0) {
-							// yが負の方向に移動する場合
-							if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
-								if (beforePos.y < chipPos.y + mapChipScale.y + scale.y) {
-									isFirstX = true;
-								}
-								else {
-									if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y + mapChipScale.y) - (beforePos.y - scale.y) },
-										{ velocity.x,velocity.y }) > 0) {
-										isFirstX = false;
-									}
-									else {
-										isFirstX = true;
-									}
-								}
-							}
-							else {
-								isFirstX = false;
-							}
-
-							if (isFirstX) {
-								// x軸から先に修正する
-
-								sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-								velocity.x = 0.0f;
-
-								//sub.UpdateMatrix();
-								nextX -= 1;
-
-								chipPos.x -= mapChipScale.x * 2;
-
-								if (y == int(b->shapeType_->mapChip2D_.mapChip_.size())) {
-
-									if (b->shapeType_->mapChip2D_.IsCollider(y, nextX)) {
-										// あたり判定があり
-
-
-									}
-									else if (b->shapeType_->mapChip2D_.IsRigitBody(y, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub,scale,chipPos,mapChipScale)) {
-											velocity.y = 0.0f;
-											sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
-										}
-									}
-
-								}
-								else {
-									nextY += 1;
-
-									chipPos.y -= mapChipScale.y * 2;
-
-									if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-									else if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = 0.0f;
-											sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
-										}
-									}
-
-								}
-
-							}
-							else {
-								// y軸から修正する
-
-								velocity.y = 0.0f;
-								sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
-
-								//sub.UpdateMatrix();
-								nextY -= 1;
-
-								chipPos.y += mapChipScale.x * 2;
-
-								if (x == int(b->shapeType_->mapChip2D_.mapChip_[nextY].size())) {
-									
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, x)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-											velocity.x = 0.0f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
-										// あたり判定があり
-
-
-									}
-									
-								}
-								else {
-									nextX += 1;
-									chipPos.x += mapChipScale.x * 2;
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-											velocity.x = 0.0f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-
-								}
-							}
-
-							finishFlag = true;
+					if (velocity.x == 0 && velocity.y != 0) {
+						// x軸方向の移動がない場合
+						if (velocity.y > 0) {
+							sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
 						}
 						else {
-							// yが正の方向に移動する場合
-							if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
-								if (beforePos.y > chipPos.y - mapChipScale.y - scale.y) {
-									isFirstX = true;
-								}
-								else {
-									if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-										{ velocity.x,velocity.y }) > 0) {
-										isFirstX = false;
-									}
-									else {
-										isFirstX = true;
-									}
-								}
-							}
-							else {
-								isFirstX = false;
-							}
-
-							if (isFirstX) {
-								// x軸から先に修正する
-
-								sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-								velocity.x = 0.0f;
-
-								//sub.UpdateMatrix();
-								nextX -= 1;
-
-								chipPos.x -= mapChipScale.x * 2;
-
-								if (y == 0) {
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(y, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = -0.001f;
-											sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(y, nextX)) {
-										// あたり判定があり
-
-
-									}
-
-								}
-								else {
-									nextY -= 1;
-
-									chipPos.y += mapChipScale.y * 2;
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = -0.001f;
-											sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-
-								}
-
-							}
-							else {
-								// y軸から修正する
-
-								velocity.y = -0.001f;
-								sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
-
-								//sub.UpdateMatrix();
-								nextY += 1;
-								chipPos.y -= mapChipScale.y * 2;
-
-								if (x == int(b->shapeType_->mapChip2D_.mapChip_[nextY].size())) {
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, x)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-											velocity.x = 0.0f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
-										// あたり判定があり
-
-
-									}
-
-								}
-								else {
-									nextX += 1;
-									chipPos.x += mapChipScale.x * 2;
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x - mapChipScale.x - scale.x - 0.001f;
-											velocity.x = 0.0f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-
-								}
-							}
-
-							finishFlag = true;
-
+							sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
 						}
+						if (velocity.y >= 0.0f) {
+							velocity.y = -edit;
+						}
+						else {
+							velocity.y = 0.0f;
+						}
+						finishFlag = true;
+						break;
+					}
+					else if (velocity.y == 0 && velocity.x != 0) {
+						// y軸方向の移動がない場合
+						if (velocity.x > 0) {
+							sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+						}
+						else {
+							sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+						}
+						velocity.x = 0.0f;
+
+						finishFlag = true;
+						break;
 					}
 					else {
-						// xが負の方向に移動する場合
+						// 他のすべての場合
+						bool isFirstX = false;
 
-						if (velocity.y < 0) {
-							// yが負の方向に移動する場合
-							if (beforePos.x >= chipPos.x + mapChipScale.x + scale.x) {
-								if (beforePos.y <= chipPos.y + mapChipScale.y + scale.y) {
-									isFirstX = true;
-								}
-								else {
-									if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y + mapChipScale.y) - (beforePos.y - scale.y) },
-										{ velocity.x,velocity.y }) < 0) {
-										isFirstX = false;
+						Vector2 beforePos = { sub.x - velocity.x , sub.y - velocity.y };
+
+						if (velocity.x > 0) {
+							// xが正の方向に移動する場合
+							if (velocity.y < 0) {
+								// yが負の方向に移動する場合
+								if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
+									if (beforePos.y < chipPos.y + mapChipScale.y + scale.y) {
+										isFirstX = true;
 									}
 									else {
-
-										Vector2 hoge = chipPos;
-										hoge.x += mapChipScale.x * 2;
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, hoge, mapChipScale)) {
+										if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y + mapChipScale.y) - (beforePos.y - scale.y) },
+											{ velocity.x,velocity.y }) > 0) {
 											isFirstX = false;
 										}
 										else {
@@ -492,105 +232,42 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 										}
 									}
 								}
-							}
-							else {
-								isFirstX = false;
-							}
-
-							if (isFirstX) {
-								// x軸から先に修正する
-
-								sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-								velocity.x = 0.0f;
-
-								//sub.UpdateMatrix();
-								nextX += 1;
-								chipPos.x += mapChipScale.x * 2;
-
-								if (y == int(b->shapeType_->mapChip2D_.mapChip_.size())) {
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(y, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = 0.0f;
-											sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(y, nextX)) {
-										// あたり判定があり
-
-
-									}
-
-								}
 								else {
-									nextY += 1;
-									chipPos.y -= mapChipScale.y * 2;
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = 0.0f;
-											sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
-										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
+									isFirstX = false;
 								}
 
-							}
-							else {
-								// y軸から修正する
+								if (isFirstX) {
+									// x軸から先に修正する
 
-								velocity.y = 0.0f;
-								sub.y = chipPos.y + mapChipScale.y + scale.y + 0.001f;
+									sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+									velocity.x = 0.0f;
 
-								//sub.UpdateMatrix();
-								nextY -= 1;
-								chipPos.y += mapChipScale.y * 2;
+									//sub.UpdateMatrix();
+									nextX -= 1;
 
-								if (x == 0) {
+									chipPos.x -= mapChipScale.x * 2;
 
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, x)) {
-										// めり込み処理する
+									if (row == int(b->shapeType_->mapChip2D_.mapChip_.size()) - 1) {
 
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-											velocity.x = 0.0f;
+										if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
+											// あたり判定があり
+
+
 										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, x)) {
-										// あたり判定があり
+										else if (b->shapeType_->mapChip2D_.IsRigitBody(row, nextX)) {
+											// めり込み処理する
 
-
-									}
-
-								}
-								else {
-									//nextX -= 1;
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-											velocity.x = 0.0f;
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = 0.0f;
+												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+											}
 										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
 
 									}
 									else {
+										nextY += 1;
 
-										nextX--;
-										chipPos.x -= mapChipScale.x * 2;
+										chipPos.y -= mapChipScale.y * 2;
 
 										if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
@@ -601,92 +278,256 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											// めり込み処理する
 
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-												sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
+												velocity.y = 0.0f;
+												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+											}
+										}
+
+									}
+
+								}
+								else {
+									// y軸から修正する
+
+									velocity.y = 0.0f;
+									sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+
+									//sub.UpdateMatrix();
+									nextY -= 1;
+
+									chipPos.y += mapChipScale.x * 2;
+
+									if (column == int(b->shapeType_->mapChip2D_.mapChip_[nextY].size()) - 1) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, column)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 												velocity.x = 0.0f;
 											}
 										}
-									}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
+											// あたり判定があり
 
-									
-								}
-							}
 
-							finishFlag = true;
+										}
 
-						}
-						else {
-							// yが正の方向に移動する場合
-							if (beforePos.x >= chipPos.x + mapChipScale.x + scale.x) {
-								if (beforePos.y >= chipPos.y - mapChipScale.y - scale.y) {
-									isFirstX = true;
-								}
-								else {
-									if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-										{ velocity.x,velocity.y }) < 0) {
-										isFirstX = false;
 									}
 									else {
-										isFirstX = true;
+										nextX += 1;
+										chipPos.x += mapChipScale.x * 2;
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+
 									}
 								}
+
+								finishFlag = true;
 							}
 							else {
-								isFirstX = false;
-							}
-
-							if (isFirstX) {
-								// x軸から先に修正する
-
-								sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-								velocity.x = 0.0f;
-
-								//sub.UpdateMatrix();
-								nextX += 1;
-								chipPos.x += mapChipScale.x * 2;
-
-								if (y == 0) {
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = -0.001f;
-											sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
+								// yが正の方向に移動する場合
+								if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
+									if (beforePos.y > chipPos.y - mapChipScale.y - scale.y) {
+										isFirstX = true;
+									}
+									else {
+										if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
+											{ velocity.x,velocity.y }) > 0) {
+											isFirstX = false;
+										}
+										else {
+											isFirstX = true;
 										}
 									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-									
 								}
 								else {
-									//nextY -= 1;
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
+									isFirstX = false;
+								}
 
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											velocity.y = -0.001f;
-											sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
+								if (isFirstX) {
+									// x軸から先に修正する
+
+									sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+									velocity.x = 0.0f;
+
+									//sub.UpdateMatrix();
+									nextX -= 1;
+
+									chipPos.x -= mapChipScale.x * 2;
+
+									if (row == 0) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(row, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = -edit;
+												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+											}
 										}
-									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
+										else if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
+											// あたり判定があり
 
+
+										}
 
 									}
 									else {
+										nextY -= 1;
 
-										nextY--;
 										chipPos.y += mapChipScale.y * 2;
 
 										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
 											// めり込み処理する
 
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-												velocity.y = -0.001f;
-												sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
+												velocity.y = -edit;
+												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+
+								}
+								else {
+									// y軸から修正する
+
+									velocity.y = -edit;
+									sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+
+									//sub.UpdateMatrix();
+									nextY += 1;
+									chipPos.y -= mapChipScale.y * 2;
+
+									if (column == int(b->shapeType_->mapChip2D_.mapChip_[nextY].size()) - 1) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, column)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+									else {
+										nextX += 1;
+										chipPos.x += mapChipScale.x * 2;
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+								}
+
+								finishFlag = true;
+
+							}
+						}
+						else {
+							// xが負の方向に移動する場合
+
+							if (velocity.y < 0) {
+								// yが負の方向に移動する場合
+								if (beforePos.x >= chipPos.x + mapChipScale.x + scale.x) {
+									if (beforePos.y <= chipPos.y + mapChipScale.y + scale.y) {
+										isFirstX = true;
+									}
+									else {
+										if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y + mapChipScale.y) - (beforePos.y - scale.y) },
+											{ velocity.x,velocity.y }) < 0) {
+											isFirstX = false;
+										}
+										else {
+
+											Vector2 hoge = chipPos;
+											hoge.x += mapChipScale.x * 2;
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, hoge, mapChipScale)) {
+												isFirstX = false;
+											}
+											else {
+												isFirstX = true;
+											}
+										}
+									}
+								}
+								else {
+									isFirstX = false;
+								}
+
+								if (isFirstX) {
+									// x軸から先に修正する
+
+									sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+									velocity.x = 0.0f;
+
+									//sub.UpdateMatrix();
+									nextX += 1;
+									chipPos.x += mapChipScale.x * 2;
+
+									if (row == int(b->shapeType_->mapChip2D_.mapChip_.size()) - 1) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(row, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = 0.0f;
+												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+									else {
+										nextY += 1;
+										chipPos.y -= mapChipScale.y * 2;
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = 0.0f;
+												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
@@ -697,69 +538,246 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									}
 
 								}
+								else {
+									// y軸から修正する
+
+									velocity.y = 0.0f;
+									sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+
+									//sub.UpdateMatrix();
+									nextY -= 1;
+									chipPos.y += mapChipScale.y * 2;
+
+									if (column == 0) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, column)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+									else {
+										//nextX -= 1;
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+										else {
+
+											nextX--;
+											chipPos.x -= mapChipScale.x * 2;
+
+											if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+												// あたり判定があり
+
+
+											}
+											else if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+												// めり込み処理する
+
+												if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+													sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+													velocity.x = 0.0f;
+												}
+											}
+										}
+
+
+									}
+								}
+
+								finishFlag = true;
 
 							}
 							else {
-								// y軸から修正する
-
-								velocity.y = -0.001f;
-								sub.y = chipPos.y - mapChipScale.y - scale.y - 0.001f;
-
-								//sub.UpdateMatrix();
-								nextY += 1;
-								chipPos.y -= mapChipScale.y * 2;
-
-								if (x == 0) {
-
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
-
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-											velocity.x = 0.0f;
+								// yが正の方向に移動する場合
+								if (beforePos.x >= chipPos.x + mapChipScale.x + scale.x) {
+									if (beforePos.y >= chipPos.y - mapChipScale.y - scale.y) {
+										isFirstX = true;
+									}
+									else {
+										if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
+											{ velocity.x,velocity.y }) < 0) {
+											isFirstX = false;
+										}
+										else {
+											isFirstX = true;
 										}
 									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
-									
 								}
 								else {
-									nextX -= 1;
-									chipPos.x -= mapChipScale.x * 2;
+									isFirstX = false;
+								}
 
-									if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
-										// めり込み処理する
+								if (isFirstX) {
+									// x軸から先に修正する
 
-										if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
-											sub.x = chipPos.x + mapChipScale.x + scale.x + 0.001f;
-											velocity.x = 0.0f;
+									sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+									velocity.x = 0.0f;
+
+									//sub.UpdateMatrix();
+									nextX += 1;
+									chipPos.x += mapChipScale.x * 2;
+
+									if (row == 0) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = -edit;
+												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+									else {
+										//nextY -= 1;
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												velocity.y = -edit;
+												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+										else {
+
+											nextY--;
+											chipPos.y += mapChipScale.y * 2;
+
+											if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+												// めり込み処理する
+
+												if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+													velocity.y = -edit;
+													sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+												}
+											}
+											else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+												// あたり判定があり
+
+
+											}
+										}
+
+									}
+
+								}
+								else {
+									// y軸から修正する
+
+									velocity.y = -edit;
+									sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+
+									//sub.UpdateMatrix();
+									nextY += 1;
+									chipPos.y -= mapChipScale.y * 2;
+
+									if (column == 0) {
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
+										}
+
+									}
+									else {
+										nextX -= 1;
+										chipPos.x -= mapChipScale.x * 2;
+
+										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
+											// めり込み処理する
+
+											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
+												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
+												velocity.x = 0.0f;
+											}
+										}
+										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
+											// あたり判定があり
+
+
 										}
 									}
-									else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
-										// あたり判定があり
-
-
-									}
 								}
+
+								finishFlag = true;
+
 							}
-
-							finishFlag = true;
-
 						}
+
 					}
+
+					break;
 
 				}
 
-				break;
+				if (finishFlag) {
+					break;
+				}
 
 			}
 
 			if (finishFlag) {
 				break;
 			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+
+			/*if (i == 1) {
+				x = static_cast<int>((worldPos.x + scale.x - bottomLeft.x) / (mapChipScale.x * 2));
+			}
+			else if (i == 2) {
+				y = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y - scale.y - bottomLeft.y) / (mapChipScale.y * 2));
+				x = static_cast<int>((worldPos.x - scale.x - bottomLeft.x) / (mapChipScale.x * 2));
+			}
+			else if (i == 3) {
+				x = static_cast<int>((worldPos.x + scale.x - bottomLeft.x) / (mapChipScale.x * 2));
+			}*/
+
+			//editXY();
+
+			
 		}
 	}
 
