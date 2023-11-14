@@ -64,10 +64,10 @@ void MapChipEditor::Update() {
 		// マウスのワールド座標を取得
 		Vector2 screenMousePos = input_->GetMouseScreenPosition();
 		// マップチップ内でクリックしていたら
-		if (screenMousePos.x >= 0.0f &&
-			screenMousePos.x <= 1280.0f &&
-			screenMousePos.y >= 0.0f &&
-			screenMousePos.y <= 720.0f) {
+		if (screenMousePos.x / float(kBlockScreenSize)>= 0.0f &&
+			screenMousePos.x / float(kBlockScreenSize) <= float(kMaxWidthBlockNum)&&
+			screenMousePos.y / float(kBlockScreenSize) >= 0.0f &&
+			screenMousePos.y / float(kBlockScreenSize) <= float(kMaxHeightBlockNum)) {
 			mapChip_->SetBlocks(screenMousePos, blockCount_);
 		}
 	}
