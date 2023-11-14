@@ -2,27 +2,9 @@
 
 #include <cstdint>
 
+#include "Matrix4x4.h"
 #include "Vector3.h"
 #include "Vector4.h"
-
-struct Emitter {
-    Vector3 position;
-    int32_t inOnce;
-    int32_t aliveTime;
-    bool isAlive;
-};
-
-struct ParticleMotion {
-    Scale scale;
-    Rotate rotate;
-    Vector3 position;
-    Velocity velocity;
-    Angel angle;
-    Color color;
-    AliveTime aliveTime;
-    bool isAlive;
-    ParticleForGPU constantBuff;
-};
 
 struct ParticleForGPU {
     Matrix4x4 matWorld;
@@ -52,6 +34,7 @@ struct Angel {
 };
 
 struct AliveTime {
+    int32_t maxTime;
     int32_t time;
     int32_t randomRange;
 };
@@ -60,4 +43,23 @@ struct Velocity {
     float speed;
     Vector3 velocity;
     float randomRange;
+};
+
+struct Emitter {
+    Vector3 position;
+    int32_t inOnce;
+    int32_t aliveTime;
+    bool isAlive;
+};
+
+struct ParticleMotion {
+    Scale scale;
+    Rotate rotate;
+    Vector3 position;
+    Velocity velocity;
+    Angel angle;
+    Color color;
+    AliveTime aliveTime;
+    bool isAlive;
+    ParticleForGPU constantBuff;
 };
