@@ -14,29 +14,25 @@
 
 #include "WinApp.h"
 
-void MapChip::OnCollision()
-{
-}
+void MapChip::OnCollision() {}
 
-void MapChip::SetCollider()
-{
+void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
 }
 
-void MapChip::Update()
-{
+void MapChip::Update() {
 	SetCollider();
 }
 
 MapChip::MapChip() {
-	for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
+	/*for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 		blockWorldTransform_.push_back(std::vector<WorldTransform>());
 		map_.push_back(std::vector<uint32_t>());
 		for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 			blockWorldTransform_[y].push_back(WorldTransform());
 			map_[y].push_back(uint32_t());
 		}
-	}
+	}*/
 
 	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
 	collisionAttribute_ = 0x00000000;
@@ -70,8 +66,10 @@ void MapChip::Initialize() {
 	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount) - 1; i++) {
 		blockModels_.emplace_back(modelManager->GetBlockModel(i));
 	}
+	// コンストラクタとInitializeのどっちも呼び出しる
 	for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 		blockWorldTransform_.push_back(std::vector<WorldTransform>());
+		map_.push_back(std::vector<uint32_t>());
 		for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 			blockWorldTransform_[y].push_back(WorldTransform());
 			blockWorldTransform_[y][x].Initialize();
@@ -81,6 +79,7 @@ void MapChip::Initialize() {
 				0.0f
 			);
 			blockWorldTransform_[y][x].UpdateMatrix();
+			map_[y].push_back(uint32_t());
 		}
 	}
 
@@ -179,24 +178,15 @@ void MapChip::Draw(const ViewProjection& viewProjection) {
 	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
 
 	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
-	if (xMin < 0) {
-		xMin = 0;
-	}
+	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
 	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
-	if (xMax < 0) {
-		xMax = 0;
-	}
+	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
 	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
 	yMin = kMaxHeightBlockNum - yMin;
-	if (yMin < 0) {
-		yMin = 0;
-	}
+	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
 	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
 	yMax = kMaxHeightBlockNum - yMax;
-	yMax = std::max(yMax, int32_t(kMaxHeightBlockNum - 1));
-	if (yMax > kMaxHeightBlockNum) {
-		yMax = kMaxHeightBlockNum;
-	}
+	yMax = std::clamp(yMax, 0 , int32_t(kMaxHeightBlockNum));
 
 	for (int32_t y = yMin; y < yMax; y++) {
 		for (int32_t x = xMin; x < xMax; x++) {
@@ -255,5 +245,8 @@ void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 	float cameraPosY = viewProjection_->kInitializeTranslate_.y;
 	uint32_t differenceY = uint32_t((viewProjection_->translate_.y - cameraPosY) / float(kBlockSize));
 	differenceY = kMaxScreenHeightBlockNum - differenceY;
-	map_[y + differenceY][x + differenceX] = blockType;
+	if (y + differenceY < kMaxHeightBlockNum &&
+		x + differenceX < kMaxWidthBlockNum) {
+		map_[y + differenceY][x + differenceX] = blockType;
+	}
 }

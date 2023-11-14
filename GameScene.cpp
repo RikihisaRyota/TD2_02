@@ -31,9 +31,9 @@ void GameScene::Initialize() {
 #pragma endregion
 
 #pragma region 初期化
-	mapChip_->LoadCSV("stage_1");
-	mapChip_->SetViewProjection(&viewProjection_);
 	mapChip_->Initialize();
+	mapChip_->SetViewProjection(&viewProjection_);
+	mapChip_->LoadCSV("stage_1");
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
@@ -58,8 +58,12 @@ void GameScene::Update() {
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
 		if (isDebug_) {
-			viewProjection_.translate_.x = std::max(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / kBlockSize, viewProjection_.kInitializeTranslate_.x);
-			viewProjection_.translate_.y = std::max(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / kBlockSize, viewProjection_.kInitializeTranslate_.y);
+			int32_t x =int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / float(kBlockSize));
+			x = std::clamp(x, 16,int32_t(kMaxWidthBlockNum));
+			int32_t y =int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / float(kBlockSize));
+			y = std::clamp(y, 10,int32_t(kMaxHeightBlockNum));
+			viewProjection_.translate_.x = float(x	)* float(kBlockSize);
+			viewProjection_.translate_.y = float(y)* float(kBlockSize);
 			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
 			viewProjection_.UpdateMatrix();
 		}
