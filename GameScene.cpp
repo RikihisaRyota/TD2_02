@@ -53,13 +53,24 @@ void GameScene::Update() {
 	if (input_->TriggerKey(DIK_SPACE)) {
   		Emitter* emitter = new Emitter();
 		emitter->aliveTime = 1;
-		emitter->createParticle = 10;
-		emitter->color = { 1.0f,1.0f,1.0f,1.0f };
+		emitter->aliveTime = 10;
 		emitter->position = { 4.0f,4.0f,0.0f };
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
-		particleMotion->velocity = { 1.0f,1.0f,0.0f };
-		particleMotion->aliveTime = 20;
+		particleMotion->angle.start = DegToRad(0.0f);
+		particleMotion->angle.end= DegToRad(180.0f);
+		particleMotion->color.currentColor= { 1.0f,1.0f,1.0f,1.0f };
+		particleMotion->color.startColor = { 1.0f,1.0f,1.0f,1.0f };
+		particleMotion->color.endColor = { 1.0f,1.0f,1.0f,0.0f };
+		particleMotion->scale.currentScale = { 1.0f,1.0f,1.0f };
+		particleMotion->scale.startScale= { 1.0f,1.0f,1.0f };
+		particleMotion->scale.endScale= { 0.5f,0.5f,0.5f };
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate= { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 5.0f;
+		particleMotion->velocity.randomRange = 1.0f;
+		particleMotion->aliveTime.time = 20;
+		particleMotion->aliveTime.randomRange = 5;
 		particleMotion->isAlive = true;
 		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion,0);
 	}

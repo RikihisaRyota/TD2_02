@@ -3,12 +3,12 @@
 #include <d3dx12.h>
 #include <vector>
 
+#include "cMaterial.h"
+#include "cVertexPos.h"
 #include "Particle.h"
 #include "ParticleGraphicsPipline.h"
 #include "ParticleShaderStruct.h"
-#include "cMaterial.h"
 #include "WorldTransform.h"
-#include "cVertexPos.h"
 #include "ViewProjection.h"
 
 class ParticleManager {
@@ -60,5 +60,6 @@ private:
 #pragma region 
 	std::vector<Instancing*> instancing_;
 #pragma endregion
+	
 };
 

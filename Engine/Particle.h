@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <vector>
+
+#include "Random.h"
 #include "WorldTransform.h"
 #include "Vector4.h"
 
@@ -23,6 +25,7 @@ public:
 	uint32_t GetAliveParticle() {return numAliveParticle_;}
 	bool GetIsAlive() { return isAlive_; }
 private:
+	Random::RandomNumberGenerator rnd_;
 	bool isAlive_;
 	uint32_t numAliveParticle_;
 	ParticleMotion* originalParticle_;

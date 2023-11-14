@@ -13,15 +13,15 @@ struct Emitter {
 };
 
 struct ParticleMotion {
+    Scale scale;
+    Rotate rotate;
     Vector3 position;
-    Vector3 velocity;
+    Velocity velocity;
     Angel angle;
     Color color;
-    Scale scale;
-    Vector3 acceleration;
-    uint32_t aliveTime;
+    AliveTime aliveTime;
     bool isAlive;
-    ParticleForGPU 
+    ParticleForGPU constantBuff;
 };
 
 struct ParticleForGPU {
@@ -30,15 +30,20 @@ struct ParticleForGPU {
 };
 
 struct Scale {
-    Vector4 startScale;
-    Vector4 endScale;
-    Vector4 scale;
+    Vector3 startScale;
+    Vector3 endScale;
+    Vector3 currentScale;
+};
+
+struct Rotate {
+    Vector3 addRotate;
+    Vector3 currentRotate;
 };
 
 struct Color {
     Vector4 startColor;
     Vector4 endColor;
-    Vector4 color;
+    Vector4 currentColor;
 };
 
 struct Angel {
@@ -52,7 +57,7 @@ struct AliveTime {
 };
 
 struct Velocity {
+    float speed;
     Vector3 velocity;
-    Vector3 randomRange;
-
+    float randomRange;
 };
