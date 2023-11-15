@@ -3,8 +3,9 @@
 #include "GameScene.h"
 #include "ImGuiManager.h"
 #include "TextureManager.h"
+#include "ParticleGraphicsPipline.h"
 #include "ModelManager.h"
-#include "./Engine/ShaderCompiler.h"
+#include "ShaderCompiler.h"
 
 #include "GlobalVariables/GlobalVariables.h"
 
@@ -51,7 +52,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	LineGraphicsPipline::SetDevice(dxCommon->GetDevice());
 
 	// ParticleGraphicsPipelineの静的初期化
-	//ParticleGraphicsPipline::SetDevice(dxCommon->GetDevice());
+	ParticleGraphicsPipeline::SetDevice(dxCommon->GetDevice());
 
 	// PostEffectPipeLine
 	//PostEffectGraphicsPipeline::SetDevice(dxCommon->GetDevice());

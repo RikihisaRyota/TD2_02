@@ -202,6 +202,12 @@
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp">
       <Filter>Collision\ColliderShape</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ParticleManager.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Particle.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -395,6 +401,15 @@
     </ClInclude>
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h">
       <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleManager.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleShaderStruct.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Particle.h">
+      <Filter>engine\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
