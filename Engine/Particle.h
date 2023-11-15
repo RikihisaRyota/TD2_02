@@ -25,6 +25,9 @@ public:
 	uint32_t GetAliveParticle() {return numAliveParticle_;}
 	bool GetIsAlive() { return isAlive_; }
 private:
+	static bool CompareParticles(const std::unique_ptr<ParticleWorldTransform>& a, const std::unique_ptr<ParticleWorldTransform>& b) {
+		return a->motion.isAlive > b->motion.isAlive;
+	}
 	Random::RandomNumberGenerator rnd_;
 	bool isAlive_;
 	uint32_t numAliveParticle_;

@@ -51,12 +51,12 @@ void Particle::Update() {
 				isAlive_ = false;
 			}
 			else {
-				float t = float(particle->motion.aliveTime.time) / float(particle->motion.aliveTime.maxTime);
+				float t = 1.0f - float(particle->motion.aliveTime.time) / float(particle->motion.aliveTime.maxTime);
 				// 更新
 				// 色
-				particle->motion.color.currentColor = Lerp(particle->motion.color.startColor, particle->motion.color.endColor, t);
+				particle->motion.color.currentColor = Lerp(particle->motion.color.startColor, particle->motion.color.endColor, std::clamp(t,0.0f,1.0f));
 				// スケール
-				particle->motion.scale.currentScale = Lerp(particle->motion.scale.startScale, particle->motion.scale.endScale, t);
+				particle->motion.scale.currentScale = Lerp(particle->motion.scale.startScale, particle->motion.scale.endScale, std::clamp(t, 0.0f, 1.0f));
 				// 回転
 				particle->motion.rotate.currentRotate += particle->motion.rotate.addRotate;
 				// 移動
@@ -66,14 +66,17 @@ void Particle::Update() {
 				particle->rotate = particle->motion.rotate.currentRotate;
 				particle->transform = particle->motion.position;
 				particle->UpdateMatrix();
+				particle->constantDate.color = particle->motion.color.currentColor;
 				particle->motion.aliveTime.time--;
 				numAliveParticle_++;
 				isAlive_ = true;
 			}
 		}
 	}
-
+	// 生存しているパーティクルをソート
+	std::sort(particleWorldTransform_.begin(), particleWorldTransform_.end(), &Particle::CompareParticles);
 }
+
 
 void Particle::ParticleWorldTransform::UpdateMatrix() {
 	Matrix4x4 matScale, matRot, matTrans;
