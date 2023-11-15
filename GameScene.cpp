@@ -84,10 +84,9 @@ void GameScene::Update() {
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		Emitter* emitter = new Emitter();
-		emitter->aliveTime = 1;
-		emitter->aliveTime = 1;
+		emitter->aliveTime = 5;
 		emitter->position = { 4.0f,4.0f,0.0f };
-		emitter->inOnce = 2;
+		emitter->inOnce = 20;
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
 		particleMotion->angle.start = DegToRad(0.0f);
@@ -108,9 +107,8 @@ void GameScene::Update() {
 		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
 	}
 	if (!isDebug_) {
-		debugCamera_->Update(&viewProjection_);
-		//followCamera_->Update();
-		//viewProjection_ = followCamera_->GetViewProjection();
+		followCamera_->Update();
+		viewProjection_ = followCamera_->GetViewProjection();
 	}
 	else {
 		// マップチップエディター
