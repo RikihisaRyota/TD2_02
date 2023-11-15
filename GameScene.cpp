@@ -26,31 +26,29 @@ void GameScene::Initialize() {
 #pragma endregion
 	isDebug_ = false;
 #pragma region 生成
+	backGround_ = std::make_unique<Sprite>();
+	collisionManager_ = std::make_unique<CollisionManager>();
+	followCamera_ = std::make_unique<FollowCamera>();
 	mapChip_ = std::make_unique<MapChip>();
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
+	player_ = std::make_unique<Player>();
 
 #pragma endregion
 
 #pragma region 初期化
+	backGround_.reset(Sprite::Create(0, { 0.0f,0.0f }, { 0.0f,0.0f,0.0f,1.0f }));
+	backGround_->SetSize({ 1280.0f,720.0f });
+	collisionManager_->Init();
+	followCamera_->SetTarget(player_->GetWorldTransform());
+	followCamera_->Initialize();
 	mapChip_->Initialize();
 	mapChip_->SetViewProjection(&viewProjection_);
 	mapChip_->LoadCSV("stage_1");
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
-#pragma endregion
-
-	followCamera_ = std::make_unique<FollowCamera>();
-
-	player_ = std::make_unique<Player>();
 	player_->Initialize();
-
-	followCamera_->SetTarget(player_->GetWorldTransform());
-	followCamera_->Initialize();
-
-	collisionManager_ = std::make_unique<CollisionManager>();
-
-	collisionManager_->Init();
+#pragma endregion
 }
 
 void GameScene::Update() {
@@ -128,6 +126,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	backGround_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
