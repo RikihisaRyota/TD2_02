@@ -120,6 +120,13 @@ void ParticleGraphicsPipeline::CreateInputLayout() {
 
 void ParticleGraphicsPipeline::CreateBlendState() {
 	//全ての色要素を書き込む
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 

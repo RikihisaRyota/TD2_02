@@ -31,6 +31,7 @@ private:
 	Random::RandomNumberGenerator rnd_;
 	bool isAlive_;
 	uint32_t numAliveParticle_;
+	int32_t flameInterval_;
 	ParticleMotion* originalParticle_;
 	Emitter* emitter_;
 	std::vector<std::unique_ptr<ParticleWorldTransform>> particleWorldTransform_;

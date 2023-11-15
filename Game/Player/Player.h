@@ -63,8 +63,6 @@ public:
 	WorldTransform* GetWorldTransform() { return &worldTransform_; }
 
 	void UpdateMatrix();
-
-
 private:
 
 	void OnCollision() override;
@@ -109,6 +107,10 @@ private:
 	void WallDownJumpInitialize();
 
 	void WallDownJumpUpdate();
+
+	// 俺が追加した
+	// プレイヤーの後ろにパーティクルを追加
+	void MoveParticle();
 	
 private:
 
@@ -209,4 +211,7 @@ private:
 	// グローバル変数のグループネーム
 	const std::string groupName_ = "Player";
 
+	// 何フレーム間隔でパーティクルを生成するか
+	int32_t flameCount_;
+	const int32_t kMaxFlameTime = 5;
 };

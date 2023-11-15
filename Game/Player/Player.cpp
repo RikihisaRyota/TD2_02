@@ -4,9 +4,11 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "Collision/CollisionConfig.h"
+// 俺が追加した
+#include "ParticleManager.h"
+#include "MyMath.h"
 
-Player::Player()
-{
+Player::Player() {
 
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::RIGID_BODY);
 	collisionAttribute_ = 0x00000000;
@@ -21,7 +23,7 @@ Player::Player()
 
 	models_.push_back(std::make_unique<Model>());
 	models_[Parts::kMain].reset(Model::Create("Cube"));
-	
+
 	modelWorldTransforms_.push_back(WorldTransform());
 	modelWorldTransforms_[Parts::kMain].Initialize();
 
@@ -46,8 +48,7 @@ Player::Player()
 	SetGlobalVariable();
 }
 
-void Player::Initialize()
-{
+void Player::Initialize() {
 	statusRequest_ = Status::kNormal;
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
@@ -59,8 +60,7 @@ void Player::Initialize()
 	velocity_ = {};
 }
 
-void Player::UpdateMatrix()
-{
+void Player::UpdateMatrix() {
 	worldTransform_.UpdateMatrix();
 
 	for (int i = 0; i < Parts::kCountParts; i++) {
@@ -68,8 +68,7 @@ void Player::UpdateMatrix()
 	}
 }
 
-void Player::OnCollision()
-{
+void Player::OnCollision() {
 	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
 		StatusRequest(Status::kNormal);
 	}
@@ -95,14 +94,12 @@ void Player::OnCollision()
 
 }
 
-void Player::SetCollider()
-{
-	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y }, 
-		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y },Vector2{ velocity_.x,velocity_.y });
+void Player::SetCollider() {
+	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ velocity_.x,velocity_.y });
 }
 
-void Player::SetGlobalVariable()
-{
+void Player::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
@@ -122,8 +119,7 @@ void Player::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void Player::ApplyGlobalVariable()
-{
+void Player::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	for (int i = 0; i < FloatParameterNames::kCountFloatParameter; i++) {
@@ -144,13 +140,11 @@ void Player::ApplyGlobalVariable()
 	}
 }
 
-void Player::NormalInitialize()
-{
+void Player::NormalInitialize() {
 	worldTransform_.rotation_ = {};
 }
 
-void Player::NormalUpdate()
-{
+void Player::NormalUpdate() {
 	Input* input = Input::GetInstance();
 
 	if (velocity_.y == 0.0f) {
@@ -191,15 +185,13 @@ void Player::NormalUpdate()
 
 }
 
-void Player::JumpInitialize()
-{
+void Player::JumpInitialize() {
 	velocity_ = {};
 	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
 
 }
 
-void Player::JumpUpdate()
-{
+void Player::JumpUpdate() {
 
 	if (isRight_) {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
@@ -216,7 +208,7 @@ void Player::JumpUpdate()
 		}
 		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
-	
+
 	if (velocity_.y <= 0) {
 		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
 		if (velocity_.y <= -1.5f) {
@@ -230,15 +222,13 @@ void Player::JumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::GripWallInitialize()
-{
+void Player::GripWallInitialize() {
 	worldTransform_.rotation_ = {};
 	velocity_ = {};
 	countFrame_ = 0;
 }
 
-void Player::GripWallUpdate()
-{
+void Player::GripWallUpdate() {
 
 	countFrame_++;
 
@@ -340,8 +330,7 @@ void Player::GripWallUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::WallJumpInitialize()
-{
+void Player::WallJumpInitialize() {
 	velocity_ = {};
 
 	if (isRight_) {
@@ -355,8 +344,7 @@ void Player::WallJumpInitialize()
 	velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
 }
 
-void Player::WallJumpUpdate()
-{
+void Player::WallJumpUpdate() {
 
 	if (isRight_) {
 		// 右の壁
@@ -398,14 +386,12 @@ void Player::WallJumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::WallSideJumpInitialize()
-{
+void Player::WallSideJumpInitialize() {
 	velocity_ = {};
 	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
 }
 
-void Player::WallSideJumpUpdate()
-{
+void Player::WallSideJumpUpdate() {
 	if (isRight_) {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
 		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
@@ -439,8 +425,7 @@ void Player::WallSideJumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::WallDownJumpInitialize()
-{
+void Player::WallDownJumpInitialize() {
 	velocity_ = {};
 
 	if (isRight_) {
@@ -453,8 +438,7 @@ void Player::WallDownJumpInitialize()
 	}
 }
 
-void Player::WallDownJumpUpdate()
-{
+void Player::WallDownJumpUpdate() {
 	if (isRight_) {
 		velocity_.x -= parameters_[FloatParameterNames::kJumpAccelerationX];
 		if (velocity_.x <= 0.2f) {
@@ -483,20 +467,49 @@ void Player::WallDownJumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::Update()
-{
+void Player::MoveParticle() {
+	if (flameCount_ <= 0) {
+		Emitter* emitter = new Emitter();
+		emitter->aliveTime = 20;
+		emitter->position = worldTransform_.worldPos_;
+		emitter->inOnce = 1;
+		emitter->isAlive = true;
+		ParticleMotion* particleMotion = new ParticleMotion();
+		//particleMotion->angle.start = DegToRad(0.0f);
+		//particleMotion->angle.end = DegToRad(180.0f);
+		particleMotion->color.startColor = { 1.0f,0.0f,0.0f,1.0f };
+		particleMotion->color.endColor = { 1.0f,0.0f,0.0f,0.0f };
+		particleMotion->color.currentColor = particleMotion->color.startColor;
+		particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
+		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
+		particleMotion->scale.currentScale = particleMotion->scale.startScale;
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		//particleMotion->velocity.speed = 1.0f;
+		//particleMotion->velocity.randomRange = 0.0f;
+		particleMotion->aliveTime.time = 20;
+		//particleMotion->aliveTime.randomRange = 5;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+		flameCount_ = kMaxFlameTime;
+	}
+	else {
+		flameCount_--;
+	}
+}
+
+void Player::Update() {
 
 	ApplyGlobalVariable();
 
 	if (statusRequest_) {
 		status_ = statusRequest_.value();
 
-		switch (status_)
-		{
+		switch (status_) {
 		case Player::Status::kNormal:
 			NormalInitialize();
 			break;
-		
+
 		case Player::Status::kJump:
 			JumpInitialize();
 			break;
@@ -520,8 +533,7 @@ void Player::Update()
 		statusRequest_ = std::nullopt;
 	}
 
-	switch (status_)
-	{
+	switch (status_) {
 	case Player::Status::kNormal:
 		NormalUpdate();
 		break;
@@ -549,10 +561,11 @@ void Player::Update()
 	UpdateMatrix();
 
 	SetCollider();
+
+	MoveParticle();
 }
 
-void Player::Draw(const ViewProjection& viewProjection)
-{
+void Player::Draw(const ViewProjection& viewProjection) {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
 	}

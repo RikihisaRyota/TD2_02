@@ -16,7 +16,7 @@ public:
 	struct Instancing {
 		uint32_t textureHandle;
 		Particle* particle;
-		uint32_t maxInstance = 1024;
+		uint32_t maxInstance = 10000;
 		uint32_t currentInstance;
 		// ワールドトランスフォームマトリックスリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuff;

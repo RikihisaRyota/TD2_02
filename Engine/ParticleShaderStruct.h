@@ -48,6 +48,7 @@ struct Velocity {
 struct Emitter {
     Vector3 position;
     int32_t inOnce;
+    int32_t flameInterval;
     int32_t aliveTime;
     bool isAlive;
 };
