@@ -4,6 +4,7 @@
 #include "MyMath.h"
 #include "TextureManager.h"
 #include "ImGuiManager.h"
+#include "ParticleManager.h"
 
 #include "Collision/Collision.h"
 
@@ -81,10 +82,35 @@ void GameScene::Update() {
 
 	collisionManager_->CheckCollision();
 
-
+	if (input_->TriggerKey(DIK_SPACE)) {
+		Emitter* emitter = new Emitter();
+		emitter->aliveTime = 1;
+		emitter->aliveTime = 1;
+		emitter->position = { 4.0f,4.0f,0.0f };
+		emitter->inOnce = 2;
+		emitter->isAlive = true;
+		ParticleMotion* particleMotion = new ParticleMotion();
+		particleMotion->angle.start = DegToRad(0.0f);
+		particleMotion->angle.end = DegToRad(180.0f);
+		particleMotion->color.currentColor = { 1.0f,1.0f,1.0f,1.0f };
+		particleMotion->color.startColor = { 1.0f,1.0f,1.0f,1.0f };
+		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,0.0f };
+		particleMotion->scale.currentScale = { 0.5f,0.5f,0.5f };
+		particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
+		particleMotion->scale.endScale = { 0.2f,0.2f,0.2f };
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,1.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 1.0f;
+		particleMotion->velocity.randomRange = 0.0f;
+		particleMotion->aliveTime.time = 20;
+		particleMotion->aliveTime.randomRange = 5;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+	}
 	if (!isDebug_) {
-		followCamera_->Update();
-		viewProjection_ = followCamera_->GetViewProjection();
+		debugCamera_->Update(&viewProjection_);
+		//followCamera_->Update();
+		//viewProjection_ = followCamera_->GetViewProjection();
 	}
 	else {
 		// マップチップエディター
@@ -124,6 +150,8 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
+
+	ParticleManager::GetInstance()->Draw(viewProjection_);
 	PrimitiveDrawer::Draw();
 	// 3Dオブジェクト描画後処理
 	PlaneRenderer::PostDraw();

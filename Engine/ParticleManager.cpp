@@ -12,8 +12,6 @@ ParticleManager* ParticleManager::GetInstance() {
 }
 
 void ParticleManager::Update() {
-	size_t count = 0;
-
 	for (auto it = instancing_.begin(); it != instancing_.end();) {
 		(*it)->particle->Update();
 		(*it)->currentInstance = (*it)->particle->GetAliveParticle();
