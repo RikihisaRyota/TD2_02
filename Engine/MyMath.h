@@ -28,6 +28,8 @@ float Distance(const Vector3& v1, const Vector3& v2);
 
 float Dot(const Vector3& a, const Vector3& b);
 
+float Outer(const Vector2& v1, const Vector2& v2);
+
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
 
 float Length(const Vector3& a);

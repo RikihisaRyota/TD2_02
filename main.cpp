@@ -7,6 +7,8 @@
 #include "ModelManager.h"
 #include "./Engine/ShaderCompiler.h"
 
+#include "GlobalVariables/GlobalVariables.h"
+
 #include <dxgidebug.h>
 #include <cassert>
 
@@ -99,6 +101,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 	);
 
+	GlobalVariables::GetInstance()->LoadFiles();
+
 	// ゲームシーンの初期化
 	GameScene* gameScene = nullptr;
 	gameScene = new GameScene();
@@ -117,6 +121,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		input->Update();
 		// 音声アップデート
 		audio->Update();
+
+		GlobalVariables::GetInstance()->Update();
 		// ゲームシーンの毎フレーム処理
 		gameScene->Update();
 		// ImGui受付終了

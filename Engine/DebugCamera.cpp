@@ -22,12 +22,12 @@ void DebugCamera::Update(ViewProjection* viewProjection) {
 		Matrix4x4 rotMat = MakeRotateXYZMatrix(viewProjection->rotation_);
 		Vector3 cameraX = GetXAxis(rotMat) * static_cast<float>(-mouseMove.x) * 0.01f;
 		Vector3 cameraY = GetYAxis(rotMat) * static_cast<float>(mouseMove.y) * 0.01f;
-		viewProjection->translation_ += cameraX + cameraY;
+		viewProjection->translate_ += cameraX + cameraY;
 	}
 	else if (wheel != 0) {
 		Matrix4x4 rotMat = MakeRotateXYZMatrix(viewProjection->rotation_);
 		Vector3 cameraZ = GetZAxis(rotMat) * (static_cast<float>(wheel / 120.0f) * 0.5f);
-		viewProjection->translation_ += cameraZ;
+		viewProjection->translate_ += cameraZ;
 	}
 	viewProjection->UpdateMatrix();
 }

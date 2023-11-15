@@ -51,7 +51,7 @@ void WorldTransform::UpdateMatrix()
 	// スケール、回転、平行移動行列の計算
 	matScale = MakeScaleMatrix(scale_);
 	matRot *= MakeRotateXYZMatrix(rotation_);
-	matTrans = MakeTranslateMatrix(translation_);
+	matTrans = MakeTranslateMatrix(translate_);
 
 	// ワールド行列の合成
 	matWorld_ = MakeIdentity4x4(); // 変形をリセット
@@ -64,6 +64,11 @@ void WorldTransform::UpdateMatrix()
 		matWorld_ = Mul(matWorld_, parent_->matWorld_);
 	}
 
+	// ワールド座標の更新
+	worldPos_.x = matWorld_.m[3][0];
+	worldPos_.y = matWorld_.m[3][1];
+	worldPos_.z = matWorld_.m[3][2];
+
 	// 定数バッファに転送する
 	TransferMatrix();
 }
@@ -74,7 +79,7 @@ void WorldTransform::Reset() {
 	// rotatition
 	rotation_ = { 0.0f,0.0f,0.0f };
 	// translation
-	translation_ = { 0.0f,0.0f,0.0f };
+	translate_ = { 0.0f,0.0f,0.0f };
 	// matWorld
 	matWorld_ = MakeIdentity4x4();
 }

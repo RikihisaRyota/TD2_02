@@ -42,7 +42,7 @@ void ViewProjection::Map() {
 
 void ViewProjection::UpdateMatrix() {
 	// ビュー行列の生成
-	matView_ = MakeViewMatrix(rotation_,translation_);
+	matView_ = MakeViewMatrix(rotation_,translate_);
 
 	// 平行投影による射影行列の生成
 	//matProjection_ = MakeOrthographicMatrix(
@@ -56,7 +56,7 @@ void ViewProjection::UpdateMatrix() {
 	// 定数バッファに書き込み
 	constMap_->view = matView_;
 	constMap_->projection = matProjection_;
-	constMap_->cameraPos = translation_;
+	constMap_->cameraPos = translate_;
 }
 
 void ViewProjection::TransferMatrix() {
@@ -71,5 +71,5 @@ void ViewProjection::TransferMatrix() {
 	// 定数バッファに書き込み
 	constMap_->view = matView_;
 	constMap_->projection = matProjection_;
-	constMap_->cameraPos = translation_;
+	constMap_->cameraPos = translate_;
 }

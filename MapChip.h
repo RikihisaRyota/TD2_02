@@ -6,16 +6,18 @@
 #include "Model.h"
 #include "ViewProjection.h"
 
+#include "Collision/Collider.h"
+
 const static uint32_t kBlockSize = 2;
 const static uint32_t kBlockScreenSize = 40;
 const static uint32_t kMaxWidthBlockNum = 400;
-const static uint32_t kMaxHeightBlockNum = 18;
+const static uint32_t kMaxHeightBlockNum = 36;
 const static uint32_t kMaxScreenWidthBlockNum = 32;
-const static uint32_t kMaxScreenHeightBlockNum = kMaxHeightBlockNum;
+const static uint32_t kMaxScreenHeightBlockNum = 18;
 const static uint32_t kMaxWidth = kBlockSize * kMaxWidthBlockNum;
 const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
-class MapChip {
+class MapChip : public Collider{
 public:
 	enum class Blocks {
 		kNone,
@@ -25,6 +27,12 @@ public:
 		kCount,
 	};
 public:
+
+	void OnCollision() override;
+	void SetCollider();
+	void Update();
+
+	MapChip();
 	void Initialize();
 	void Draw(const ViewProjection& viewProjection);
 
@@ -37,12 +45,16 @@ public:
 	void SaveCSV(std::string fileName);
 #pragma endregion
 #pragma region BlockType
+	std::vector<std::vector<uint32_t>> GetBlocksTypes() { return map_; }
 	uint32_t GetBlocksType(uint32_t x, uint32_t y) { return map_[y][x]; }
 	uint32_t GetBlocksType(int x, int y) { return map_[static_cast<uint32_t>(y)][static_cast<uint32_t>(x)]; }
 	uint32_t GetBlocksType(const Vector3& pos) { return (map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
 	uint32_t GetBlocksType(const Vector2& pos) { return(map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
 #pragma endregion
 	Vector3 GetBlocksCenterWorldPosition(uint32_t x, uint32_t y);
+	std::vector<std::vector<WorldTransform>> GetWorldTransforms() {
+		return blockWorldTransform_;
+	}
 
 	uint32_t GetCurrentStage() { return currentStage_; }
 	void SetCurrentStage(uint32_t stageNum) { currentStage_ = stageNum; }
@@ -55,11 +67,13 @@ private:
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);
 	ViewProjection* viewProjection_;
 	// マップチップの種類
-	uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
+	std::vector<std::vector<uint32_t>> map_;
+	//uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;
 	// ブロックのワールドトランスフォーム
-	WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
+	std::vector<std::vector<WorldTransform>> blockWorldTransform_;
+	//WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// CSVの名前保存
 	std::vector<std::string> stageName_;
 	// 現在のステージ

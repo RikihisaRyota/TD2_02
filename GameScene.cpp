@@ -8,6 +8,8 @@
 #include "ParticleManager.h"
 #include "ParticleShaderStruct.h"
 
+#include "Collision/Collision.h"
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
@@ -31,24 +33,64 @@ void GameScene::Initialize() {
 #pragma endregion
 
 #pragma region 初期化
-	mapChip_->LoadCSV("stage_1");
-	mapChip_->SetViewProjection(&viewProjection_);
 	mapChip_->Initialize();
+	mapChip_->SetViewProjection(&viewProjection_);
+	mapChip_->LoadCSV("stage_1");
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
 #pragma endregion
+
+	followCamera_ = std::make_unique<FollowCamera>();
+
+	player_ = std::make_unique<Player>();
+	player_->Initialize();
+
+	followCamera_->SetTarget(player_->GetWorldTransform());
+	followCamera_->Initialize();
+
+	collisionManager_ = std::make_unique<CollisionManager>();
+
+	collisionManager_->Init();
 }
 
 void GameScene::Update() {
+	collisionManager_->Clear();
+
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
+		if (isDebug_) {
+			int32_t x =int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / float(kBlockSize));
+			x = std::clamp(x, 16,int32_t(kMaxWidthBlockNum));
+			int32_t y =int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / float(kBlockSize));
+			y = std::clamp(y, 10,int32_t(kMaxHeightBlockNum));
+			viewProjection_.translate_.x = float(x	)* float(kBlockSize);
+			viewProjection_.translate_.y = float(y)* float(kBlockSize);
+			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
+			viewProjection_.UpdateMatrix();
+		}
+
 	}
-	// マップチップエディター
-	mapChipEditor_->Update();
+
+	mapChip_->Update();
+
+	player_->Update();
+
+	/*CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
+	player_->UpdateMatrix();*/
+	collisionManager_->SetCollider(player_.get());
+	collisionManager_->SetCollider(mapChip_.get());
+
+	collisionManager_->CheckCollision();
+
+
 	if (!isDebug_) {
-		// デバックカメラ
-		debugCamera_->Update(&viewProjection_);
+		followCamera_->Update();
+		viewProjection_ = followCamera_->GetViewProjection();
+	}
+	else {
+		// マップチップエディター
+		mapChipEditor_->Update();
 	}
 	if (input_->TriggerKey(DIK_SPACE)) {
   		Emitter* emitter = new Emitter();
@@ -107,6 +149,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	mapChip_->Draw(viewProjection_);
+	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

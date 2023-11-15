@@ -15,8 +15,13 @@
 #include "SphereRenderer.h"
 #include "Sprite.h"
 
+#include "Game/Player/Player.h"
+#include "Game/FollowCamera/FollowCamera.h"
+
 #include "MapChip.h"
 #include "MapChipEditor.h"
+
+#include "Collision/CollisionManager.h"
 
 class DirectXCommon;
 /// <summary>
@@ -67,4 +72,10 @@ private: // メンバ変数
 	/// </summary>
 	std::unique_ptr<MapChip> mapChip_;
 	std::unique_ptr<MapChipEditor> mapChipEditor_;
+
+	std::unique_ptr<FollowCamera> followCamera_;
+
+	std::unique_ptr<Player> player_;
+
+	std::unique_ptr<CollisionManager> collisionManager_;
 };

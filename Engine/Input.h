@@ -21,6 +21,14 @@ struct ViewProjection;
 /// </summary>
 class Input {
 public:
+
+	enum class GamePadButton {
+		kA,
+		kB,
+		kX,
+		kY
+	};
+
 	enum class PadType {
 		DirectInput,
 		XInput,
@@ -159,9 +167,25 @@ public: // メンバ関数
 	/// <param name="out">前回のジョイスティック状態</param>
 	/// <returns>正しく取得できたか</returns>
 	bool GetJoystickStatePrevious(int32_t stickNo, XINPUT_STATE& out) const;
+
+	Vector2 GetGamePadLStick();
+
+	Vector2 GetGamePadRStick();
+
+	bool PressedGamePadButton(GamePadButton button);
+
+	bool PressingGamePadButton(GamePadButton button);
+
+	bool ReleasedGamePadButton(GamePadButton button);
+
 private: // メンバ変数
 	BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* instance, VOID* context);
 	BOOL CALLBACK EnumJoystickObjectsCallback(const DIDEVICEOBJECTINSTANCE* instance, VOID* context);
+
+	bool GetGamePadButton(GamePadButton button);
+
+	bool GetPreGamePadButton(GamePadButton button);
+
 private: // メンバ変数
 	Microsoft::WRL::ComPtr<IDirectInput8> dInput_;
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> devKeyboard_;
@@ -172,4 +196,8 @@ private: // メンバ変数
 	DIMOUSESTATE2 mousePre_;
 	std::array<BYTE, 256> key_;
 	std::array<BYTE, 256> keyPre_;
+
+	XINPUT_STATE xInputState_ = {};
+	XINPUT_STATE preXInputState_ = {};
+
 };
