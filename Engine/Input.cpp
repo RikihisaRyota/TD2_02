@@ -378,6 +378,31 @@ bool Input::ReleasedGamePadButton(GamePadButton button)
 	return false;
 }
 
+bool Input::PressedKey(BYTE keyNumber)
+{
+	if (!keyPre_[keyNumber] && key_[keyNumber]) {
+		return true;
+	}
+	return false;
+}
+
+bool Input::PressingKey(BYTE keyNumber)
+{
+	if (keyPre_[keyNumber] && key_[keyNumber]) {
+		return true;
+	}
+	return false;
+}
+
+bool Input::ReleasedKey(BYTE keyNumber)
+{
+	if (keyPre_[keyNumber] && !key_[keyNumber]) {
+		return true;
+	}
+	return false;
+}
+
+
 bool Input::GetGamePadButton(GamePadButton button)
 {
 

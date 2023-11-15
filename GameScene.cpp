@@ -4,8 +4,7 @@
 #include "MyMath.h"
 #include "TextureManager.h"
 #include "ImGuiManager.h"
-
-#include "Collision/Collision.h"
+#include "Collision/CollisionManager.h"
 
 GameScene::GameScene() {}
 
@@ -46,14 +45,11 @@ void GameScene::Initialize() {
 
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	followCamera_->Initialize();
-
-	collisionManager_ = std::make_unique<CollisionManager>();
-
-	collisionManager_->Init();
 }
 
 void GameScene::Update() {
-	collisionManager_->Clear();
+	CollisionManager* collisionManager = CollisionManager::GetInstance();
+	collisionManager->Clear();
 
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
@@ -70,12 +66,7 @@ void GameScene::Update() {
 
 	player_->Update();
 
-	/*CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
-	player_->UpdateMatrix();*/
-	collisionManager_->SetCollider(player_.get());
-	collisionManager_->SetCollider(mapChip_.get());
-
-	collisionManager_->CheckCollision();
+	collisionManager->CheckCollision();
 
 
 	if (!isDebug_) {
