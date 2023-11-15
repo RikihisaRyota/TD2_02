@@ -169,9 +169,6 @@
     <ClCompile Include="Engine\ShaderCompiler.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\PostEffectPipeline.cpp">
-      <Filter>engine\graphicsPipeline</Filter>
-    </ClCompile>
     <ClCompile Include="Collision\Collision.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
@@ -206,6 +203,30 @@
       <Filter>engine\base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\ParticleManager.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffectPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PreBloomPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\VerticalBlurPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\BloomPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\HorizontalBlurPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Bloom.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GaussianBlur.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -366,9 +387,6 @@
     <ClInclude Include="Engine\ShaderCompiler.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\PostEffectPipeline.h">
-      <Filter>engine\graphicsPipeline</Filter>
-    </ClInclude>
     <ClInclude Include="Collision\Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -414,6 +432,33 @@
     <ClInclude Include="Engine\ParticleShaderStruct.h">
       <Filter>engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\cBuffer.h">
+      <Filter>engine\base\constantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PreBloomPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffectPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VerticalBlurPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BloomPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\HorizontalBlurPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Bloom.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GaussianBlur.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -421,28 +466,61 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\PostEffect.PS.hlsl">
+    <None Include=".editorconfig" />
+    <None Include="Resources\Shaders\Basic.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\PostEffect.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Bloom.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Sprite.PS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\HorizontalBlur.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Sprite.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Lighting.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Toon.PS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Line.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Toon.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\OBJ.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
+    </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Pera.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Sprite.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Triangle.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\VertexShaderOutput.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\VerticalBlur.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <FxCompile Include="Resources\Shaders\Basic.PS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Basic.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Bloom.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Bloom.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\HorizontalBlur.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\HorizontalBlur.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Lighting.PS.hlsl">
@@ -475,35 +553,35 @@
     <FxCompile Include="Resources\Shaders\Pera.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Shaders\Sprite.hlsli">
+    <FxCompile Include="Resources\Shaders\PostEffect.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Triangle.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffect.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\VertexShaderOutput.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PreBloom.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Basic.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PreBloom.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Lighting.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Sprite.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Line.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Sprite.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\OBJ.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Toon.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Particle.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Toon.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Pera.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\VerticalBlur.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include=".editorconfig" />
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\VerticalBlur.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

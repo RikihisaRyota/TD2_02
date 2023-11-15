@@ -4,7 +4,9 @@
 
 #include <memory>
 
-#include "PostEffectPipeline.h"
+#include "cBuffer.h"
+#include "Bloom.h"
+#include "PostEffect.h"
 #include "WinApp.h"
 
 
@@ -15,7 +17,6 @@ public:// 静的メンバ関数
 	/// </summary>
 	/// <returns></returns>
 	static DirectXCommon* GetInstance();
-
 public:
 	/// <summary>
 	/// 初期化
@@ -33,11 +34,13 @@ public:
 	/// </summary>
 	void PostDraw();
 
+	void PreUIDraw();
+	void PostUIDraw();
+
 	/// <summary>
 	/// レンダーターゲットのクリア
 	/// </summary>
-	void ClearRenderTarget(
-	);
+	void ClearRenderTarget();
 
 	/// <summary>
 	/// 深度バッファのクリア
@@ -62,8 +65,6 @@ public:
 	/// <returns>バックバッファ</returns>
 	size_t GetBackBufferCount()const { return backBuffers_.size(); }
 
-	ID3D12Resource* GetBackBuff()const { return backBuffers_[0].Get(); }
-
 	/// <summary>
 	/// RTV
 	/// </summary>
@@ -75,16 +76,18 @@ public:
 	/// DSV
 	/// </summary>
 	/// <returns></returns>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() { return dpsHandle_; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() { return mainDepthBuffer_->dpsCPUHandle; }
 	/// <summary>
 	/// リリース
 	/// </summary>
 	void Release();
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle();
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle();
-	void GetCPUGPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE& cpu, D3D12_GPU_DESCRIPTOR_HANDLE& gpu);
-	uint32_t GetNumDescriptorsCount() {return numDescriptorsCount;}
-	
+	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle();
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle();
+	void GetSRVCPUGPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE& cpu, D3D12_GPU_DESCRIPTOR_HANDLE& gpu);
+	uint32_t GetSRVDescriptorsCount() { return numSRVDescriptorsCount; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVCPUDescriptorHandle();
+	uint32_t GetRTVDescriptorsCount() { return numRTVDescriptorsCount; }
+
 private:// メンバ関数
 
 	/// <summary>
@@ -116,11 +119,22 @@ private:// メンバ関数
 	/// フェンス生成
 	/// </summary>
 	void CreateFence();
+	/// <summary>
+	/// ポストエフェクト初期化
+	/// </summary>
+	void PostEffectInitialize();
+
+	/// <summary>
+	/// ブルーム
+	/// </summary>
+	void BloomInitialize();
 private: // メンバ関数
 	DirectXCommon() = default;
 	~DirectXCommon() = default;
 	DirectXCommon(const DirectXCommon&) = delete;
 	const DirectXCommon& operator=(const DirectXCommon&) = delete;
+
+	void WaitForGPU();
 
 	/// <summary>
 	/// CreateDepthStencilTexture関数
@@ -155,18 +169,21 @@ private:// メンバ変数
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_;
 	// レンダーターゲット関連
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
-	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> backBuffers_;
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle_;
+	Buffer* mainBuffer_;
+	std::vector<Buffer*> backBuffers_;
+	uint32_t numRTVDescriptorsCount = 0u;
 	// デスクリプタサイズ
-	uint32_t numDescriptorsCount = 0u;
-	UINT descriptorHandleIncrementSize = 0u;
+	uint32_t numSRVDescriptorsCount = 0u;
+	UINT SRVDescriptorHandleIncrementSize = 0u;
+	UINT RTVDescriptorHandleIncrementSize = 0u;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
-	D3D12_CPU_DESCRIPTOR_HANDLE srvCPUHandle_;
-	D3D12_GPU_DESCRIPTOR_HANDLE srvGPUHandle_;
+	// ポストエフェクト
+	PostEffect* postEffect_;
+	// ガウシアンブラー
+	Bloom* bloom_;
 	// 深度バッファ関連
-	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
+	Buffer* mainDepthBuffer_;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
-	D3D12_CPU_DESCRIPTOR_HANDLE dpsHandle_;
 	// 描画関連
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
 	UINT64 fenceValue_ = 0;

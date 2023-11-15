@@ -10,11 +10,8 @@
 
 class PostEffectGraphicsPipeline {
 public:
-	enum class ROOT_PARAMETER_TYP {
-		WORLDTRANSFORM,
-		VIEWPROJECTION,
-		MATERIAL,
-		LIGHTING,
+	enum ROOT_PARAMETER_TYP {
+		TIME,
 		TEXTURE,
 		COUNT,
 	};
@@ -59,5 +56,6 @@ private:
 	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob_ = nullptr;
 	// パイプラインステートオブジェクト
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
+
 };
 

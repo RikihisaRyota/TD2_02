@@ -6,12 +6,13 @@
 
 using namespace Microsoft::WRL;
 
-void GaussianBlur::Initialize(Buffer* buffer, Buffer* depthBuffer, PostEffect* postEffect) {
+void GaussianBlur::Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState) {
 	verticalBlurPipelinePipeline_ = new VerticalBlurPipeline();
 	verticalBlurPipelinePipeline_->InitializeGraphicsPipeline();
 	horizontalBlurPipeline_ = new HorizontalBlurPipeline();
 	horizontalBlurPipeline_->InitializeGraphicsPipeline();
-	postEffect_ = postEffect;
+	rootSignature_ = rootSignature;
+	pipelineState_ = pipelineState;
 	originalBuffer_ = buffer;
 	depthBuffer_ = depthBuffer;
 
@@ -240,13 +241,12 @@ void GaussianBlur::SetCommandList() {
 	rect = CD3DX12_RECT(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight);
 	commandList->RSSetScissorRects(1, &rect);
 
-	commandList->SetPipelineState(postEffect_->GetPipelineState());
-	commandList->SetGraphicsRootSignature(postEffect_->GetRootSignature());
+	commandList->SetPipelineState(pipelineState_);
+	commandList->SetGraphicsRootSignature(rootSignature_);
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	commandList->IASetIndexBuffer(&ibView_);
-	commandList->SetGraphicsRootConstantBufferView(PostEffectGraphicsPipeline::ROOT_PARAMETER_TYP::TIME, postEffect_->GetTime()->GetGPUVirtualAddress());
-	commandList->SetGraphicsRootDescriptorTable(PostEffectGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE, buffer_.at(kHorizontalBlur)->srvGPUHandle);
+	commandList->SetGraphicsRootDescriptorTable(0, buffer_.at(kHorizontalBlur)->srvGPUHandle);
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 }
 

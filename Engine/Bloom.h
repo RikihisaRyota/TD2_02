@@ -7,7 +7,6 @@
 #include "BloomPipeline.h"
 #include "cBuffer.h"
 #include "GaussianBlur.h"
-#include "PostEffect.h"
 #include "PreBloomPipeline.h"
 #include "Vector2.h"
 #include "Vector4.h"
@@ -19,13 +18,12 @@ public:
 		Vector2 texcoord{};
 	};
 
-	void Initialize(Buffer* original, Buffer* depth, PostEffect* postEffect);
+	void Initialize(Buffer* original, Buffer* depth);
 	void Update();
 	void Shutdown();
 
 	ID3D12RootSignature* GetRootSignature() { return bloomPipeline_->GetRootSignature(); }
 	ID3D12PipelineState* GetPipelineState() { return bloomPipeline_->GetPipelineState(); }
-	BloomPipeline* GetPostEffectPipeline() { return bloomPipeline_; }
 	ID3D12Resource* GetBufferResource() { return temporaryBuffer_->buffer.Get(); }
 	Buffer* GetBuffer() { return temporaryBuffer_; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle() { return temporaryBuffer_->rtvHandle; }

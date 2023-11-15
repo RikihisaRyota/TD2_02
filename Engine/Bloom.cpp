@@ -6,7 +6,7 @@
 
 using namespace Microsoft::WRL;
 
-void Bloom::Initialize(Buffer* original, Buffer* depth, PostEffect* postEffect) {
+void Bloom::Initialize(Buffer* original, Buffer* depth) {
 	// パイプライン生成
 	bloomPipeline_ = new BloomPipeline();
 	bloomPipeline_->InitializeGraphicsPipeline();
@@ -18,7 +18,7 @@ void Bloom::Initialize(Buffer* original, Buffer* depth, PostEffect* postEffect) 
 	originalDepthBuffer_ = depth;
 	CreateResource();
 	gaussianBlur_ = new GaussianBlur();
-	gaussianBlur_->Initialize(originalBuffer_, originalDepthBuffer_, postEffect);
+	gaussianBlur_->Initialize(originalBuffer_, originalDepthBuffer_, preBloomPipeline_->GetRootSignature(), preBloomPipeline_->GetPipelineState());
 }
 
 void Bloom::Update() {
@@ -185,7 +185,7 @@ void Bloom::SetCommandList() {
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	commandList->ResourceBarrier(2, barrier);
 	commandList->OMSetRenderTargets(1, &temporaryBuffer_->rtvHandle, false, &originalDepthBuffer_->dpsCPUHandle);
-	
+
 	commandList->SetGraphicsRootSignature(bloomPipeline_->GetRootSignature());
 	commandList->SetPipelineState(bloomPipeline_->GetPipelineState());
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -216,7 +216,7 @@ void Bloom::SetCommandList() {
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 
 
-	CD3DX12_RESOURCE_BARRIER barrier_0=CD3DX12_RESOURCE_BARRIER::Transition(
+	CD3DX12_RESOURCE_BARRIER barrier_0 = CD3DX12_RESOURCE_BARRIER::Transition(
 		temporaryBuffer_->buffer.Get(),
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_PRESENT);

@@ -1,12 +1,11 @@
 #include "Particle.hlsli"
 
-struct ParticleForGPU
+struct WorldTransform
 {
     matrix world; // ワールド変換行列
-    float4 color;
 };
 
-StructuredBuffer<ParticleForGPU> gParticleForGPU : register(t0);
+StructuredBuffer<WorldTransform> gWorldTransform : register(t0);
 
 struct ViewProjection
 {
@@ -24,13 +23,12 @@ struct VertexShaderInput
     float2 texcoord : TEXCOORD0;
 };
 
-VertexShaderOutput main(VertexShaderInput input, uint instanceID : SV_InstanceID)
+VertexShaderOutput main(VertexShaderInput input,uint instanceID:SV_InstanceID)
 {
     VertexShaderOutput output; // ピクセルシェーダーに渡す値
     output.position = input.position;
-    output.position = mul(mul(output.position, gParticleForGPU[instanceID].world), mul(gViewProjection.view, gViewProjection.projection));
-    output.normal = normalize(mul(input.normal, (float3x3) gParticleForGPU[instanceID].world));
+    output.position = mul(mul(output.position, gWorldTransform[instanceID].world), mul(gViewProjection.view, gViewProjection.projection));
+    output.normal = normalize(mul(input.normal, (float3x3) gWorldTransform[instanceID].world));
     output.texcoord = input.texcoord;
-    output.color = gParticleForGPU[instanceID].color;
     return output;
 }

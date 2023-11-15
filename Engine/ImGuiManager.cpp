@@ -17,7 +17,7 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon) {
 	// プラットフォームとレンダラーのバックエンドを設定する
 	ImGui_ImplWin32_Init(winApp->GetHwnd());
 	// srvHandleの取得
-	dxCommon_->GetCPUGPUHandle(srvCPUHandle_, srvGPUHandle_);
+	dxCommon_->GetSRVCPUGPUHandle(srvCPUHandle_, srvGPUHandle_);
 	ImGui_ImplDX12_Init(
 		dxCommon_->GetDevice(),
 		static_cast<int>(dxCommon_->GetBackBufferCount()),

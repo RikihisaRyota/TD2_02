@@ -189,7 +189,7 @@ void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMoti
 	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	desc.Buffer.NumElements = instancing->maxInstance;
 	desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	DirectXCommon::GetInstance()->GetCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
+	DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
 	device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
 
 	instancing_.emplace_back(instancing);

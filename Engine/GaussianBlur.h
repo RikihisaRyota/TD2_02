@@ -7,8 +7,6 @@
 #include "cBuffer.h"
 #include "VerticalBlurPipeline.h"
 #include "HorizontalBlurPipeline.h"
-#include "PostEffectPipeline.h"
-#include "PostEffect.h"
 #include "Vector2.h"
 #include "Vector4.h"
 
@@ -27,7 +25,7 @@ private:
 		Vector2 texcoord{};
 	};
 public:
-	void Initialize(Buffer* buffer, Buffer* depthBuffer, PostEffect* postEffect);
+	void Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState);
 	void Update();
 	void Shutdown();
 
@@ -61,12 +59,12 @@ private:
 
 	std::vector<Buffer*> buffer_;
 	
-	PostEffectGraphicsPipeline* originalPipeline_;
+	ID3D12PipelineState* pipelineState_;
+	ID3D12RootSignature* rootSignature_;
 	Buffer* originalBuffer_;
 	Buffer* depthBuffer_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> constantBuffer_;
 	float weights_[kNumWeights]{};
 
-	PostEffect* postEffect_;
 }; 
