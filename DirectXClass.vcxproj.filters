@@ -411,6 +411,9 @@
     <ClInclude Include="Engine\Particle.h">
       <Filter>engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Random.h">
+      <Filter>engine\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
