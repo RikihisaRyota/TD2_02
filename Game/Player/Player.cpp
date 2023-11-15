@@ -168,7 +168,7 @@ void Player::NormalUpdate()
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if (input->PressedGamePadButton(Input::GamePadButton::kA) && !isJump_) {
+	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
 
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
@@ -263,7 +263,7 @@ void Player::GripWallUpdate()
 
 	}
 
-	if (input->PressedGamePadButton(Input::GamePadButton::kA)) {
+	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
 
 		if (isRight_) {
 			// 右の壁
@@ -551,7 +551,7 @@ void Player::Update()
 	}
 
 #ifdef _DEBUG
-	if (Input::GetInstance()->PressedKey(DIK_R)) {
+	if (Input::GetInstance()->PressedKey(DIK_R) || Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::Y)) {
 		Initialize();
 	}
 #endif // _DEBUG
