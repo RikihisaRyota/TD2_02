@@ -100,7 +100,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Collision\Collider.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeMapChip2D.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp" />
-    <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BasicGraphicsPipline.cpp" />
@@ -154,7 +153,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Collision\Collider.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeBox2D.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h" />
-    <ClInclude Include="Collision\Collision.h" />
     <ClInclude Include="Collision\CollisionConfig.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="Engine\AABB.h" />

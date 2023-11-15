@@ -178,6 +178,12 @@ public: // メンバ関数
 
 	bool ReleasedGamePadButton(GamePadButton button);
 
+	bool PressedKey(BYTE keyNumber);
+
+	bool PressingKey(BYTE keyNumber);
+
+	bool ReleasedKey(BYTE keyNumber);
+
 private: // メンバ変数
 	BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* instance, VOID* context);
 	BOOL CALLBACK EnumJoystickObjectsCallback(const DIDEVICEOBJECTINSTANCE* instance, VOID* context);

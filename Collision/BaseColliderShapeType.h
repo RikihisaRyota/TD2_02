@@ -24,10 +24,7 @@ public:
     {
         //std::vector<std::vector<std::unique_ptr<BaseColliderShapeType>>> shape_;
         std::vector<std::vector<uint32_t>> mapChip_;
-      /*  std::vector<int> iParas_;
-        std::vector<float> fParas_;
-        std::vector<Vector2> v2Paras_;
-        std::vector<Vector3> v3Paras_;*/
+     
         std::vector<int> noRigitBody_;
         std::vector<int> noCollider_;
         void SetMapChip(const std::vector<std::vector<uint32_t>>& mapchip);

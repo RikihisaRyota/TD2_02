@@ -4,6 +4,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "Collision/CollisionConfig.h"
+#include "Collision/CollisionManager.h"
 
 Player::Player()
 {
@@ -48,10 +49,11 @@ Player::Player()
 
 void Player::Initialize()
 {
-	statusRequest_ = Status::kNormal;
+	StatusRequest(Status::kNormal);
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
+	worldTransform_.rotation_ = {};
 
 	UpdateMatrix();
 
@@ -99,6 +101,8 @@ void Player::SetCollider()
 {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y }, 
 		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y },Vector2{ velocity_.x,velocity_.y });
+
+	CollisionManager::GetInstance()->SetCollider(this);
 }
 
 void Player::SetGlobalVariable()
@@ -546,6 +550,11 @@ void Player::Update()
 		break;
 	}
 
+#ifdef _DEBUG
+	if (Input::GetInstance()->PressedKey(DIK_R)) {
+		Initialize();
+	}
+#endif // _DEBUG
 	UpdateMatrix();
 
 	SetCollider();

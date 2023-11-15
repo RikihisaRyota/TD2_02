@@ -4,6 +4,12 @@
 #include "MyMath.h"
 #include <functional>
 
+CollisionManager* CollisionManager::GetInstance()
+{
+	static CollisionManager instance;
+	return &instance;
+}
+
 void CollisionManager::Init()
 {
 	Clear();
