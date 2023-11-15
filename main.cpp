@@ -125,6 +125,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		GlobalVariables::GetInstance()->Update();
 		// ゲームシーンの毎フレーム処理
 		gameScene->Update();
+		ParticleManager::GetInstance()->Update();
 		// ImGui受付終了
 		imguiManager->End();
 		// 描画開始

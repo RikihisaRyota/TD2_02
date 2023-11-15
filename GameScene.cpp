@@ -117,7 +117,7 @@ void GameScene::Update() {
 		particleMotion->isAlive = true;
 		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion,0);
 	}
-	ParticleManager::GetInstance()->Update();
+	
 }
 
 void GameScene::Draw() {
