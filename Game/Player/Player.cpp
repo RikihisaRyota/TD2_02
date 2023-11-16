@@ -643,7 +643,7 @@ void Player::ParticleInitialize() {
 	emitter_->spawn.position = worldTransform_.worldPos_;
 	emitter_->spawn.rangeX = 1.5f;
 	emitter_->spawn.rangeY = 1.5f;
-	emitter_->inOnce = 5;
+	emitter_->inOnce = 2;
 	emitter_->isAlive = true;
 	particleMotion_ = new ParticleMotion();
 	//particleMotion_->angle.start = DegToRad(0.0f);
@@ -658,7 +658,7 @@ void Player::ParticleInitialize() {
 	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 	//particleMotion_->velocity.speed = 1.0f;
 	//particleMotion_->velocity.randomRange = 0.0f;
-	particleMotion_->aliveTime.time = 60;
+	particleMotion_->aliveTime.time = 20;
 	particleMotion_->aliveTime.randomRange = 5;
 	particleMotion_->isAlive = true;
 	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, 0);
