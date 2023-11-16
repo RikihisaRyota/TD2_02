@@ -58,6 +58,7 @@ void Player::Initialize()
 
 	UpdateMatrix();
 
+	jumpCount_ = 0;
 	isJump_ = true;
 	velocity_ = {};
 }
@@ -167,10 +168,16 @@ void Player::ApplyGlobalVariable()
 void Player::NormalInitialize()
 {
 	worldTransform_.rotation_ = {};
+	countFrame_ = 0;
+	if (preState_ != State::kJump) {
+		jumpCount_ = 0;
+	}
 }
 
 void Player::NormalUpdate()
 {
+	countFrame_++;
+
 	Input* input = Input::GetInstance();
 
 	if (velocity_.y == 0.0f) {
@@ -213,28 +220,83 @@ void Player::NormalUpdate()
 
 void Player::JumpInitialize()
 {
-	velocity_ = {};
-	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	if (kIs2Jump_) {
+		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+			jumpCount_ = 0;
+		}
+
+		if (jumpCount_ >= 1) {
+			jumpCount_++;
+			velocity_ = {};
+			velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity] * parameters_[FloatParameterNames::k2JumpMagnification];
+		}
+		else {
+			jumpCount_ = 1;
+			velocity_ = {};
+			velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+		}
+	}
+	else {
+		velocity_ = {};
+		velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	}
 
 }
 
 void Player::JumpUpdate()
 {
+	if (kIs2Jump_) {
+		if (jumpCount_ >= 2) {
+			if (isRight_) {
+				velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * parameters_[FloatParameterNames::k2JumpMagnification];
+				if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+					velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+				}
 
-	if (isRight_) {
-		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
-		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
-			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+				worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+			}
+			else {
+				velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1) * parameters_[FloatParameterNames::k2JumpMagnification];
+				if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+					velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+				}
+				worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+			}
 		}
+		else {
+			if (isRight_) {
+				velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
+				if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+					velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+				}
 
-		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+				worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+			}
+			else {
+				velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
+				if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+					velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+				}
+				worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+			}
+		}
 	}
 	else {
-		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
-		if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
-			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+		if (isRight_) {
+			velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
+			if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
+				velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
+			}
+
+			worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 		}
-		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+		else {
+			velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
+			if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
+				velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
+			}
+			worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+		}
 	}
 	
 	if (velocity_.y <= 0) {
@@ -255,6 +317,10 @@ void Player::GripWallInitialize()
 	worldTransform_.rotation_ = {};
 	velocity_ = {};
 	countFrame_ = 0;
+
+	if (preState_ == State::kNormal || preState_ == State::kJump) {
+		jumpCount_ = 0;
+	}
 }
 
 void Player::GripWallUpdate()
@@ -372,7 +438,25 @@ void Player::WallJumpInitialize()
 		// 左の壁
 		velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
 	}
-	velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
+
+	if (kIs2Jump_) {
+		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+			jumpCount_ = 0;
+		}
+
+		if (jumpCount_ >= 1) {
+			jumpCount_++;
+			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2JumpMagnification];
+		}
+		else {
+			jumpCount_ = 1;
+			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
+		}
+	}
+	else {
+		velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
+	}
+	
 }
 
 void Player::WallJumpUpdate()
@@ -422,6 +506,7 @@ void Player::WallSideJumpInitialize()
 {
 	velocity_ = {};
 	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
+	jumpCount_ = 0;
 }
 
 void Player::WallSideJumpUpdate()
@@ -531,6 +616,7 @@ void Player::Update()
 
 		(this->*spStateInitFuncTable[static_cast<size_t>(state_)])();
 
+		preState_ = state_;
 		stateRequest_ = std::nullopt;
 	}
 
@@ -550,6 +636,13 @@ void Player::Draw(const ViewProjection& viewProjection)
 {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
+	}
+}
+
+void Player::StatusRequest(State state)
+{
+	if (state_ != state) {
+		stateRequest_ = state;
 	}
 }
 

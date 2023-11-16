@@ -45,7 +45,7 @@ public:
 	/// 状態のリクエスト
 	/// </summary>
 	/// <param name="status">したい状態</param>
-	void StatusRequest(State state) { stateRequest_ = state; }
+	void StatusRequest(State state);
 
 	/// <summary>
 	/// 今の状態の確認。あたり判定のフラグに使用。
@@ -135,6 +135,10 @@ private:
 	bool isJump_;
 	// 右向きか
 	bool isRight_;
+	// ２段ジャンプか
+	int jumpCount_;
+
+	bool kIs2Jump_ = true;
 
 	int countFrame_;
 
@@ -148,6 +152,7 @@ private:
 		kWallJumpInitialVelocityX, // 壁キック時のx軸の初速
 		kWallJumpInitialVelocityY, // 壁キック時のy軸の初速
 		kJumpRotateSpeed, // ジャンプ時のプレイヤーの回転スピード
+		k2JumpMagnification, // 2段ジャンプの倍率
 		kCountFloatParameter, // 末尾
 	};
 
@@ -164,6 +169,7 @@ private:
 		"壁キック時のx軸の初速",
 		"壁キック時のy軸の初速",
 		"ジャンプ時のプレイヤーの回転スピード",
+		"2段ジャンプの倍率",
 
 	};
 
@@ -192,6 +198,7 @@ private:
 
 	enum IParameterNames {
 		kGripStayTime, // 壁に捕まって動かないフレーム数
+		k2JumpExtensionFrame, // 2段ジャンプの猶予フレーム
 		kCountIParameter, // 末尾
 	};
 
@@ -200,12 +207,16 @@ private:
 
 	std::string iParameterItemNames[IParameterNames::kCountIParameter] = {
 		"壁に捕まって動かないフレーム数",
+		"2段ジャンプの猶予フレーム",
+
 	};
 
 	Vector3 preInitialPos_;
 
 	// 今の状態
 	State state_ = State::kNormal;
+
+	State preState_ = State::kNormal;
 
 	// 状態のリクエスト
 	std::optional<State> stateRequest_ = std::nullopt;
