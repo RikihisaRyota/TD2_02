@@ -71,7 +71,7 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void ParticleManager::Initialize() {
+void ParticleManager::StaticInitialize() {
 	// パイプライン生成
 	basicGraphicsPipeline_ = new ParticleGraphicsPipeline();
 	basicGraphicsPipeline_->InitializeGraphicsPipeline();
@@ -165,6 +165,12 @@ void ParticleManager::Initialize() {
 
 #pragma endregion
 
+}
+
+void ParticleManager::Initialize() {
+	for (auto& instancing : instancing_) {
+		instancing->particle->Reset();
+	}
 }
 
 void ParticleManager::Shutdown() {

@@ -32,6 +32,7 @@ public:
 	};
 public:
 	static ParticleManager* GetInstance();
+	void StaticInitialize();
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
