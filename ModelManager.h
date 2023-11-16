@@ -13,7 +13,7 @@ public:
 	static ModelManager* GetInstance();
 	void Shutdown();
 	void LoadBlockModel(std::initializer_list<std::string> modelNames, bool isLighting = false);
-	void LoadModel(std::string modeName, bool isLighting=false);
+	void LoadModel(std::initializer_list<std::string> modeName, bool isLighting = false);
 	
 	Model* GetModel(std::string modeName);
 	Model* GetBlockModel(size_t num) {return blockModels_[num];}

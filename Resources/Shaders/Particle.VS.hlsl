@@ -24,7 +24,7 @@ struct VertexShaderInput
     float2 texcoord : TEXCOORD0;
 };
 
-VertexShaderOutput main(VertexShaderInput input,uint instanceID:SV_InstanceID)
+VertexShaderOutput main(VertexShaderInput input, uint instanceID : SV_InstanceID)
 {
     VertexShaderOutput output; // ピクセルシェーダーに渡す値
     output.position = input.position;

@@ -20,6 +20,7 @@ public:
 	~Particle();
 	void Initialize(Emitter* emitter ,ParticleMotion* particleMotion);
 	void Update();
+	void Reset();
 
 	ParticleForGPU GetParticleForGPU(size_t num) { return particleWorldTransform_.at(num)->constantDate; }
 	uint32_t GetAliveParticle() {return numAliveParticle_;}
@@ -31,7 +32,8 @@ private:
 	Random::RandomNumberGenerator rnd_;
 	bool isAlive_;
 	uint32_t numAliveParticle_;
-	ParticleMotion* originalParticle_;
-	Emitter* emitter_;
+	int32_t flameInterval_;
+	std::unique_ptr<ParticleMotion> originalParticle_;
+	std::unique_ptr<Emitter> emitter_;
 	std::vector<std::unique_ptr<ParticleWorldTransform>> particleWorldTransform_;
 };

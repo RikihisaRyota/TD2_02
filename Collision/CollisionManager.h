@@ -6,6 +6,8 @@
 class CollisionManager
 {
 public:
+
+	static CollisionManager* GetInstance();
 	
 	void Init();
 
@@ -16,6 +18,10 @@ public:
 	void CheckCollision();
 
 private:
+	CollisionManager() = default;
+	~CollisionManager() = default;
+	CollisionManager(const CollisionManager&) = delete;
+	const CollisionManager& operator=(const CollisionManager&) = delete;
 
 	bool IsMatchedConfig(Collider* a, Collider* b) const;
 

@@ -34,15 +34,16 @@ void PostEffectGraphicsPipeline::CreateRootSignature() {
 	CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-	CD3DX12_ROOT_PARAMETER rootParameters[1]{};
-	rootParameters[0].InitAsDescriptorTable(_countof(ranges), ranges);
+	CD3DX12_ROOT_PARAMETER rootParameters[ROOT_PARAMETER_TYP::COUNT]{};
+	rootParameters[ROOT_PARAMETER_TYP::TIME].InitAsConstantBufferView(ROOT_PARAMETER_TYP::TIME,0);
+	rootParameters[ROOT_PARAMETER_TYP::TEXTURE].InitAsDescriptorTable(_countof(ranges), ranges);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSampler(
 		0,
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		D3D12_TEXTURE_ADDRESS_MODE_BORDER,
-		D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 		D3D12_DEFAULT_MIP_LOD_BIAS, D3D12_DEFAULT_MAX_ANISOTROPY,
 		D3D12_COMPARISON_FUNC_LESS_EQUAL,
 		D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE);
@@ -160,6 +161,7 @@ void PostEffectGraphicsPipeline::CreatePSO() {
 
 	// どのように画面に色を打ち込むのか設定（気にしなくてもよい）
 	graphicPipelineStateDesc.SampleDesc.Count = 1;
+	graphicPipelineStateDesc.SampleDesc.Quality = 0;
 	graphicPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 
 	// グラフィックスパイプラインの生成

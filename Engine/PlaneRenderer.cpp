@@ -134,7 +134,7 @@ void PlaneRenderer::Initialize() {
 	// ライティングバッファへのデータ転送
 	result = directionalLightBuff_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
 	// 初期値代入
-	directionalLight_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLight_->color_ = { 1.0f,1.0f,1.0f ,1.0f};
 	directionalLight_->direction_ = { 0.5f,-0.7f,1.0f };
 	directionalLight_->intensiy_ = 1.0f;
 	directionalLight_->sharpness_ = 1.0f;

@@ -52,6 +52,18 @@
     <Filter Include="Collision\ColliderShape">
       <UniqueIdentifier>{919406c5-a45d-4085-b1f4-1a61a25ae5fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Block">
+      <UniqueIdentifier>{9e8912d1-117c-4070-b137-f7037b181ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneSystem">
+      <UniqueIdentifier>{31e7cf76-f61f-4850-b4ba-2d398e6a9444}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\MapChip">
+      <UniqueIdentifier>{bb7b9a56-8481-4278-96ac-55f85e43722a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Background">
+      <UniqueIdentifier>{c5169e6a-9dbc-493b-a0de-8796132f125b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -79,9 +91,6 @@
       <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
     <ClCompile Include="Engine\LineGraphicsPipline.cpp">
-      <Filter>engine\graphicsPipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\ParticleGraphicsPipline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
     <ClCompile Include="Engine\PeraGraphicsPipeline.cpp">
@@ -159,10 +168,8 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="MapChip.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapChipEditor.cpp" />
     <ClCompile Include="Engine\Input.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
@@ -208,6 +215,69 @@
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp">
       <Filter>Collision\ColliderShape</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Block\Block.cpp">
+      <Filter>Game\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\IScene\IScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\StageScene\StageScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\TitleScene\TitleScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SelectScene\SelectScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleGraphicsPipline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Particle.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleManager.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffectPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PreBloomPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\VerticalBlurPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\BloomPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\HorizontalBlurPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Bloom.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GaussianBlur.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\PostEffect.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="MapChip.cpp">
+      <Filter>Game\MapChip</Filter>
+    </ClCompile>
+    <ClCompile Include="MapChipEditor.cpp">
+      <Filter>Game\MapChip</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Background\Background.cpp">
+      <Filter>Game\Background</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -235,9 +305,6 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Engine\BasicGraphicsPipline.h">
-      <Filter>engine\graphicsPipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ParticleGraphicsPipline.h">
       <Filter>engine\graphicsPipeline</Filter>
     </ClInclude>
     <ClInclude Include="Engine\PeraGraphicsPipeline.h">
@@ -354,9 +421,7 @@
     <ClInclude Include="GameScene.h">
       <Filter>engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="MapChip.h" />
     <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="MapChipEditor.h" />
     <ClInclude Include="Engine\Draw.h">
       <Filter>engine\base</Filter>
     </ClInclude>
@@ -384,6 +449,81 @@
     <ClInclude Include="Engine\Random.h">
       <Filter>engine\math</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Block\Block.h">
+      <Filter>Game\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\ClearScene\ClearScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\IScene\IScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SceneManager\SceneManager.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\StageScene\StageScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\TitleScene\TitleScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ResourceLeakChecker.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SelectScene\SelectScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Random.h">
+      <Filter>engine\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleGraphicsPipline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Particle.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleManager.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleShaderStruct.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\cBuffer.h">
+      <Filter>engine\base\constantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PreBloomPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffectPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\VerticalBlurPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BloomPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\HorizontalBlurPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PostEffect.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Bloom.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GaussianBlur.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="MapChip.h">
+      <Filter>Game\MapChip</Filter>
+    </ClInclude>
+    <ClInclude Include="MapChipEditor.h">
+      <Filter>Game\MapChip</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Background\Background.h">
+      <Filter>Game\Background</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -391,28 +531,61 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\PostEffect.PS.hlsl">
+    <None Include=".editorconfig" />
+    <None Include="Resources\Shaders\Basic.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\PostEffect.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Bloom.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Sprite.PS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\HorizontalBlur.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Sprite.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Lighting.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Toon.PS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\Line.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\Shaders\Toon.VS.hlsl">
+    </None>
+    <None Include="Resources\Shaders\OBJ.hlsli">
       <Filter>engine\shader</Filter>
-    </FxCompile>
+    </None>
+    <None Include="Resources\Shaders\Particle.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Pera.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Sprite.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\Triangle.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\VertexShaderOutput.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\VerticalBlur.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <FxCompile Include="Resources\Shaders\Basic.PS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Basic.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Bloom.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Bloom.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\HorizontalBlur.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\HorizontalBlur.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Lighting.PS.hlsl">
@@ -445,35 +618,35 @@
     <FxCompile Include="Resources\Shaders\Pera.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Shaders\Sprite.hlsli">
+    <FxCompile Include="Resources\Shaders\PostEffect.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Triangle.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffect.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\VertexShaderOutput.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PreBloom.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Basic.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\PreBloom.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Lighting.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Sprite.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Line.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Sprite.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\OBJ.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Toon.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Particle.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\Toon.VS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include="Resources\Shaders\Pera.hlsli">
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\VerticalBlur.PS.hlsl">
       <Filter>engine\shader</Filter>
-    </None>
-    <None Include=".editorconfig" />
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\VerticalBlur.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

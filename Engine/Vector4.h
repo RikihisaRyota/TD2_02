@@ -1,10 +1,11 @@
 #pragma once
 
 struct Vector4 {
-	float x;
-	float y;
-	float z;
-	float w;
+    float x;
+    float y;
+    float z;
+    float w;
+
     // コンストラクタ
     Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
