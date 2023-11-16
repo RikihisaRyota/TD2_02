@@ -9,6 +9,8 @@
 #include "OBJ.h"
 #include "CubeRenderer.h"
 
+#include "ParticleManager.h"
+
 StageScene::StageScene()
 {
 #pragma region 
@@ -72,6 +74,8 @@ void StageScene::Update()
 
 	collisionManager->CheckCollision();
 
+	ParticleManager::GetInstance()->Update();
+
 
 	if (!isDebug_) {
 		followCamera_->Update();
@@ -120,6 +124,8 @@ void StageScene::Draw()
 	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
+
+	ParticleManager::GetInstance()->Draw(viewProjection_);
 	PrimitiveDrawer::Draw();
 	// 3Dオブジェクト描画後処理
 	PlaneRenderer::PostDraw();

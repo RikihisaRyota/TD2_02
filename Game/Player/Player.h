@@ -7,7 +7,7 @@
 
 #include "Collision/Collider.h"
 #include "PlaneRenderer.h"
-
+#include "ParticleShaderStruct.h"
 class Player : public Collider
 {
 public:
@@ -123,7 +123,8 @@ private:
 
 	// 俺が追加した
 	// プレイヤーの後ろにパーティクルを追加
-	void MoveParticle();
+	void ParticleInitialize();
+	void ParticleUpdate();
 	
 private:
 
@@ -247,4 +248,7 @@ private:
 	// 何フレーム間隔でパーティクルを生成するか
 	int32_t flameCount_;
 	const int32_t kMaxFlameTime = 5;
+	// 所有権はパーティクルマネージャーが持っている
+	Emitter* emitter_;
+	ParticleMotion* particleMotion_;
 };

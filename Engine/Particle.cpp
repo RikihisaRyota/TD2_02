@@ -2,14 +2,9 @@
 
 #include "MyMath.h"
 
-Particle::~Particle() {
-	delete originalParticle_;
-	delete emitter_;
-}
-
 void Particle::Initialize(Emitter* emitter, ParticleMotion* particleMotion) {
-	emitter_ = emitter;
-	originalParticle_ = particleMotion;
+	emitter_.reset(emitter);
+	originalParticle_.reset(particleMotion);
 	flameInterval_ = emitter->flameInterval;
 	emitter->flameInterval = 0;
 	isAlive_ = true;
@@ -94,9 +89,6 @@ void Particle::Update() {
 }
 
 void Particle::Reset() {
-	for (auto& particleWorldTransform : particleWorldTransform_) {
-		delete particleWorldTransform;
-	}
 	particleWorldTransform_.clear();
 }
 

@@ -124,45 +124,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	std::unique_ptr<SceneManager> sceneManager = std::make_unique<SceneManager>();
 	sceneManager->Run();
 
-	//// ゲームシーンの初期化
-	//GameScene* gameScene = nullptr;
-	//gameScene = new GameScene();
-	//gameScene->Initialize();
-
-
-	//// メインループ
-	//while (true) {
-	//	// メッセージ処理
-	//	if (win->ProcessMessage()) {
-	//		break;
-	//	}
-	//	// ImGui受付開始
-	//	imguiManager->Begin();
-	//	// 入力関連の毎フレーム処理
-	//	input->Update();
-	//	// 音声アップデート
-	//	audio->Update();
-
-	//	GlobalVariables::GetInstance()->Update();
-	//	// ゲームシーンの毎フレーム処理
-	//	gameScene->Update();
-	//	// ImGui受付終了
-	//	imguiManager->End();
-	//	// 描画開始
-	//	dxCommon->PreDraw();
-	//	// ゲームシーンの描画
-	//	gameScene->Draw();
-	//	// ImGui描画
-	//	imguiManager->Draw();
-	//	// 描画終わり
-	//	dxCommon->PostDraw();
-	//}
-		
-
-	//// ゲームシーン解放
-	//gameScene->Release();
-	//SafeDelete(gameScene);
-
 	ParticleManager::GetInstance()->Shutdown();
 
 	// モデル

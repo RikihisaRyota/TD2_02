@@ -57,6 +57,9 @@ Player::Player() {
 	preInitialPos_ = v3Parameters_[V3ParameterNames::kInitialPos];
 
 	SetGlobalVariable();
+
+	// パーティクル初期化
+	ParticleInitialize();
 }
 
 void Player::Initialize()
@@ -633,37 +636,37 @@ void Player::WallDownJumpUpdate() {
 	worldTransform_.translate_ += velocity_;
 }
 
-void Player::MoveParticle() {
-	if (flameCount_ <= 0) {
-		Emitter* emitter = new Emitter();
-		emitter->aliveTime = 1;
-		emitter->spawn.position = worldTransform_.worldPos_;
-		emitter->spawn.rangeX = 0.5f;
-		emitter->spawn.rangeY = 0.5f;
-		emitter->inOnce = 4;
-		emitter->isAlive = true;
-		ParticleMotion* particleMotion = new ParticleMotion();
-		//particleMotion->angle.start = DegToRad(0.0f);
-		//particleMotion->angle.end = DegToRad(180.0f);
-		particleMotion->color.startColor = { 0.0f,1.0f,0.8f,1.0f };
-		particleMotion->color.endColor = { 0.0f,1.0f,0.8f,0.0f };
-		particleMotion->color.currentColor = particleMotion->color.startColor;
-		particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
-		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
-		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
-		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-		//particleMotion->velocity.speed = 1.0f;
-		//particleMotion->velocity.randomRange = 0.0f;
-		particleMotion->aliveTime.time = 20;
-		particleMotion->aliveTime.randomRange = 5;
-		particleMotion->isAlive = true;
-		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
-		flameCount_ = kMaxFlameTime;
-	}
-	else {
-		flameCount_--;
-	}
+void Player::ParticleInitialize() {
+
+	emitter_ =new Emitter();
+	emitter_->aliveTime = 1;
+	emitter_->spawn.position = worldTransform_.worldPos_;
+	emitter_->spawn.rangeX = 1.5f;
+	emitter_->spawn.rangeY = 1.5f;
+	emitter_->inOnce = 5;
+	emitter_->isAlive = true;
+	particleMotion_ = new ParticleMotion();
+	//particleMotion_->angle.start = DegToRad(0.0f);
+	//particleMotion_->angle.end = DegToRad(180.0f);
+	particleMotion_->color.startColor = { 0.0f,1.0f,0.8f,1.0f };
+	particleMotion_->color.endColor = { 0.0f,1.0f,0.8f,0.0f };
+	particleMotion_->color.currentColor = particleMotion_->color.startColor;
+	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
+	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
+	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
+	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
+	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+	//particleMotion_->velocity.speed = 1.0f;
+	//particleMotion_->velocity.randomRange = 0.0f;
+	particleMotion_->aliveTime.time = 60;
+	particleMotion_->aliveTime.randomRange = 5;
+	particleMotion_->isAlive = true;
+	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, 0);
+}
+
+void Player::ParticleUpdate() {
+	emitter_->aliveTime = 2;
+	emitter_->spawn.position = worldTransform_.worldPos_;
 }
 
 void Player::ClearMoveInitialize()
@@ -724,7 +727,7 @@ void Player::Update()
 
 	SetCollider();
 
-	MoveParticle();
+	ParticleUpdate();
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {
