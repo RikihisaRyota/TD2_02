@@ -13,7 +13,6 @@
 #include "Pera.h"
 
 #include "SafeDelete.h"
-#include "Particle.h"
 #include "PlaneRenderer.h"
 #include "SphereRenderer.h"
 #include "Sprite.h"
@@ -153,7 +152,7 @@ private: // メンバ変数
 	std::vector<std::vector<std::unique_ptr<cMaterial>>> fenceMaterial_;
 	std::vector<std::vector<std::unique_ptr<UVtranslation>>> fenceUVtranslation_;
 
-	std::unique_ptr<Particle> particle_;
+	
 	// 音声再生
 	Audio* audio_;
 

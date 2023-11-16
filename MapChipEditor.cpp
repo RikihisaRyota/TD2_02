@@ -79,7 +79,7 @@ void MapChipEditor::Update() {
 				if (ImGui::Selectable(stage[i], isSelected)) {
 					currenStage = i;
 					mapChip_->SetCurrentStage(currenStage);
-					mapChip_->LoadCSV();
+					mapChip_->ChengeStage();
 				}
 			}
 			ImGui::EndCombo();

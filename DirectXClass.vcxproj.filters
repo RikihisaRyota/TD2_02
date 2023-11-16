@@ -52,6 +52,12 @@
     <Filter Include="Collision\ColliderShape">
       <UniqueIdentifier>{919406c5-a45d-4085-b1f4-1a61a25ae5fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Block">
+      <UniqueIdentifier>{9e8912d1-117c-4070-b137-f7037b181ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneSystem">
+      <UniqueIdentifier>{31e7cf76-f61f-4850-b4ba-2d398e6a9444}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Game\MapChip">
       <UniqueIdentifier>{bb7b9a56-8481-4278-96ac-55f85e43722a}</UniqueIdentifier>
     </Filter>
@@ -173,6 +179,9 @@
     <ClCompile Include="Engine\ShaderCompiler.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\PostEffectPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
     <ClCompile Include="Collision\Collision.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
@@ -199,6 +208,27 @@
     </ClCompile>
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp">
       <Filter>Collision\ColliderShape</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Block\Block.cpp">
+      <Filter>Game\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\IScene\IScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\StageScene\StageScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\TitleScene\TitleScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SelectScene\SelectScene.cpp">
+      <Filter>SceneSystem</Filter>
     </ClCompile>
     <ClCompile Include="Engine\ParticleGraphicsPipline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
@@ -398,6 +428,9 @@
     <ClInclude Include="Engine\ShaderCompiler.h">
       <Filter>engine\base</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\PostEffectPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
     <ClInclude Include="Collision\Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -427,6 +460,30 @@
     </ClInclude>
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h">
       <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Block\Block.h">
+      <Filter>Game\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\ClearScene\ClearScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\IScene\IScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SceneManager\SceneManager.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\StageScene\StageScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\TitleScene\TitleScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ResourceLeakChecker.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SelectScene\SelectScene.h">
+      <Filter>SceneSystem</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Random.h">
       <Filter>engine\math</Filter>

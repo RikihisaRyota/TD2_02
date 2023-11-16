@@ -4,6 +4,12 @@
 #include "MyMath.h"
 #include <functional>
 
+CollisionManager* CollisionManager::GetInstance()
+{
+	static CollisionManager instance;
+	return &instance;
+}
+
 void CollisionManager::Init()
 {
 	Clear();
@@ -114,6 +120,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 	Vector2 sub = worldPos;
 
+	a->editInfo_.i32Info_.clear();
+	b->editInfo_.pairIInfo_.clear();
+
 	if (velocity.x != 0 || velocity.y != 0) {
 
 		bool finishFlag = false;
@@ -124,6 +133,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 		int x = static_cast<int>((worldPos.x -scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
 		int endY = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y - scale.y - bottomLeft.y) / (mapChipScale.y * 2));
+		if (endY >= b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) {
+			endY = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - 1;
+		}
 		int endX = static_cast<int>((worldPos.x + scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
 		std::function<void()> editXY = [&]() {
@@ -169,6 +181,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 					result = true;
 					// あたり判定があり
 
+					a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+					b->editInfo_.SetPairIInfo(std::pair(row, column));
 
 				}
 				else if (b->shapeType_->mapChip2D_.IsRigitBody(row, column)) {
@@ -192,6 +206,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 						else {
 							velocity.y = 0.0f;
 						}
+
+						a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+						b->editInfo_.SetPairIInfo(std::pair(row, column));
 						finishFlag = true;
 						break;
 					}
@@ -204,7 +221,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 							sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 						}
 						velocity.x = 0.0f;
-
+						a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+						b->editInfo_.SetPairIInfo(std::pair(row, column));
 						finishFlag = true;
 						break;
 					}
@@ -242,6 +260,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 									velocity.x = 0.0f;
 
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
+
 									//sub.UpdateMatrix();
 									nextX -= 1;
 
@@ -252,7 +273,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 										if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 										}
 										else if (b->shapeType_->mapChip2D_.IsRigitBody(row, nextX)) {
 											// めり込み処理する
@@ -260,6 +282,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = 0.0f;
 												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 											}
 										}
 
@@ -272,7 +296,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 										if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 										else if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
 											// めり込み処理する
@@ -280,6 +305,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = 0.0f;
 												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 
@@ -291,6 +318,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 									velocity.y = 0.0f;
 									sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
 
 									//sub.UpdateMatrix();
 									nextY -= 1;
@@ -305,12 +335,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 										}
 
 									}
@@ -324,12 +357,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 
 									}
@@ -363,6 +399,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 									velocity.x = 0.0f;
 
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
+
 									//sub.UpdateMatrix();
 									nextX -= 1;
 
@@ -376,12 +415,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = -edit;
 												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 										}
 
 									}
@@ -396,12 +438,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = -edit;
 												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 
 									}
@@ -412,6 +457,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 									velocity.y = -edit;
 									sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
 
 									//sub.UpdateMatrix();
 									nextY += 1;
@@ -425,12 +473,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 										}
 
 									}
@@ -444,11 +495,14 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x - mapChipScale.x - scale.x - edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 
 										}
 
@@ -497,6 +551,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 									velocity.x = 0.0f;
 
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
+
 									//sub.UpdateMatrix();
 									nextX += 1;
 									chipPos.x += mapChipScale.x * 2;
@@ -509,12 +566,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = 0.0f;
 												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(row, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(row, nextX));
 										}
 
 									}
@@ -528,11 +588,14 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = 0.0f;
 												sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 
 										}
 									}
@@ -543,6 +606,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 									velocity.y = 0.0f;
 									sub.y = chipPos.y + mapChipScale.y + scale.y + edit;
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
 
 									//sub.UpdateMatrix();
 									nextY -= 1;
@@ -556,12 +621,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, column)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][column]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, column));
 										}
 
 									}
@@ -574,11 +642,14 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 
 										}
 										else {
@@ -588,7 +659,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 											if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 												// あたり判定があり
-
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 
 											}
 											else if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
@@ -597,6 +669,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 												if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 													sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 													velocity.x = 0.0f;
+													a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+													b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 												}
 											}
 										}
@@ -633,7 +707,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 									sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 									velocity.x = 0.0f;
-
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[row][column]);
+									b->editInfo_.SetPairIInfo(std::pair(row, column));
 									//sub.UpdateMatrix();
 									nextX += 1;
 									chipPos.x += mapChipScale.x * 2;
@@ -646,12 +721,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = -edit;
 												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 
 									}
@@ -663,12 +741,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												velocity.y = -edit;
 												sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 										else {
 
@@ -681,11 +762,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 												if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 													velocity.y = -edit;
 													sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
+													a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+													b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
+
 												}
 											}
 											else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 												// あたり判定があり
-
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 
 											}
 										}
@@ -698,7 +783,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 									velocity.y = -edit;
 									sub.y = chipPos.y - mapChipScale.y - scale.y - edit;
-
+									a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+									b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 									//sub.UpdateMatrix();
 									nextY += 1;
 									chipPos.y -= mapChipScale.y * 2;
@@ -711,12 +797,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 
 									}
@@ -730,12 +819,15 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 											if (ColliderShapeBox2D::IsCollisionBox2DBox2D(sub, scale, chipPos, mapChipScale)) {
 												sub.x = chipPos.x + mapChipScale.x + scale.x + edit;
 												velocity.x = 0.0f;
+												a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+												b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 											}
 										}
 										else if (b->shapeType_->mapChip2D_.IsCollider(nextY, nextX)) {
 											// あたり判定があり
 
-
+											a->editInfo_.SetI32Info(b->shapeType_->mapChip2D_.mapChip_[nextY][nextX]);
+											b->editInfo_.SetPairIInfo(std::pair(nextY, nextX));
 										}
 									}
 								}
@@ -783,6 +875,13 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 
 	a->editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS] = sub;
 	a->editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY] = velocity;
+
+	a->editInfo_.collisionMask_ = b->GetCollisionAttribute();
+	b->editInfo_.collisionMask_ = a->GetCollisionAttribute();
+
+	if (a->editInfo_.i32Info_.size() > 0) {
+		result = true;
+	}
 
 	return result;
 

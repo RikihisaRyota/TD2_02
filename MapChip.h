@@ -19,6 +19,18 @@ const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
 class MapChip : public Collider{
 public:
+	enum Stage
+	{
+		kStage_1,
+		kStage_2,
+		kStage_3,
+		kStage_4,
+		kStage_5,
+		kStage_6,
+		kStage_7,
+		kStage_8,
+		kCount,
+	};
 	enum class Blocks {
 		kNone,
 		kBlock,
@@ -43,6 +55,7 @@ public:
 	void SaveCSV();
 	void SaveCSV(uint32_t stageNum);
 	void SaveCSV(std::string fileName);
+	void ChengeStage();
 #pragma endregion
 #pragma region BlockType
 	std::vector<std::vector<uint32_t>> GetBlocksTypes() { return map_; }
@@ -68,6 +81,7 @@ private:
 	ViewProjection* viewProjection_;
 	// マップチップの種類
 	std::vector<std::vector<uint32_t>> map_;
+	std::vector<std::vector<std::vector<uint32_t>>> maps_;
 	//uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;

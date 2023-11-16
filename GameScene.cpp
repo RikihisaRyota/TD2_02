@@ -6,8 +6,6 @@
 #include "ImGuiManager.h"
 #include "ParticleManager.h"
 
-#include "Collision/Collision.h"
-
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {}
@@ -52,7 +50,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-	collisionManager_->Clear();
+	CollisionManager* collisionManager = CollisionManager::GetInstance();
+	collisionManager->Clear();
 
 	if (input_->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
@@ -73,12 +72,7 @@ void GameScene::Update() {
 
 	player_->Update();
 
-	/*CollisionEdit(mapChip_->GetWorldTransforms(), mapChip_->GetBlocksTypes(), player_->GetWorldTransform(), player_->GetVelocity());
-	player_->UpdateMatrix();*/
-	collisionManager_->SetCollider(player_.get());
-	collisionManager_->SetCollider(mapChip_.get());
-
-	collisionManager_->CheckCollision();
+	collisionManager->CheckCollision();
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		Emitter* emitter = new Emitter();

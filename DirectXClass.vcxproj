@@ -100,7 +100,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Collision\Collider.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeMapChip2D.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp" />
-    <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BasicGraphicsPipline.cpp" />
@@ -150,6 +149,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Game\Block\Block.cpp" />
     <ClCompile Include="Game\Background\Background.cpp" />
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
@@ -158,13 +158,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="MapChip.cpp" />
     <ClCompile Include="MapChipEditor.cpp" />
     <ClCompile Include="ModelManager.cpp" />
+    <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp" />
+    <ClCompile Include="SceneSystem\IScene\IScene.cpp" />
+    <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp" />
+    <ClCompile Include="SceneSystem\SelectScene\SelectScene.cpp" />
+    <ClCompile Include="SceneSystem\StageScene\StageScene.cpp" />
+    <ClCompile Include="SceneSystem\TitleScene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision\BaseColliderShapeType.h" />
     <ClInclude Include="Collision\Collider.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeBox2D.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h" />
-    <ClInclude Include="Collision\Collision.h" />
     <ClInclude Include="Collision\CollisionConfig.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="Engine\AABB.h" />
@@ -183,6 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\ParticleShaderStruct.h" />
     <ClInclude Include="Engine\PostEffect.h" />
     <ClInclude Include="Engine\PostEffectPipeline.h" />
+    <ClInclude Include="Engine\ResourceLeakChecker.h" />
     <ClInclude Include="Engine\PreBloomPipeline.h" />
     <ClInclude Include="Engine\Random.h" />
     <ClInclude Include="Engine\ShaderCompiler.h" />
@@ -232,6 +238,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Game\Block\Block.h" />
     <ClInclude Include="Game\Background\Background.h" />
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Game\Player\Player.h" />
@@ -239,6 +246,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="MapChip.h" />
     <ClInclude Include="MapChipEditor.h" />
     <ClInclude Include="ModelManager.h" />
+    <ClInclude Include="SceneSystem\ClearScene\ClearScene.h" />
+    <ClInclude Include="SceneSystem\IScene\IScene.h" />
+    <ClInclude Include="SceneSystem\SceneManager\SceneManager.h" />
+    <ClInclude Include="SceneSystem\SelectScene\SelectScene.h" />
+    <ClInclude Include="SceneSystem\StageScene\StageScene.h" />
+    <ClInclude Include="SceneSystem\TitleScene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
