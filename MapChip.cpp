@@ -268,7 +268,6 @@ void MapChip::InstancingInitialize() {
 }
 void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	for (auto& instancing : instancing_) {
-		instancing->mat = nullptr;
 		instancing->currentInstance = 0;
 	}
 	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;

@@ -10,6 +10,7 @@
 #include "CubeRenderer.h"
 
 #include "ParticleManager.h"
+#include "ImGuiManager.h"
 
 StageScene::StageScene()
 {
@@ -79,7 +80,10 @@ void StageScene::Update()
 
 	ParticleManager::GetInstance()->Update();
 
-
+	ImGui::Begin("fps");
+	ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
+	ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
+	ImGui::End();
 	if (!isDebug_) {
 		followCamera_->Update();
 		viewProjection_ = followCamera_->GetViewProjection();
