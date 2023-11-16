@@ -26,16 +26,15 @@ StageScene::StageScene()
 #pragma region 生成
 	mapChip_ = std::make_unique<MapChip>();
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
-
+	background_ = std::make_unique<Background>();
 #pragma endregion
 
-#pragma region 初期化
 	mapChip_->Initialize();
 	mapChip_->SetViewProjection(&viewProjection_);
+
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
-#pragma endregion
 
 	followCamera_ = std::make_unique<FollowCamera>();
 	player_ = std::make_unique<Player>();
@@ -44,6 +43,8 @@ StageScene::StageScene()
 
 void StageScene::Init()
 {
+	ParticleManager::GetInstance()->Initialize();
+	background_->Initialize();
 	player_->Initialize();
 	followCamera_->Initialize();
 }
@@ -67,6 +68,8 @@ void StageScene::Update()
 		}
 
 	}
+
+	background_->Update();
 
 	mapChip_->Update();
 
@@ -120,6 +123,7 @@ void StageScene::Draw()
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	background_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 
