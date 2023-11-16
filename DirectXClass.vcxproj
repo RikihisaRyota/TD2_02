@@ -100,7 +100,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Collision\Collider.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeMapChip2D.cpp" />
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp" />
-    <ClCompile Include="Collision\Collision.cpp" />
     <ClCompile Include="Collision\CollisionManager.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BasicGraphicsPipline.cpp" />
@@ -141,6 +140,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Game\Block\Block.cpp" />
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="GlobalVariables\GlobalVariables.cpp" />
@@ -154,7 +154,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Collision\Collider.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeBox2D.h" />
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h" />
-    <ClInclude Include="Collision\Collision.h" />
     <ClInclude Include="Collision\CollisionConfig.h" />
     <ClInclude Include="Collision\CollisionManager.h" />
     <ClInclude Include="Engine\AABB.h" />
@@ -210,6 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Game\Block\Block.h" />
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="GlobalVariables\GlobalVariables.h" />

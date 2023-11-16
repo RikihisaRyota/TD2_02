@@ -23,10 +23,20 @@ class Input {
 public:
 
 	enum class GamePadButton {
-		kA,
-		kB,
-		kX,
-		kY
+		A,
+		B,
+		X,
+		Y,
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT,
+		START,
+		BACK,
+		LEFT_THUMB,
+		RIGHT_THUMB,
+		LEFT_SHOULDER,
+		RIGHT_SHOULDER,
 	};
 
 	enum class PadType {
@@ -177,6 +187,12 @@ public: // メンバ関数
 	bool PressingGamePadButton(GamePadButton button);
 
 	bool ReleasedGamePadButton(GamePadButton button);
+
+	bool PressedKey(BYTE keyNumber);
+
+	bool PressingKey(BYTE keyNumber);
+
+	bool ReleasedKey(BYTE keyNumber);
 
 private: // メンバ変数
 	BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* instance, VOID* context);

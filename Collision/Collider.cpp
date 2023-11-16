@@ -30,3 +30,25 @@ void Collider::SetCollisionMask(uint32_t mask)
 {
 	collisionMask_ = collisionMask_ | mask;
 }
+
+void Collider::EditInfo::SetI32Info(uint32_t info)
+{
+	for (uint32_t num : i32Info_) {
+		if (num == info) {
+			return;
+		}
+	}
+
+	i32Info_.push_back(info);
+}
+
+void Collider::EditInfo::SetPairIInfo(std::pair<int, int> info)
+{
+	for (std::pair<int, int> num : pairIInfo_) {
+		if (num == info) {
+			return;
+		}
+	}
+
+	pairIInfo_.push_back(info);
+}

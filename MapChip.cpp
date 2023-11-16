@@ -13,11 +13,13 @@
 #include "Collision/CollisionConfig.h"
 
 #include "WinApp.h"
+#include "Collision/CollisionManager.h"
 
 void MapChip::OnCollision() {}
 
 void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
+	CollisionManager::GetInstance()->SetCollider(this);
 }
 
 void MapChip::Update() {
