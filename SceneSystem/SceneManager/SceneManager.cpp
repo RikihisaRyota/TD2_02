@@ -22,7 +22,8 @@ SceneManager::SceneManager()
 	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
 
 	IScene::sceneNo_ = TITLE;
-	currentSceneNo_ = TITLE;
+	currentSceneNo_ = IScene::sceneNo_;
+	sceneArr_[currentSceneNo_]->Init();
 
 	soundManager_ = std::make_unique<SoundManager>();
 }
