@@ -39,13 +39,13 @@ public:
 	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle);
 private:
 	static const size_t kNumInstancing = 100;
-	static bool CompareParticles(const Instancing* a, const Instancing* b) {
+	static bool CompareParticles(const std::unique_ptr<Instancing>& a, const std::unique_ptr<Instancing>& b) {
 		return a->isAlive_> b->isAlive_;
 	}
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 #pragma region DirectX関連
 	// グラフィックパイプライン
-	ParticleGraphicsPipeline* basicGraphicsPipeline_ = nullptr;
+	std::unique_ptr<ParticleGraphicsPipeline> basicGraphicsPipeline_ = nullptr;
 #pragma region 頂点バッファ
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
@@ -63,7 +63,7 @@ private:
 	std::vector<uint16_t> indices_;
 #pragma endregion
 #pragma region 
-	std::vector<Instancing*> instancing_;
+	std::vector<std::unique_ptr<Instancing>> instancing_;
 #pragma endregion
 	
 };

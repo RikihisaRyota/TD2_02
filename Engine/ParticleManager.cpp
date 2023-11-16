@@ -75,7 +75,7 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 
 void ParticleManager::Initialize() {
 	// パイプライン生成
-	basicGraphicsPipeline_ = new ParticleGraphicsPipeline();
+	basicGraphicsPipeline_ = std::make_unique<ParticleGraphicsPipeline>();
 	basicGraphicsPipeline_->InitializeGraphicsPipeline();
 	HRESULT result = S_FALSE;
 
@@ -183,7 +183,6 @@ void ParticleManager::Shutdown() {
 	instancing_.clear();
 	vertBuff_.Reset();
 	idxBuff_.Reset();
-	delete basicGraphicsPipeline_;
 }
 
 ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {

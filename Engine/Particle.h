@@ -17,7 +17,6 @@ class Particle {
 		void UpdateMatrix();
 	};
 public:
-	~Particle();
 	void Initialize(Emitter* emitter ,ParticleMotion* particleMotion);
 	void Update();
 	void Reset();

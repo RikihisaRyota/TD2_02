@@ -2,11 +2,6 @@
 
 #include "MyMath.h"
 
-Particle::~Particle() {
-	delete originalParticle_;
-	delete emitter_;
-}
-
 void Particle::Initialize(Emitter* emitter, ParticleMotion* particleMotion) {
 	emitter_.reset(emitter);
 	originalParticle_.reset(particleMotion);
