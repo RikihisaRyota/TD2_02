@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 
+#include "DirectXCommon.h"
 #include "ModelManager.h"
 #include "MyMath.h"
 
@@ -14,6 +15,9 @@
 
 #include "WinApp.h"
 #include "Collision/CollisionManager.h"
+#include "TextureManager.h"
+
+using namespace Microsoft::WRL;
 
 void MapChip::OnCollision() {}
 
@@ -68,7 +72,7 @@ MapChip::MapChip() {
 	}
 
 	currentStage_ = 0;
-	
+
 	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
 	collisionAttribute_ = 0x00000000;
 	collisionMask_ = 0x00000000;
@@ -79,6 +83,9 @@ MapChip::MapChip() {
 	//shapeType_->mapChip2D_.SetNoCollider(0);
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
+
+	// インスタンシング初期化
+	InstancingInitialize();
 }
 
 void MapChip::Initialize() {
@@ -157,13 +164,113 @@ void MapChip::SaveCSV(std::string fileName) {
 	outputCSVFile.close();
 }
 
-void MapChip::ChengeStage()
-{
+void MapChip::ChangeStage() {
 	map_ = maps_[currentStage_];
 }
 
 void MapChip::Draw(const ViewProjection& viewProjection) {
+	InstancingDraw(viewProjection);
+}
 
+Vector3 MapChip::GetBlocksCenterWorldPosition(uint32_t x, uint32_t y) {
+	return MakeTranslate(blockWorldTransform_[y][x].matWorld_);
+}
+void MapChip::InstancingInitialize() {
+	// パイプライン生成
+	basicGraphicsPipeline_ = std::make_unique<MapChipGraphicsPipeline>();
+	basicGraphicsPipeline_->InitializeGraphicsPipeline();
+	HRESULT result = S_FALSE;
+
+	vertices_ = {
+		//	x      y     z      w      nx    ny    nz     u     v
+		{{-1.0f, -1.0f, 0.0f, +1.0f},{0.0f, 0.0f,-1.0f},{0.0f, 1.0f}}, // 左下 0
+		{{-1.0f, +1.0f, 0.0f, +1.0f},{0.0f, 0.0f,-1.0f},{0.0f, 0.0f}}, // 左上 1
+		{{+1.0f, +1.0f, 0.0f, +1.0f},{0.0f, 0.0f,-1.0f},{1.0f, 0.0f}}, // 右上 2
+		{{+1.0f, -1.0f, 0.0f, +1.0f},{0.0f, 0.0f,-1.0f},{1.0f, 1.0f}}, // 右下 3
+	};
+	// 頂点インデックスの設定
+	indices_ = { 0, 1, 2,
+				 0, 2, 3,
+	};
+#pragma region 頂点バッファ
+	// 頂点データのサイズ
+	UINT sizeVB = static_cast<UINT>(sizeof(cVertexPos) * vertices_.size());
+	vertBuff_ = CreateBuffer(sizeVB);
+	// 頂点バッファへのデータ転送
+	{
+		cVertexPos* vertMap = nullptr;
+		result = vertBuff_->Map(0, nullptr, reinterpret_cast<void**>(&vertMap));
+		if (SUCCEEDED(result)) {
+			std::copy(vertices_.begin(), vertices_.end(), vertMap);
+			vertBuff_->Unmap(0, nullptr);
+		}
+	}
+	// 頂点バッファビューの作成
+	vbView_.BufferLocation = vertBuff_->GetGPUVirtualAddress();
+	vbView_.SizeInBytes = sizeVB;
+	vbView_.StrideInBytes = sizeof(vertices_[0]);
+#pragma endregion 頂点バッファ
+#pragma region インデックスバッファ
+	// インデックスデータのサイズ
+	UINT sizeIB = static_cast<UINT>(sizeof(uint16_t) * indices_.size());
+	idxBuff_ = CreateBuffer(sizeIB);
+	// インデックスバッファへのデータ転送
+	uint16_t* indexMap = nullptr;
+	result = idxBuff_->Map(0, nullptr, reinterpret_cast<void**>(&indexMap));
+	if (SUCCEEDED(result)) {
+		std::copy(indices_.begin(), indices_.end(), indexMap);
+		idxBuff_->Unmap(0, nullptr);
+	}
+
+	// インデックスバッファビューの作成
+	ibView_.BufferLocation = idxBuff_->GetGPUVirtualAddress();
+	ibView_.Format = DXGI_FORMAT_R16_UINT;
+	ibView_.SizeInBytes = sizeIB; // 修正: インデックスバッファのバイトサイズを代入
+#pragma endregion インデックスバッファ
+#pragma region マテリアルバッファ
+	materialBuff_ = CreateBuffer(sizeof(cMaterial));
+	// マテリアルへのデータ転送
+	materialBuff_->Map(0, nullptr, reinterpret_cast<void**>(&material_));
+	material_->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	// Lightingを有効化
+	material_->enableLightint_ = 0;
+	material_->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+#pragma endregion
+#pragma region ライティングバッファ
+	directionalLightBuff_ = CreateBuffer(sizeof(cDirectionalLight));
+	// ライティングバッファへのデータ転送
+	result = directionalLightBuff_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight_));
+	// 初期値代入
+	directionalLight_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLight_->direction_ = { 0.5f,-0.7f,1.0f };
+	directionalLight_->intensiy_ = 1.0f;
+	directionalLight_->sharpness_ = 1.0f;
+#pragma endregion
+#pragma region インスタンシング生成
+	for (size_t i = 0; i < size_t(MapChip::Blocks::kCount) - 1; i++) {
+		auto device = DirectXCommon::GetInstance()->GetDevice();
+		MapChipInstancing* instancing = new MapChipInstancing();
+		instancing->instancingBuff = CreateBuffer(sizeof(Matrix4x4) * instancing->maxInstance);
+		instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->mat));
+		// シェーダーリソースビュー
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+		desc.Format = DXGI_FORMAT_UNKNOWN;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		desc.Buffer.FirstElement = 0;
+		desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		desc.Buffer.NumElements = instancing->maxInstance;
+		desc.Buffer.StructureByteStride = sizeof(Matrix4x4);
+		DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
+		device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
+		instancing_.emplace_back(instancing);
+	}
+}
+void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
+	for (auto& instancing : instancing_) {
+		instancing->mat = nullptr;
+		instancing->currentInstance = 0;
+	}
 	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
 
 	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
@@ -182,33 +289,61 @@ void MapChip::Draw(const ViewProjection& viewProjection) {
 
 	for (int32_t y = yMin; y < yMax; y++) {
 		for (int32_t x = xMin; x < xMax; x++) {
-			auto blockType = map_[y][x];
-			switch (blockType) {
-			case static_cast<size_t>(MapChip::Blocks::kBlock):
-			{
-				blockModels_.at(static_cast<size_t>(MapChip::Blocks::kBlock) - 1)->Draw(blockWorldTransform_[y][x], viewProjection);
-			}
-			break;
-			case static_cast<size_t>(MapChip::Blocks::kRedBlock):
-			{
-				blockModels_.at(static_cast<size_t>(MapChip::Blocks::kRedBlock) - 1)->Draw(blockWorldTransform_[y][x], viewProjection);
-			}
-			break;
-			case static_cast<size_t>(MapChip::Blocks::kNone):
-			{
-
-			}
-			break;
+			auto block = map_[y][x];
+			switch (block) {
+			case uint32_t(Blocks::kBlock):
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kRedBlock):
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
+				break;
 			default:
 				break;
 			}
-
 		}
 	}
-}
+	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
+	// ルートシグネチャの設定
+	commandList->SetGraphicsRootSignature(basicGraphicsPipeline_->GetRootSignature());
 
-Vector3 MapChip::GetBlocksCenterWorldPosition(uint32_t x, uint32_t y) {
-	return MakeTranslate(blockWorldTransform_[y][x].matWorld_);
+	// パイプラインステートの設定
+	commandList->SetPipelineState(basicGraphicsPipeline_->GetPipelineState());
+
+	// プリミティブ形状を設定
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 頂点バッファの設定
+	commandList->IASetVertexBuffers(0, 1, &vbView_);
+
+	// インデックスバッファの設定
+	commandList->IASetIndexBuffer(&ibView_);
+
+	// CBVをセット（ビュープロジェクション行列）
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
+
+	// CBVをセット（ビュープロジェクション行列）
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
+
+	// CBVをセット（Material）
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL),materialBuff_->GetGPUVirtualAddress());
+
+	// DirectionalLight用のCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::LIGHTING), directionalLightBuff_->GetGPUVirtualAddress());
+	for (uint32_t i=0; auto & instancing : instancing_) {
+		if (instancing->mat!=nullptr) {
+			// instancing用のStructuredBuffをSRVにセット
+			commandList->SetGraphicsRootDescriptorTable(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
+
+			// SRVをセット
+			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), blockModels_.at(i++)->GetMaterial(0)->GetTextureHandle());
+
+			// 描画コマンド
+			commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), instancing->currentInstance, 0, 0, 0);
+		}
+	}
+
 }
 
 bool MapChip::InRange(const Vector3& pos) {
@@ -241,4 +376,21 @@ void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 		x + differenceX < kMaxWidthBlockNum) {
 		map_[y + differenceY][x + differenceX] = blockType;
 	}
+}
+
+ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
+	auto device = DirectXCommon::GetInstance()->GetDevice();
+	HRESULT result = S_FALSE;
+	// ヒーププロパティ
+	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	// リソース設定
+	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+
+	// バッファ生成
+	ComPtr<ID3D12Resource> buffer;
+	result = device->CreateCommittedResource(
+		&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(&buffer));
+	assert(SUCCEEDED(result));
+	return buffer;
 }

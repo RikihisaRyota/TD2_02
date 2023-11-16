@@ -24,10 +24,6 @@ public:
 		ParticleForGPU* instancingDate = nullptr;
 		D3D12_CPU_DESCRIPTOR_HANDLE instancingSRVCPUHandle;
 		D3D12_GPU_DESCRIPTOR_HANDLE instancingSRVGPUHandle;
-		// マテリアルリソース
-		Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff;
-		// マテリアル
-		cMaterial* material = nullptr;
 		bool isAlive_;
 	};
 public:
@@ -65,6 +61,10 @@ private:
 #pragma endregion
 #pragma region 
 	std::vector<std::unique_ptr<Instancing>> instancing_;
+	// マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff_;
+	// マテリアル
+	cMaterial* material_ = nullptr;
 #pragma endregion
 	
 };

@@ -182,15 +182,6 @@
     <ClCompile Include="Engine\PostEffectPipeline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ParticleManager.cpp">
-      <Filter>engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Particle.cpp">
-      <Filter>engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Collision\Collision.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Player\Player.cpp">
       <Filter>Game\Player</Filter>
     </ClCompile>
@@ -277,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="Game\Background\Background.cpp">
       <Filter>Game\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MapChipGraphicsPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,17 +431,32 @@
     <ClInclude Include="Engine\PostEffectPipeline.h">
       <Filter>engine\graphicsPipeline</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\ParticleManager.h">
-      <Filter>engine\base</Filter>
+    <ClInclude Include="Game\Player\Player.h">
+      <Filter>Game\Player</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\ParticleShaderStruct.h">
-      <Filter>engine\base</Filter>
+    <ClInclude Include="GlobalVariables\GlobalVariables.h">
+      <Filter>GlobalVariables</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Particle.h">
-      <Filter>engine\base</Filter>
+    <ClInclude Include="Game\FollowCamera\FollowCamera.h">
+      <Filter>Game\FollowCamera</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Random.h">
-      <Filter>engine\math</Filter>
+    <ClInclude Include="Collision\BaseColliderShapeType.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\CollisionConfig.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\CollisionManager.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\ColliderShapes\ColliderShapeBox2D.h">
+      <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h">
+      <Filter>Collision\ColliderShape</Filter>
     </ClInclude>
     <ClInclude Include="Game\Block\Block.h">
       <Filter>Game\Block</Filter>
@@ -524,6 +533,9 @@
     <ClInclude Include="Game\Background\Background.h">
       <Filter>Game\Background</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\MapChipGraphicsPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -566,6 +578,9 @@
       <Filter>engine\shader</Filter>
     </None>
     <None Include="Resources\Shaders\VerticalBlur.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\MapChip.hlsli">
       <Filter>engine\shader</Filter>
     </None>
   </ItemGroup>
@@ -646,6 +661,12 @@
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\VerticalBlur.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
   </ItemGroup>
