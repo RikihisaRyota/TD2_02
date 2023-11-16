@@ -58,10 +58,13 @@ int SceneManager::Run()
 		DirectXCommon::GetInstance()->PreDraw();
 		// ゲームシーンの描画
 		sceneArr_[currentSceneNo_]->Draw();
-		// ImGui描画
-		ImGuiManager::GetInstance()->Draw();
 		// 描画終わり
 		DirectXCommon::GetInstance()->PostDraw();
+		DirectXCommon::GetInstance()->PreUIDraw();
+		// ImGui描画
+		ImGuiManager::GetInstance()->Draw();
+		DirectXCommon::GetInstance()->PostUIDraw();
+		
 	}
 
 

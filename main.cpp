@@ -1,6 +1,5 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
-#include "GameScene.h"
 #include "ImGuiManager.h"
 #include "TextureManager.h"
 #include "ParticleGraphicsPipline.h"
@@ -17,6 +16,15 @@
 
 #include "ResourceLeakChecker.h"
 #include "SceneSystem/SceneManager/SceneManager.h"
+#include "Input.h"
+#include "Sprite.h"
+#include "LineGraphicsPipline.h"
+#include "PlaneRenderer.h"
+#include "OBJ.h"
+#include "CubeRenderer.h"
+#include "SphereRenderer.h"
+#include "PrimitiveDrawer.h"
+#include "Audio.h"
 
 static ResourceLeackChecker leakCheck;
 
@@ -149,28 +157,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//	// 描画終わり
 	//	dxCommon->PostDraw();
 	//}
-		GlobalVariables::GetInstance()->Update();
-		// ゲームシーンの毎フレーム処理
-		gameScene->Update();
-
-		ParticleManager::GetInstance()->Update();
-		// ImGui受付終了
-		imguiManager->End();
-		// 描画開始
-		dxCommon->PreDraw();
-		// ゲームシーンの描画
-		gameScene->Draw();
-		// 描画終わり
-		dxCommon->PostDraw();
-		// UI
-		dxCommon->PreUIDraw();
-		// ゲームシーンUI
-		gameScene->DrawUI();
-		// ImGui描画
-		imguiManager->Draw();
-		// UI
-		dxCommon->PostUIDraw();
-	}
+		
 
 	//// ゲームシーン解放
 	//gameScene->Release();

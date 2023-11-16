@@ -4,6 +4,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "Collision/CollisionConfig.h"
+#include "Collision/CollisionManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
 // 俺が追加した
@@ -665,13 +666,11 @@ void Player::MoveParticle() {
 	}
 }
 
-void Player::Update() {
-
-
 void Player::ClearMoveInitialize()
 {
 	countFrame_ = 0;
 }
+
 void Player::ClearMoveUpdate()
 {
 	countFrame_++;
