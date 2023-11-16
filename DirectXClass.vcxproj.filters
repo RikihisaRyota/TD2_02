@@ -55,6 +55,9 @@
     <Filter Include="Game\Block">
       <UniqueIdentifier>{9e8912d1-117c-4070-b137-f7037b181ab5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SceneSystem">
+      <UniqueIdentifier>{31e7cf76-f61f-4850-b4ba-2d398e6a9444}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -204,6 +207,24 @@
     </ClCompile>
     <ClCompile Include="Game\Block\Block.cpp">
       <Filter>Game\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\IScene\IScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\StageScene\StageScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\TitleScene\TitleScene.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneSystem\SelectScene\SelectScene.cpp">
+      <Filter>SceneSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -398,6 +419,27 @@
     </ClInclude>
     <ClInclude Include="Game\Block\Block.h">
       <Filter>Game\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\ClearScene\ClearScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\IScene\IScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SceneManager\SceneManager.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\StageScene\StageScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\TitleScene\TitleScene.h">
+      <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ResourceLeakChecker.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SelectScene\SelectScene.h">
+      <Filter>SceneSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

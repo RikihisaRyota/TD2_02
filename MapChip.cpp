@@ -27,32 +27,7 @@ void MapChip::Update() {
 }
 
 MapChip::MapChip() {
-	/*for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
-		blockWorldTransform_.push_back(std::vector<WorldTransform>());
-		map_.push_back(std::vector<uint32_t>());
-		for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
-			blockWorldTransform_[y].push_back(WorldTransform());
-			map_[y].push_back(uint32_t());
-		}
-	}*/
 
-	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
-	collisionAttribute_ = 0x00000000;
-	collisionMask_ = 0x00000000;
-
-	/*for (int i = 0; i < EditInfo::EditEnumV2::V2COUNT; i++) {
-		editInfo_.v2Paras_.push_back(Vector2());
-	}*/
-
-	SetCollisionAttribute(kCollisionAttributeBlock);
-	SetCollisionMask(kCollisionAttributePlayer);
-
-	//shapeType_->mapChip2D_.SetNoCollider(0);
-	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
-	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
-}
-
-void MapChip::Initialize() {
 	stageName_ = {
 		 "stage_1",
 		 "stage_2",
@@ -69,29 +44,34 @@ void MapChip::Initialize() {
 		blockModels_.emplace_back(modelManager->GetBlockModel(i));
 	}
 	// コンストラクタとInitializeのどっちも呼び出しる
-	for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
-		blockWorldTransform_.push_back(std::vector<WorldTransform>());
-		map_.push_back(std::vector<uint32_t>());
-		for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
-			blockWorldTransform_[y].push_back(WorldTransform());
-			blockWorldTransform_[y][x].Initialize();
-			blockWorldTransform_[y][x].translate_ = Vector3(
-				float(x * kBlockSize) + float(kBlockSize) * 0.5f,
-				float((kMaxHeightBlockNum - y) * kBlockSize) + float(kBlockSize) * 0.5f,
-				0.0f
-			);
-			blockWorldTransform_[y][x].UpdateMatrix();
-			map_[y].push_back(uint32_t());
+	for (uint32_t stage = 0; stage < Stage::kCount; stage++) {
+		maps_.push_back(std::vector<std::vector<uint32_t>>());
+		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
+			blockWorldTransform_.push_back(std::vector<WorldTransform>());
+			maps_[stage].push_back(std::vector<uint32_t>());
+			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
+				if (stage == 0) {
+					blockWorldTransform_[y].push_back(WorldTransform());
+					blockWorldTransform_[y][x].Initialize();
+					blockWorldTransform_[y][x].translate_ = Vector3(
+						float(x * kBlockSize) + float(kBlockSize) * 0.5f,
+						float((kMaxHeightBlockNum - y) * kBlockSize) + float(kBlockSize) * 0.5f,
+						0.0f
+					);
+					blockWorldTransform_[y][x].UpdateMatrix();
+				}
+				maps_[stage][y].push_back(uint32_t());
+			}
 		}
+		LoadCSV(stage);
+		currentStage_++;
 	}
 
+	currentStage_ = 0;
+	
 	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
 	collisionAttribute_ = 0x00000000;
 	collisionMask_ = 0x00000000;
-
-	/*for (int i = 0; i < EditInfo::EditEnumV2::V2COUNT; i++) {
-		editInfo_.v2Paras_.push_back(Vector2());
-	}*/
 
 	SetCollisionAttribute(kCollisionAttributeBlock);
 	SetCollisionMask(kCollisionAttributePlayer);
@@ -99,6 +79,10 @@ void MapChip::Initialize() {
 	//shapeType_->mapChip2D_.SetNoCollider(0);
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
+}
+
+void MapChip::Initialize() {
+	map_ = maps_[currentStage_];
 }
 
 void MapChip::LoadCSV() {
@@ -129,7 +113,7 @@ void MapChip::LoadCSV(std::string fileName) {
 		std::string cell;
 		while (getline(lineStream, cell, ',')) {
 			uint32_t value = std::stoi(cell);
-			map_[y][x] = value;
+			maps_[currentStage_][y][x] = value;
 
 			x++;
 		}
@@ -161,6 +145,7 @@ void MapChip::SaveCSV(std::string fileName) {
 	for (int y = 0; y < kMaxHeightBlockNum; ++y) {
 		for (int x = 0; x < kMaxWidthBlockNum; ++x) {
 			// コンマ区切りでデータを書き込む
+			maps_[currentStage_][y][x] = map_[y][x];
 			outputCSVFile << map_[y][x];
 			outputCSVFile << ",";
 		}
@@ -170,6 +155,11 @@ void MapChip::SaveCSV(std::string fileName) {
 
 	// ファイルを閉じる
 	outputCSVFile.close();
+}
+
+void MapChip::ChengeStage()
+{
+	map_ = maps_[currentStage_];
 }
 
 void MapChip::Draw(const ViewProjection& viewProjection) {
@@ -188,7 +178,7 @@ void MapChip::Draw(const ViewProjection& viewProjection) {
 	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
 	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
 	yMax = kMaxHeightBlockNum - yMax;
-	yMax = std::clamp(yMax, 0 , int32_t(kMaxHeightBlockNum));
+	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
 
 	for (int32_t y = yMin; y < yMax; y++) {
 		for (int32_t x = xMin; x < xMax; x++) {

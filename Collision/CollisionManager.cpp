@@ -133,6 +133,9 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 		int x = static_cast<int>((worldPos.x -scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
 		int endY = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - static_cast<int>((worldPos.y - scale.y - bottomLeft.y) / (mapChipScale.y * 2));
+		if (endY >= b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM]) {
+			endY = b->shapeType_->iParas_[ColliderShapeMapChip2D::iInfo::MAXHEIGHTCHIPNUM] - 1;
+		}
 		int endX = static_cast<int>((worldPos.x + scale.x - bottomLeft.x) / (mapChipScale.x * 2));
 
 		std::function<void()> editXY = [&]() {

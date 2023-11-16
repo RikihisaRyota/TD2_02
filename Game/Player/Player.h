@@ -19,6 +19,7 @@ public:
 		kWallJump, 
 		kWallSideJump,
 		kWallDownJump,
+		kClearMove,
 	};
 
 	Player();
@@ -45,7 +46,7 @@ public:
 	/// 状態のリクエスト
 	/// </summary>
 	/// <param name="status">したい状態</param>
-	void StatusRequest(State state);
+	void StateRequest(State state);
 
 	/// <summary>
 	/// 今の状態の確認。あたり判定のフラグに使用。
@@ -110,6 +111,10 @@ private:
 
 	void WallDownJumpUpdate();
 
+	void ClearMoveInitialize();
+
+	void ClearMoveUpdate();
+
 	static void (Player::* spStateInitFuncTable[])();
 	
 	static void (Player::* spStateUpdateFuncTable[])();
@@ -139,6 +144,10 @@ private:
 	int jumpCount_;
 
 	bool kIs2Jump_ = true;
+
+	bool kIs2WallJump_ = true;
+
+	bool kIsWallDown_ = false;
 
 	int countFrame_;
 

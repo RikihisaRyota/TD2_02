@@ -50,7 +50,7 @@ Player::Player()
 
 void Player::Initialize()
 {
-	StatusRequest(State::kNormal);
+	StateRequest(State::kNormal);
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
@@ -76,10 +76,10 @@ void Player::OnCollision()
 {
 
 	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
-		StatusRequest(State::kNormal);
+		StateRequest(State::kNormal);
 	}
 	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
-		StatusRequest(State::kGripWall);
+		StateRequest(State::kGripWall);
 		if (velocity_.x > 0) {
 			isRight_ = true;
 		}
@@ -88,7 +88,7 @@ void Player::OnCollision()
 		}
 	}
 	else {
-		StatusRequest(State::kNormal);
+		StateRequest(State::kNormal);
 	}
 	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
@@ -104,7 +104,7 @@ void Player::OnCollision()
 
 			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
 
-				Initialize();
+				StateRequest(State::kClearMove);
 				break;
 			}
 
@@ -195,7 +195,7 @@ void Player::NormalUpdate()
 
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
-		StatusRequest(State::kJump);
+		StateRequest(State::kJump);
 	}
 	else if (velocity_.y <= 0.0f) {
 		move.y += parameters_[FloatParameterNames::kFallingGravity];
@@ -328,10 +328,6 @@ void Player::GripWallUpdate()
 
 	countFrame_++;
 
-	if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
-		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
-	}
-
 	Input* input = Input::GetInstance();
 
 	Vector2 move = input->GetGamePadLStick();
@@ -345,82 +341,123 @@ void Player::GripWallUpdate()
 
 	}
 
-	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+	if (kIsWallDown_) {
 
-		if (isRight_) {
-			// 右の壁
-			if (move.x <= -0.3f) {
-				// 左上
-				isRight_ = false;
-				StatusRequest(State::kWallSideJump);
+		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
+			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+		}
+		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
+			if (isRight_) {
+				// 右の壁
+				if (move.x <= -0.3f) {
+					// 左上
+					isRight_ = false;
+					StateRequest(State::kWallSideJump);
+				}
+				else {
+					// 上
+					StateRequest(State::kWallJump);
+				}
+
 			}
 			else {
-				// 上
-				StatusRequest(State::kWallJump);
+				// 左の壁
+
+				if (move.x >= 0.3f) {
+					// 右上
+					isRight_ = true;
+					StateRequest(State::kWallSideJump);
+				}
+				else {
+					// 上
+					StateRequest(State::kWallJump);
+				}
 			}
-
 		}
-		else {
-			// 左の壁
 
-			if (move.x >= 0.3f) {
-				// 右上
-				isRight_ = true;
-				StatusRequest(State::kWallSideJump);
+	}
+	else {
+		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
+			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+		}
+
+		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+
+			if (isRight_) {
+				// 右の壁
+				if (move.x <= -0.3f) {
+					// 左上
+					isRight_ = false;
+					StateRequest(State::kWallSideJump);
+				}
+				else {
+					// 上
+					StateRequest(State::kWallJump);
+				}
+
 			}
 			else {
-				// 上
-				StatusRequest(State::kWallJump);
+				// 左の壁
+
+				if (move.x >= 0.3f) {
+					// 右上
+					isRight_ = true;
+					StateRequest(State::kWallSideJump);
+				}
+				else {
+					// 上
+					StateRequest(State::kWallJump);
+				}
 			}
+
+			//if (isRight_) {
+			//	// 右の壁
+
+			//	if (move.y >= 0.0f) {
+			//		if (move.x <= -0.3f) {
+			//			// 左上
+			//			isRight_ = false;
+			//			StatusRequest(Status::kWallSideJump);
+			//		}
+			//		else {
+			//			// 上
+			//			StatusRequest(Status::kWallJump);
+			//		}
+			//	}
+			//	else if (move.y <= -0.4f){
+			//		// 左下
+			//		isRight_ = false;
+			//		StatusRequest(Status::kWallDownJump);
+			//	}
+			//	else {
+			//		StatusRequest(Status::kWallJump);
+			//	}
+
+			//}
+			//else {
+			//	// 左の壁
+
+			//	if (move.y >= 0.0f) {
+			//		if (move.x >= 0.3f) {
+			//			// 右上
+			//			isRight_ = true;
+			//			StatusRequest(Status::kWallSideJump);
+			//		}
+			//		else {
+			//			// 上
+			//			StatusRequest(Status::kWallJump);
+			//		}
+			//	}
+			//	else if (move.y <= -0.4f) {
+			//		// 右下
+			//		isRight_ = true;
+			//		StatusRequest(Status::kWallDownJump);
+			//	}
+			//	else {
+			//		StatusRequest(Status::kWallJump);
+			//	}
+			//}
 		}
-
-		//if (isRight_) {
-		//	// 右の壁
-
-		//	if (move.y >= 0.0f) {
-		//		if (move.x <= -0.3f) {
-		//			// 左上
-		//			isRight_ = false;
-		//			StatusRequest(Status::kWallSideJump);
-		//		}
-		//		else {
-		//			// 上
-		//			StatusRequest(Status::kWallJump);
-		//		}
-		//	}
-		//	else if (move.y <= -0.4f){
-		//		// 左下
-		//		isRight_ = false;
-		//		StatusRequest(Status::kWallDownJump);
-		//	}
-		//	else {
-		//		StatusRequest(Status::kWallJump);
-		//	}
-
-		//}
-		//else {
-		//	// 左の壁
-
-		//	if (move.y >= 0.0f) {
-		//		if (move.x >= 0.3f) {
-		//			// 右上
-		//			isRight_ = true;
-		//			StatusRequest(Status::kWallSideJump);
-		//		}
-		//		else {
-		//			// 上
-		//			StatusRequest(Status::kWallJump);
-		//		}
-		//	}
-		//	else if (move.y <= -0.4f) {
-		//		// 右下
-		//		isRight_ = true;
-		//		StatusRequest(Status::kWallDownJump);
-		//	}
-		//	else {
-		//		StatusRequest(Status::kWallJump);
-		//	}
-		//}
 	}
 
 	worldTransform_.translate_ += velocity_;
@@ -439,7 +476,7 @@ void Player::WallJumpInitialize()
 		velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
 	}
 
-	if (kIs2Jump_) {
+	if (kIs2WallJump_) {
 		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
 			jumpCount_ = 0;
 		}
@@ -588,6 +625,19 @@ void Player::WallDownJumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
+void Player::ClearMoveInitialize()
+{
+	countFrame_ = 0;
+}
+
+void Player::ClearMoveUpdate()
+{
+	countFrame_++;
+	if (countFrame_ == 60) {
+		Initialize();
+	}
+}
+
 void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::NormalInitialize,
 	&Player::JumpInitialize,
@@ -595,6 +645,7 @@ void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::WallJumpInitialize,
 	&Player::WallSideJumpInitialize,
 	&Player::WallDownJumpInitialize,
+	&Player::ClearMoveInitialize,
 };
 
 void (Player::* Player::spStateUpdateFuncTable[])() {
@@ -604,6 +655,7 @@ void (Player::* Player::spStateUpdateFuncTable[])() {
 	&Player::WallJumpUpdate,
 	&Player::WallSideJumpUpdate,
 	&Player::WallDownJumpUpdate,
+	&Player::ClearMoveUpdate,
 };
 
 void Player::Update()
@@ -639,7 +691,7 @@ void Player::Draw(const ViewProjection& viewProjection)
 	}
 }
 
-void Player::StatusRequest(State state)
+void Player::StateRequest(State state)
 {
 	if (state_ != state) {
 		stateRequest_ = state;

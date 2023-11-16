@@ -9,8 +9,6 @@ public:
 
 	virtual void Update() = 0;
 
-	virtual void Draw(const ViewProjection& viewProjection) = 0;
-
 	virtual void OnCollision() = 0;
 
 protected:
@@ -28,8 +26,6 @@ public:
 
 	void Update();
 
-	void Draw(const ViewProjection& viewProjection);
-
 	void OnCollision();
 
 private:
@@ -45,8 +41,6 @@ public:
 	void Init();
 
 	void Update();
-
-	void Draw(const ViewProjection& viewProjection);
 
 	void OnCollision();
 
