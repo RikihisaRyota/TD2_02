@@ -151,7 +151,7 @@ private: // メンバ関数
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 private:// メンバ変数
 	// デスクリプターの数
-	static const size_t kNumDescriptors = 1000;
+	static const size_t kNumDescriptors = 10000;
 	// ウィンドウズアプリケーション管理
 	WinApp* winApp_;
 

@@ -83,7 +83,7 @@ void GameScene::Update() {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		Emitter* emitter = new Emitter();
 		emitter->aliveTime = 5;
-		emitter->position = { 4.0f,4.0f,0.0f };
+		emitter->spawn.position = { 4.0f,4.0f,0.0f };
 		emitter->inOnce = 20;
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
@@ -143,7 +143,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	mapChip_->Draw(viewProjection_);
+	//mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();

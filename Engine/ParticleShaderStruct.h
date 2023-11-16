@@ -45,8 +45,14 @@ struct Velocity {
     float randomRange;
 };
 
-struct Emitter {
+struct Spawn {
     Vector3 position;
+    float rangeX;
+    float rangeY;
+};
+
+struct Emitter {
+    Spawn spawn;
     int32_t inOnce;
     int32_t flameInterval;
     int32_t aliveTime;

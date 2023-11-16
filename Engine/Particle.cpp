@@ -26,7 +26,8 @@ void Particle::Update() {
 				float angle = rnd_.NextFloatRange(particle->motion.angle.start, particle->motion.angle.end);
 				Vector3 vector = { std::cos(angle),std::sin(angle),0.0f };
 				particle->motion.velocity.velocity = vector * rnd_.NextFloatRange(particle->motion.velocity.speed - particle->motion.velocity.randomRange, particle->motion.velocity.speed + particle->motion.velocity.randomRange);
-				particle->motion.position = emitter_->position;
+				particle->motion.position.x = rnd_.NextFloatRange(emitter_->spawn.position.x - emitter_->spawn.rangeX, emitter_->spawn.position.x + emitter_->spawn.rangeX);
+				particle->motion.position.y = rnd_.NextFloatRange(emitter_->spawn.position.y - emitter_->spawn.rangeY, emitter_->spawn.position.y + emitter_->spawn.rangeY);
 				particle->motion.aliveTime.time = rnd_.NextIntRange(particle->motion.aliveTime.time - particle->motion.aliveTime.randomRange, particle->motion.aliveTime.time + particle->motion.aliveTime.randomRange);
 				particle->motion.aliveTime.maxTime = particle->motion.aliveTime.time;
 				particle->motion.isAlive = true;
@@ -54,7 +55,6 @@ void Particle::Update() {
 		if (particle->motion.isAlive) {
 			if (particle->motion.aliveTime.time <= 0) {
 				particle->motion.isAlive = false;
-				isAlive_ = false;
 			}
 			else {
 				float t = 1.0f - float(particle->motion.aliveTime.time) / float(particle->motion.aliveTime.maxTime);
@@ -75,12 +75,29 @@ void Particle::Update() {
 				particle->constantDate.color = particle->motion.color.currentColor;
 				particle->motion.aliveTime.time--;
 				numAliveParticle_++;
-				isAlive_ = true;
 			}
+		}
+		else {
+			break;
 		}
 	}
 	// 生存しているパーティクルをソート
 	std::sort(particleWorldTransform_.begin(), particleWorldTransform_.end(), &Particle::CompareParticles);
+
+	isAlive_ = false;
+	for (auto& particle : particleWorldTransform_) {
+		if (particle->motion.isAlive) {
+			isAlive_=true;
+			break;
+		}
+	}
+}
+
+void Particle::Reset() {
+	for (auto& particleWorldTransform : particleWorldTransform_) {
+		delete particleWorldTransform;
+	}
+	particleWorldTransform_.clear();
 }
 
 

@@ -12,27 +12,27 @@ ParticleManager* ParticleManager::GetInstance() {
 }
 
 void ParticleManager::Update() {
-	size_t count = 0;
-
 	for (auto it = instancing_.begin(); it != instancing_.end();) {
-		(*it)->particle->Update();
-		(*it)->currentInstance = (*it)->particle->GetAliveParticle();
-		for (size_t i = 0; i < (*it)->currentInstance; i++) {
-			(*it)->instancingDate[i] = (*it)->particle->GetParticleForGPU(i);
-		}
-		if (!(*it)->particle->GetIsAlive()) {
-			// パーティクルの解放
-			delete (*it)->particle;
-
-			// リソースの解放
-			(*it)->instancingBuff.Reset();
-			(*it)->materialBuff.Reset();
-			it = instancing_.erase(it);
+		if ((*it)->isAlive_) {
+			(*it)->particle->Update();
+			(*it)->currentInstance = (*it)->particle->GetAliveParticle();
+			for (size_t i = 0; i < (*it)->currentInstance; i++) {
+				(*it)->instancingDate[i] = (*it)->particle->GetParticleForGPU(i);
+			}
+			if (!(*it)->particle->GetIsAlive()) {
+				// パーティクルの解放
+				//delete (*it)->particle;
+				(*it)->isAlive_ = false;
+			}
+			else {
+				++it;
+			}
 		}
 		else {
-			++it;
+			break;
 		}
 	}
+	std::sort(instancing_.begin(), instancing_.end(), &ParticleManager::CompareParticles);
 }
 
 void ParticleManager::Draw(const ViewProjection& viewProjection) {
@@ -55,17 +55,19 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
 	for (auto& instancing : instancing_) {
-		// instancing用のStructuredBuffをSRVにセット
-		commandList->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
+		if (instancing->isAlive_) {
+			// instancing用のStructuredBuffをSRVにセット
+			commandList->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
 
-		// CBVをセット（Material）
-		commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), instancing->materialBuff->GetGPUVirtualAddress());
+			// CBVをセット（Material）
+			commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), instancing->materialBuff->GetGPUVirtualAddress());
 
-		// SRVをセット
-		TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), instancing->textureHandle);
+			// SRVをセット
+			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), instancing->textureHandle);
 
-		// 描画コマンド
-		commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), instancing->currentInstance, 0, 0, 0);
+			// 描画コマンド
+			commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), instancing->currentInstance, 0, 0, 0);
+		}
 	}
 }
 
@@ -121,6 +123,48 @@ void ParticleManager::Initialize() {
 	ibView_.Format = DXGI_FORMAT_R16_UINT;
 	ibView_.SizeInBytes = sizeIB; // 修正: インデックスバッファのバイトサイズを代入
 #pragma endregion インデックスバッファ
+#pragma region インスタンシング生成
+	for (size_t i = 0; i < kNumInstancing; i++) {
+		auto device = DirectXCommon::GetInstance()->GetDevice();
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+		Instancing* instancing = new Instancing();
+#pragma region マテリアルバッファ
+		instancing->materialBuff = CreateBuffer(sizeof(cMaterial));
+		// マテリアルへのデータ転送
+		instancing->materialBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->material));
+		instancing->material->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+		// Lightingを有効化
+		instancing->material->enableLightint_ = 0;
+		instancing->material->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+#pragma endregion
+
+		// パーティクル
+		instancing->particle = new Particle();
+		instancing->particle->Initialize(emitter, particleMotion);
+
+		instancing->textureHandle = 0;
+
+		instancing->instancingBuff = CreateBuffer(sizeof(ParticleForGPU) * instancing->maxInstance);
+		instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->instancingDate));
+
+		// シェーダーリソースビュー
+		D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+		desc.Format = DXGI_FORMAT_UNKNOWN;
+		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		desc.Buffer.FirstElement = 0;
+		desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		desc.Buffer.NumElements = instancing->maxInstance;
+		desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
+		DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
+		device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
+		instancing->isAlive_ = false;
+		instancing_.emplace_back(instancing);
+	}
+
+#pragma endregion
+
 }
 
 void ParticleManager::Shutdown() {
@@ -158,39 +202,13 @@ ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
 }
 
 void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle) {
-	auto device = DirectXCommon::GetInstance()->GetDevice();
-
-	Instancing* instancing = new Instancing();
-#pragma region マテリアルバッファ
-	instancing->materialBuff = CreateBuffer(sizeof(cMaterial));
-	// マテリアルへのデータ転送
-	instancing->materialBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->material));
-	instancing->material->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	// Lightingを有効化
-	instancing->material->enableLightint_ = 0;
-	instancing->material->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
-#pragma endregion
-
-	// パーティクル
-	instancing->particle = new Particle();
-	instancing->particle->Initialize(emitter, particleMotion);
-
-	instancing->textureHandle = textureHandle;
-
-	instancing->instancingBuff = CreateBuffer(sizeof(ParticleForGPU) * instancing->maxInstance);
-	instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->instancingDate));
-
-	// シェーダーリソースビュー
-	D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
-	desc.Format = DXGI_FORMAT_UNKNOWN;
-	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	desc.Buffer.FirstElement = 0;
-	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	desc.Buffer.NumElements = instancing->maxInstance;
-	desc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
-	DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
-	device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
-
-	instancing_.emplace_back(instancing);
+	for (auto& instancing : instancing_) {
+		if (!instancing->isAlive_) {
+			instancing->particle->Reset();
+			instancing->particle->Initialize(emitter, particleMotion);
+			instancing->textureHandle = textureHandle;
+			instancing->isAlive_ = true;
+			break;
+		}
+	}
 }

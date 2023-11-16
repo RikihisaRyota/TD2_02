@@ -28,6 +28,7 @@ public:
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff;
 		// マテリアル
 		cMaterial* material = nullptr;
+		bool isAlive_;
 	};
 public:
 	static ParticleManager* GetInstance();
@@ -37,6 +38,10 @@ public:
 	void Shutdown();
 	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle);
 private:
+	static const size_t kNumInstancing = 100;
+	static bool CompareParticles(const Instancing* a, const Instancing* b) {
+		return a->isAlive_> b->isAlive_;
+	}
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 #pragma region DirectX関連
 	// グラフィックパイプライン

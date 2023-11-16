@@ -470,9 +470,11 @@ void Player::WallDownJumpUpdate() {
 void Player::MoveParticle() {
 	if (flameCount_ <= 0) {
 		Emitter* emitter = new Emitter();
-		emitter->aliveTime = 20;
-		emitter->position = worldTransform_.worldPos_;
-		emitter->inOnce = 1;
+		emitter->aliveTime = 1;
+		emitter->spawn.position = worldTransform_.worldPos_;
+		emitter->spawn.rangeX = 1.5f;
+		emitter->spawn.rangeY = 1.5f;
+		emitter->inOnce = 20;
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
 		//particleMotion->angle.start = DegToRad(0.0f);
@@ -488,7 +490,7 @@ void Player::MoveParticle() {
 		//particleMotion->velocity.speed = 1.0f;
 		//particleMotion->velocity.randomRange = 0.0f;
 		particleMotion->aliveTime.time = 20;
-		//particleMotion->aliveTime.randomRange = 5;
+		particleMotion->aliveTime.randomRange = 5;
 		particleMotion->isAlive = true;
 		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
 		flameCount_ = kMaxFlameTime;
