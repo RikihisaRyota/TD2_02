@@ -55,6 +55,11 @@ public: // メンバ関数
 	void Draw();
 
 	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
+	/// <summary>
 	/// 解放
 	/// </summary>
 	void Release();

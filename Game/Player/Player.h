@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "Collision/Collider.h"
+#include "PlaneRenderer.h"
 
 class Player : public Collider
 {
@@ -38,6 +39,8 @@ public:
 	/// 3DモデルのDraw仮
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection);
+
+	void DrawUI(const ViewProjection& viewProjection);
 
 public:
 
@@ -123,16 +126,21 @@ private:
 	// ワールドトランスフォーム。一番の親。
 	WorldTransform worldTransform_;
 	// モデル配列
-	std::vector<std::unique_ptr<Model>> models_;
+	std::vector<Model*> models_;
+	std::unique_ptr<PlaneRenderer>face_;
+	WorldTransform faceWorldTransform_;
 	// モデルのワールドトランスフォーム配列
 	std::vector<WorldTransform> modelWorldTransforms_;
 
+	// 顔のテクスチャハンドル
+	uint32_t faceTextureHandle_[2];
 	// 速度
 	Vector3 velocity_;
 	// ジャンプ中か
 	bool isJump_;
 	// 右向きか
 	bool isRight_;
+	bool isPlayerFaceRight_;
 
 	int countFrame_;
 

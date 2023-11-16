@@ -4,6 +4,8 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "Collision/CollisionConfig.h"
+#include "ModelManager.h"
+#include "TextureManager.h"
 // 俺が追加した
 #include "ParticleManager.h"
 #include "MyMath.h"
@@ -21,8 +23,16 @@ Player::Player() {
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionAttributeBlock);
 
-	models_.push_back(std::make_unique<Model>());
-	models_[Parts::kMain].reset(Model::Create("Cube"));
+	models_.emplace_back((ModelManager::GetInstance()->GetModel("player")));
+	face_.reset(PlaneRenderer::Create());
+	faceTextureHandle_[0] = TextureManager::Load("Resources/Textures/playerFaceRight.png");
+	faceTextureHandle_[1] = TextureManager::Load("Resources/Textures/playerFaceLeft.png");
+
+	faceWorldTransform_.Initialize();
+	faceWorldTransform_.scale_ = { 2.0f,2.0f,2.0f };
+	faceWorldTransform_.translate_.z = -1.5f;
+	faceWorldTransform_.UpdateMatrix();
+	isPlayerFaceRight_ = false;
 
 	modelWorldTransforms_.push_back(WorldTransform());
 	modelWorldTransforms_[Parts::kMain].Initialize();
@@ -31,7 +41,7 @@ Player::Player() {
 	worldTransform_.translate_ = { 50.0f,20.0f,0.0f };
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 	modelWorldTransforms_[Parts::kMain].parent_ = &worldTransform_;
-
+	faceWorldTransform_.parent_ = &worldTransform_;
 	UpdateMatrix();
 
 	isJump_ = true;
@@ -66,6 +76,7 @@ void Player::UpdateMatrix() {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		modelWorldTransforms_[i].UpdateMatrix();
 	}
+	faceWorldTransform_.UpdateMatrix();
 }
 
 void Player::OnCollision() {
@@ -155,6 +166,13 @@ void Player::NormalUpdate() {
 	}
 
 	Vector3 move = { input->GetGamePadLStick().x,0.0f,0.0f };
+
+	if (move.x > 0) {
+		isPlayerFaceRight_ = false;
+	}
+	else if (move.x < 0) {
+		isPlayerFaceRight_ = true;
+	}
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
@@ -472,15 +490,15 @@ void Player::MoveParticle() {
 		Emitter* emitter = new Emitter();
 		emitter->aliveTime = 1;
 		emitter->spawn.position = worldTransform_.worldPos_;
-		emitter->spawn.rangeX = 1.5f;
-		emitter->spawn.rangeY = 1.5f;
-		emitter->inOnce = 20;
+		emitter->spawn.rangeX = 0.5f;
+		emitter->spawn.rangeY = 0.5f;
+		emitter->inOnce = 4;
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
 		//particleMotion->angle.start = DegToRad(0.0f);
 		//particleMotion->angle.end = DegToRad(180.0f);
-		particleMotion->color.startColor = { 1.0f,0.0f,0.0f,1.0f };
-		particleMotion->color.endColor = { 1.0f,0.0f,0.0f,0.0f };
+		particleMotion->color.startColor = { 0.0f,1.0f,0.8f,1.0f };
+		particleMotion->color.endColor = { 0.0f,1.0f,0.8f,0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
 		particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
 		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
@@ -571,6 +589,10 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
 	}
+}
+
+void Player::DrawUI(const ViewProjection& viewProjection) {
+	face_->Draw(faceWorldTransform_,viewProjection,faceTextureHandle_[isPlayerFaceRight_]);
 }
 
 

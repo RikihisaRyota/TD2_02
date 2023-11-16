@@ -36,7 +36,7 @@ void GameScene::Initialize() {
 #pragma endregion
 
 #pragma region 初期化
-	backGround_.reset(Sprite::Create(0, { 0.0f,0.0f }, { 0.0f,0.0f,0.0f,1.0f }));
+	backGround_.reset(Sprite::Create(0, { 0.0f,0.0f }, { 0.1f,0.01f,0.2f,1.0f }));
 	backGround_->SetSize({ 1280.0f,720.0f });
 	collisionManager_->Init();
 	followCamera_->SetTarget(player_->GetWorldTransform());
@@ -112,6 +112,10 @@ void GameScene::Update() {
 		// マップチップエディター
 		mapChipEditor_->Update();
 	}
+	ImGui::Begin("fps");
+	ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
+	ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
+	ImGui::End();
 }
 
 void GameScene::Draw() {
@@ -127,6 +131,7 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 	backGround_->Draw();
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -143,7 +148,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	//mapChip_->Draw(viewProjection_);
+	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
@@ -174,6 +179,63 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 #pragma endregion
 
+}
+
+void GameScene::DrawUI() {
+	// コマンドリストの取得
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+#pragma region 背景スプライト描画
+	// 背景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+	
+	/// <summary>
+	/// ここに背景スプライトの描画処理を追加できる
+	/// </summary>
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+	dxCommon_->ClearDepthBuffer();
+#pragma endregion
+#pragma region 3Dオブジェクト描画
+	// 3Dオブジェクト描画前処理
+	CubeRenderer::PreDraw(commandList);
+	SphereRenderer::PreDraw(commandList);
+	OBJ::PreDraw(commandList);
+	Model::PreDraw(commandList);
+	PrimitiveDrawer::PreDraw(commandList);
+	PlaneRenderer::PreDraw(commandList);
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+	//mapChip_->Draw(viewProjection_);
+	player_->DrawUI(viewProjection_);
+
+	ParticleManager::GetInstance()->Draw(viewProjection_);
+	PrimitiveDrawer::Draw();
+	// 3Dオブジェクト描画後処理
+	PlaneRenderer::PostDraw();
+	PrimitiveDrawer::PostDraw();
+	Model::PostDraw();
+	SphereRenderer::PostDraw();
+	OBJ::PostDraw();
+	CubeRenderer::PostDraw();
+#pragma endregion
+
+
+
+#pragma region 前景スプライト描画
+	// 前景スプライト描画前処理
+	Sprite::PreDraw(commandList);
+
+	/// <summary>
+	/// ここに前景スプライトの描画処理を追加できる
+	/// </summary>
+	Sprite::SetBlendState(Sprite::BlendState::kNormal);
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+#pragma endregion
 }
 
 void GameScene::Release() {

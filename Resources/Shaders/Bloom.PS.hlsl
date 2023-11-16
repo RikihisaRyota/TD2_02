@@ -22,6 +22,6 @@ PixelShaderOutPut main(VertexShaderOutPut input)
     output.color = tex.Sample(smp, input.texcoord);
     float luminance = dot(output.color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
     //clip(luminance - param_.threshold);
-    output.color.xyz *= Knee(luminance, 0.5f, 0.3f);
+    output.color.xyz *= Knee(luminance, 0.5f, 1.5f);
     return output;
 }

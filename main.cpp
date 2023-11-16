@@ -95,6 +95,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ParticleManager::GetInstance()->Initialize();
 
 	// モデル
+	ModelManager::GetInstance()->LoadModel(
+		{
+			"player",
+			"background",
+		}
+	);
 	ModelManager::GetInstance()->LoadBlockModel(
 		{
 		"block",
@@ -138,6 +144,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		dxCommon->PostDraw();
 		// UI
 		dxCommon->PreUIDraw();
+		// ゲームシーンUI
+		gameScene->DrawUI();
 		// ImGui描画
 		imguiManager->Draw();
 		// UI

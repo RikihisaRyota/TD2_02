@@ -11,8 +11,10 @@ void ModelManager::LoadBlockModel(std::initializer_list<std::string> modelNames,
 	}
 }
 
-void ModelManager::LoadModel(std::string modeName, bool isLighting) {
-	models_.insert(std::make_pair(modeName, Model::Create(modeName, isLighting)));
+void ModelManager::LoadModel(std::initializer_list<std::string> modeNames, bool isLighting) {
+	for (auto& modelName: modeNames) {
+		models_.insert(std::make_pair(modelName, Model::Create(modelName, isLighting)));
+	}
 }
 
 Model* ModelManager::GetModel(std::string modeName) {
