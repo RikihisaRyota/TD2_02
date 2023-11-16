@@ -23,6 +23,8 @@ SceneManager::SceneManager()
 
 	IScene::sceneNo_ = STAGE;
 	currentSceneNo_ = STAGE;
+
+	sceneArr_[currentSceneNo_]->Init();
 }
 
 SceneManager::~SceneManager()
