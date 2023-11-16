@@ -5,6 +5,7 @@
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "Collision/CollisionConfig.h"
 #include "Collision/CollisionManager.h"
+#include "MapChip.h"
 
 Player::Player()
 {
@@ -49,7 +50,7 @@ Player::Player()
 
 void Player::Initialize()
 {
-	StatusRequest(Status::kNormal);
+	StatusRequest(State::kNormal);
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
@@ -72,11 +73,12 @@ void Player::UpdateMatrix()
 
 void Player::OnCollision()
 {
+
 	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
-		StatusRequest(Status::kNormal);
+		StatusRequest(State::kNormal);
 	}
 	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
-		StatusRequest(Status::kGripWall);
+		StatusRequest(State::kGripWall);
 		if (velocity_.x > 0) {
 			isRight_ = true;
 		}
@@ -85,7 +87,7 @@ void Player::OnCollision()
 		}
 	}
 	else {
-		StatusRequest(Status::kNormal);
+		StatusRequest(State::kNormal);
 	}
 	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
@@ -94,6 +96,20 @@ void Player::OnCollision()
 	velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
 
 	UpdateMatrix();
+
+	if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
+
+		for (uint32_t no : editInfo_.i32Info_) {
+
+			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
+
+				Initialize();
+				break;
+			}
+
+
+		}
+	}
 
 }
 
@@ -172,7 +188,7 @@ void Player::NormalUpdate()
 
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
-		StatusRequest(Status::kJump);
+		StatusRequest(State::kJump);
 	}
 	else if (velocity_.y <= 0.0f) {
 		move.y += parameters_[FloatParameterNames::kFallingGravity];
@@ -270,11 +286,11 @@ void Player::GripWallUpdate()
 			if (move.x <= -0.3f) {
 				// 左上
 				isRight_ = false;
-				StatusRequest(Status::kWallSideJump);
+				StatusRequest(State::kWallSideJump);
 			}
 			else {
 				// 上
-				StatusRequest(Status::kWallJump);
+				StatusRequest(State::kWallJump);
 			}
 
 		}
@@ -284,11 +300,11 @@ void Player::GripWallUpdate()
 			if (move.x >= 0.3f) {
 				// 右上
 				isRight_ = true;
-				StatusRequest(Status::kWallSideJump);
+				StatusRequest(State::kWallSideJump);
 			}
 			else {
 				// 上
-				StatusRequest(Status::kWallJump);
+				StatusRequest(State::kWallJump);
 			}
 		}
 
@@ -487,68 +503,38 @@ void Player::WallDownJumpUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
+void (Player::* Player::spStateInitFuncTable[])() {
+	&Player::NormalInitialize,
+	&Player::JumpInitialize,
+	&Player::GripWallInitialize,
+	&Player::WallJumpInitialize,
+	&Player::WallSideJumpInitialize,
+	&Player::WallDownJumpInitialize,
+};
+
+void (Player::* Player::spStateUpdateFuncTable[])() {
+	&Player::NormalUpdate,
+	&Player::JumpUpdate,
+	&Player::GripWallUpdate,
+	&Player::WallJumpUpdate,
+	&Player::WallSideJumpUpdate,
+	&Player::WallDownJumpUpdate,
+};
+
 void Player::Update()
 {
 
 	ApplyGlobalVariable();
 
-	if (statusRequest_) {
-		status_ = statusRequest_.value();
+	if (stateRequest_) {
+		state_ = stateRequest_.value();
 
-		switch (status_)
-		{
-		case Player::Status::kNormal:
-			NormalInitialize();
-			break;
-		
-		case Player::Status::kJump:
-			JumpInitialize();
-			break;
+		(this->*spStateInitFuncTable[static_cast<size_t>(state_)])();
 
-		case Player::Status::kGripWall:
-			GripWallInitialize();
-			break;
-		case Player::Status::kWallJump:
-			WallJumpInitialize();
-			break;
-		case Player::Status::kWallSideJump:
-			WallSideJumpInitialize();
-			break;
-		case Player::Status::kWallDownJump:
-			WallDownJumpInitialize();
-			break;
-		default:
-			break;
-		}
-
-		statusRequest_ = std::nullopt;
+		stateRequest_ = std::nullopt;
 	}
 
-	switch (status_)
-	{
-	case Player::Status::kNormal:
-		NormalUpdate();
-		break;
-
-	case Player::Status::kJump:
-		JumpUpdate();
-		break;
-
-	case Player::Status::kGripWall:
-		GripWallUpdate();
-		break;
-	case Player::Status::kWallJump:
-		WallJumpUpdate();
-		break;
-	case Player::Status::kWallSideJump:
-		WallSideJumpUpdate();
-		break;
-	case Player::Status::kWallDownJump:
-		WallDownJumpUpdate();
-		break;
-	default:
-		break;
-	}
+	(this->*spStateUpdateFuncTable[static_cast<size_t>(state_)])();
 
 #ifdef _DEBUG
 	if (Input::GetInstance()->PressedKey(DIK_R) || Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::Y)) {

@@ -15,6 +15,13 @@ public:
 			V2COUNT,
 		};
 
+		void SetI32Info(uint32_t info);
+		void SetPairIInfo(std::pair<int, int> info);
+
+		uint32_t collisionMask_;
+		std::vector<uint32_t> i32Info_;
+		std::vector<std::pair<int, int>> pairIInfo_;
+
 		std::vector<int> iParas_;
 		std::vector<float> fParas_;
 		std::vector<Vector2> v2Paras_;

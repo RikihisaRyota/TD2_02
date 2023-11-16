@@ -52,6 +52,9 @@
     <Filter Include="Collision\ColliderShape">
       <UniqueIdentifier>{919406c5-a45d-4085-b1f4-1a61a25ae5fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Block">
+      <UniqueIdentifier>{9e8912d1-117c-4070-b137-f7037b181ab5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -198,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="Collision\ColliderShapes\ColliderShapeBox2D.cpp">
       <Filter>Collision\ColliderShape</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Block\Block.cpp">
+      <Filter>Game\Block</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -389,6 +395,9 @@
     </ClInclude>
     <ClInclude Include="Collision\ColliderShapes\ColliderShapeMapChip2D.h">
       <Filter>Collision\ColliderShape</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Block\Block.h">
+      <Filter>Game\Block</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

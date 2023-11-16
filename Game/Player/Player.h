@@ -12,7 +12,7 @@ class Player : public Collider
 public:
 
 	// 状態
-	enum class Status {
+	enum class State {
 		kNormal, // 通常時
 		kJump, // ジャンプ時
 		kGripWall, // 壁に張り付いている時
@@ -45,13 +45,13 @@ public:
 	/// 状態のリクエスト
 	/// </summary>
 	/// <param name="status">したい状態</param>
-	void StatusRequest(Status status) { statusRequest_ = status; }
+	void StatusRequest(State state) { stateRequest_ = state; }
 
 	/// <summary>
 	/// 今の状態の確認。あたり判定のフラグに使用。
 	/// </summary>
 	/// <returns>状態</returns>
-	Status GetStatus() { return status_; }
+	State GetStatus() { return state_; }
 
 	/// <summary>
 	/// 速度の参照。あたり判定用。
@@ -109,7 +109,11 @@ private:
 	void WallDownJumpInitialize();
 
 	void WallDownJumpUpdate();
+
+	static void (Player::* spStateInitFuncTable[])();
 	
+	static void (Player::* spStateUpdateFuncTable[])();
+
 private:
 
 	// モデルのパーツ
@@ -201,10 +205,10 @@ private:
 	Vector3 preInitialPos_;
 
 	// 今の状態
-	Status status_ = Status::kNormal;
+	State state_ = State::kNormal;
 
 	// 状態のリクエスト
-	std::optional<Status> statusRequest_ = std::nullopt;
+	std::optional<State> stateRequest_ = std::nullopt;
 
 	// グローバル変数のグループネーム
 	const std::string groupName_ = "Player";
