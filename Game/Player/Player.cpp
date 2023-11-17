@@ -651,8 +651,8 @@ void Player::ParticleInitialize() {
 	particleMotion_ = new ParticleMotion();
 	//particleMotion_->angle.start = DegToRad(0.0f);
 	//particleMotion_->angle.end = DegToRad(180.0f);
-	particleMotion_->color.startColor = { 0.0f,1.0f,0.8f,1.0f };
-	particleMotion_->color.endColor = { 0.0f,1.0f,0.8f,0.0f };
+	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
 	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
 	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };

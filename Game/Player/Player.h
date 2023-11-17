@@ -5,6 +5,7 @@
 #include "ViewProjection.h"
 #include <optional>
 
+#include "Random.h"
 #include "Collision/Collider.h"
 #include "PlaneRenderer.h"
 #include "ParticleShaderStruct.h"
@@ -248,6 +249,7 @@ private:
 	// 所有権はパーティクルマネージャーが持っている
 	Emitter* emitter_;
 	ParticleMotion* particleMotion_;
+	Random::RandomNumberGenerator rnd_;
 
 	// 音関係
 	int32_t jumpSoundHandle_;
