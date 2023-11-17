@@ -8,6 +8,13 @@ struct PixelShaderOutPut
     float4 color : SV_TARGET0;
 };
 
+struct Param
+{
+    float threshold;
+    float knee;
+};
+ConstantBuffer<Param> param_ : register(b0);
+
 float Knee(float x, float n, float k)
 {
     float s = k / n * x;
@@ -22,6 +29,6 @@ PixelShaderOutPut main(VertexShaderOutPut input)
     output.color = tex.Sample(smp, input.texcoord);
     float luminance = dot(output.color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
     //clip(luminance - param_.threshold);
-    output.color.xyz *= Knee(luminance, 0.5f, 1.5f);
+    output.color.xyz *= Knee(luminance, param_.threshold, param_.knee);
     return output;
 }

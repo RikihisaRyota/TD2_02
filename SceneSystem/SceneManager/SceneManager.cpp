@@ -47,6 +47,9 @@ int SceneManager::Run()
 		Audio::GetInstance()->Update();
 
 		GlobalVariables::GetInstance()->Update();
+
+		DirectXCommon::GetInstance()->Update();
+
 		// ゲームシーンの毎フレーム処理
 		preSceneNo_ = currentSceneNo_;
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
