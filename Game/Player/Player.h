@@ -125,7 +125,7 @@ private:
 	// プレイヤーの後ろにパーティクルを追加
 	void ParticleInitialize();
 	void ParticleUpdate();
-	
+	void SoundInitialize();
 private:
 
 	// モデルのパーツ
@@ -245,10 +245,11 @@ private:
 	// グローバル変数のグループネーム
 	const std::string groupName_ = "Player";
 
-	// 何フレーム間隔でパーティクルを生成するか
-	int32_t flameCount_;
-	const int32_t kMaxFlameTime = 5;
 	// 所有権はパーティクルマネージャーが持っている
 	Emitter* emitter_;
 	ParticleMotion* particleMotion_;
+
+	// 音関係
+	int32_t jumpSoundHandle_;
+	int32_t deathSoundHandle_;
 };

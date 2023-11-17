@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include "Audio.h"
 #include "Input.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
@@ -60,6 +61,9 @@ Player::Player() {
 
 	// パーティクル初期化
 	ParticleInitialize();
+
+	// 音初期化
+	SoundInitialize();
 }
 
 void Player::Initialize()
@@ -210,7 +214,7 @@ void Player::NormalUpdate()
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
-
+		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
 		StateRequest(State::kJump);
@@ -637,7 +641,6 @@ void Player::WallDownJumpUpdate() {
 }
 
 void Player::ParticleInitialize() {
-
 	emitter_ =new Emitter();
 	emitter_->aliveTime = 1;
 	emitter_->spawn.position = worldTransform_.worldPos_;
@@ -667,6 +670,12 @@ void Player::ParticleInitialize() {
 void Player::ParticleUpdate() {
 	emitter_->aliveTime = 2;
 	emitter_->spawn.position = worldTransform_.worldPos_;
+}
+
+void Player::SoundInitialize() {
+	auto audio = Audio::GetInstance();
+	deathSoundHandle_ = audio->SoundLoadWave("SE/death.wav");
+	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
 }
 
 void Player::ClearMoveInitialize()

@@ -25,8 +25,9 @@ public:
 		const WorldTransform& worldTransform,
 		const ViewProjection& viewProjection,
 		uint32_t textureHadle = 0u);
+	Mesh* GetMesh(size_t num = 0)const { return meshs_.at(num).get(); }
 	size_t GetModelSize() const { return meshs_.size(); }
-	Material* GetMaterial(size_t i) { return materials_[i].get(); }
+	Material* GetMaterial(size_t i = 0) { return materials_[i].get(); }
 	void SetToon(uint32_t IsToon) { IsToon_ = IsToon; }
 private:
 	void Initialize();

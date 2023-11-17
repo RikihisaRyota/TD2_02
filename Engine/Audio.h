@@ -8,7 +8,7 @@
 
 class Audio {
 public:
-    static const size_t kMaxNumPlayHandles = 128;
+    static const int32_t kMaxNumPlayHandles = 1024;
 
     // チャンクヘッダ
     struct ChunkHearder {
@@ -44,32 +44,32 @@ public:
     /// 音声データ解放
     /// </summary>
     /// <param name="soundData"></param>
-    void SoundUnload(size_t soundHandle);
+    void SoundUnload(int32_t soundHandle);
     /// <summary>
     /// 音声再生
     /// </summary>
     /// <param name="xAudio2"></param>
     /// <param name="soundData"></param>
-    size_t SoundPlayWave(size_t soundHandle);
+    int32_t SoundPlayWave(int32_t soundHandle);
 
-    size_t SoundPlayLoopStart(size_t soundHandle);
-    void SoundPlayLoopEnd(size_t playHandle);
+    int32_t SoundPlayLoopStart(int32_t soundHandle);
+    void SoundPlayLoopEnd(int32_t playHandle);
     /// <summary>
     /// 音声ロード
     /// </summary>
     /// <param name="filename"></param>
     /// <returns></returns>
-    size_t SoundLoadWave(const std::string& fileName);
+    int32_t SoundLoadWave(const std::string& fileName);
 
-    void StopSound(size_t playHandle);
-    void SetPitch(size_t playHandle, float pitch);
-    void SetValume(size_t playHandle, float volume);
-    bool IsValidPlayHandle(size_t playHandle);
+    void StopSound(int32_t playHandle);
+    void SetPitch(int32_t playHandle, float pitch);
+    void SetValume(int32_t playHandle, float volume);
+    bool IsValidPlayHandle(int32_t playHandle);
 
 private:
-    size_t FindUnusedPlayHandle();
+    int32_t FindUnusedPlayHandle();
 
-    void DestroyPlayHandle(size_t playHandle);
+    void DestroyPlayHandle(int32_t playHandle);
 
     Audio() = default;
     Audio(const Audio&) = delete;

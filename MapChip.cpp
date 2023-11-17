@@ -313,33 +313,27 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	// プリミティブ形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// 頂点バッファの設定
-	commandList->IASetVertexBuffers(0, 1, &vbView_);
-
-	// インデックスバッファの設定
-	commandList->IASetIndexBuffer(&ibView_);
-
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
-
-	// CBVをセット（ビュープロジェクション行列）
-	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
-
-	// CBVをセット（Material）
-	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL),materialBuff_->GetGPUVirtualAddress());
-
-	// DirectionalLight用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::LIGHTING), directionalLightBuff_->GetGPUVirtualAddress());
 	for (uint32_t i=0; auto & instancing : instancing_) {
 		if (instancing->mat!=nullptr) {
+			// 頂点バッファの設定
+			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
+
+			// CBVをセット（Material）
+			commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), blockModels_.at(i)->GetMaterial(0)->GetMaterialBuff()->GetGPUVirtualAddress());
+
+			// DirectionalLight用のCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::LIGHTING), blockModels_.at(i)->GetMaterial(0)->GeLightingBuff()->GetGPUVirtualAddress());
+
 			// instancing用のStructuredBuffをSRVにセット
 			commandList->SetGraphicsRootDescriptorTable(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
 
 			// SRVをセット
-			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), blockModels_.at(i++)->GetMaterial(0)->GetTextureHandle());
+			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), blockModels_.at(i)->GetMaterial(0)->GetTextureHandle());
 
 			// 描画コマンド
-			commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), instancing->currentInstance, 0, 0, 0);
+			commandList->DrawInstanced(static_cast<UINT> (blockModels_.at(i++)->GetMesh(0)->GetVertices().size()), instancing->currentInstance, 0, 0);
 		}
 	}
 

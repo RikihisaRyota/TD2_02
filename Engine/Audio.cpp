@@ -10,7 +10,7 @@ Audio* Audio::GetInstance() {
 }
 
 Audio::~Audio() {
-    for (size_t i = 0; i < kMaxNumPlayHandles; ++i) {
+    for (int32_t i = 0; i < kMaxNumPlayHandles; ++i) {
         DestroyPlayHandle(i);
     }
 
@@ -29,13 +29,13 @@ void Audio::Initialize() {
     result = xAudio2_->CreateMasteringVoice(&masterVoice_);
     assert(SUCCEEDED(result));
 
-    for (size_t i = 0; i < kMaxNumPlayHandles; ++i) {
+    for (int32_t i = 0; i < kMaxNumPlayHandles; ++i) {
         DestroyPlayHandle(i);
     }
 }
 
 void Audio::Update() {
-    for (size_t i = 0; i < kMaxNumPlayHandles; ++i) {
+    for (int32_t i = 0; i < kMaxNumPlayHandles; ++i) {
         if (sourceVoices_[i]) {
             XAUDIO2_VOICE_STATE state{ };
             sourceVoices_[i]->GetState(&state);
@@ -46,7 +46,7 @@ void Audio::Update() {
     }
 }
 
-size_t Audio::SoundPlayWave(size_t soundHandle) {
+int32_t Audio::SoundPlayWave(int32_t soundHandle) {
     HRESULT result;
     const SoundData& soundData = soundData_.at(soundHandle);
 
@@ -56,7 +56,7 @@ size_t Audio::SoundPlayWave(size_t soundHandle) {
     buf.AudioBytes = soundData.bufferSize;
     buf.Flags = XAUDIO2_END_OF_STREAM;
 
-    size_t playHandle = FindUnusedPlayHandle();
+    int32_t playHandle = FindUnusedPlayHandle();
     // プレイハンドルがいっぱい
     assert(playHandle < kMaxNumPlayHandles);
 
@@ -75,7 +75,7 @@ size_t Audio::SoundPlayWave(size_t soundHandle) {
     return playHandle;
 }
 
-size_t Audio::SoundPlayLoopStart(size_t soundHandle) {
+int32_t Audio::SoundPlayLoopStart(int32_t soundHandle) {
     HRESULT result;
     const SoundData& soundData = soundData_.at(soundHandle);
 
@@ -86,7 +86,7 @@ size_t Audio::SoundPlayLoopStart(size_t soundHandle) {
     buf.Flags = XAUDIO2_END_OF_STREAM;
     buf.LoopCount = XAUDIO2_LOOP_INFINITE;
 
-    size_t playHandle = FindUnusedPlayHandle();
+    int32_t playHandle = FindUnusedPlayHandle();
     // プレイハンドルがいっぱい
     assert(playHandle < kMaxNumPlayHandles);
 
@@ -105,7 +105,7 @@ size_t Audio::SoundPlayLoopStart(size_t soundHandle) {
     return playHandle;
 }
 
-void Audio::SoundPlayLoopEnd(size_t playHandle) {
+void Audio::SoundPlayLoopEnd(int32_t playHandle) {
     // soundHandle に対応する SourceVoice を取得
     if (IsValidPlayHandle(playHandle)) {
         sourceVoices_[playHandle]->Stop();
@@ -113,12 +113,12 @@ void Audio::SoundPlayLoopEnd(size_t playHandle) {
     }
 }
 
-size_t Audio::SoundLoadWave(const std::string& fileName) {
+int32_t Audio::SoundLoadWave(const std::string& fileName) {
     auto iter = std::find_if(soundData_.begin(), soundData_.end(), [&](const SoundData& soundData) {
         return soundData.filename == fileName;
         });
     if (iter != soundData_.end()) {
-        return std::distance(soundData_.begin(), iter);
+        return int32_t(std::distance(soundData_.begin(), iter));
     }
 
 #pragma region ファイルオープン
@@ -215,39 +215,39 @@ size_t Audio::SoundLoadWave(const std::string& fileName) {
 #pragma endregion
     soundData_.emplace_back(soundData);
 
-    return soundData_.size() - 1;
+    return int32_t(soundData_.size() - 1);
 }
 
-void Audio::StopSound(size_t playHandle) {
+void Audio::StopSound(int32_t playHandle) {
     assert(playHandle < kMaxNumPlayHandles);
     DestroyPlayHandle(playHandle);
 }
 
-void Audio::SetPitch(size_t playHandle, float pitch) {
+void Audio::SetPitch(int32_t playHandle, float pitch) {
     assert(playHandle < kMaxNumPlayHandles);
     sourceVoices_[playHandle]->SetFrequencyRatio(pitch);
 }
 
-void Audio::SetValume(size_t playHandle, float volume) {
+void Audio::SetValume(int32_t playHandle, float volume) {
     assert(playHandle < kMaxNumPlayHandles);
     sourceVoices_[playHandle]->SetVolume(volume);
 }
 
-bool Audio::IsValidPlayHandle(size_t playHandle) {
+bool Audio::IsValidPlayHandle(int32_t playHandle) {
     return playHandle < kMaxNumPlayHandles && sourceVoices_[playHandle] != nullptr;
 }
 
 
-size_t Audio::FindUnusedPlayHandle() {
-    for (size_t i = 0; i < kMaxNumPlayHandles; ++i) {
+int32_t Audio::FindUnusedPlayHandle() {
+    for (int32_t i = 0; i < kMaxNumPlayHandles; ++i) {
         if (sourceVoices_[i] == nullptr) {
             return i;
         }
     }
-    return size_t(-1);
+    return int32_t(-1);
 }
 
-void Audio::DestroyPlayHandle(size_t playHandle) {
+void Audio::DestroyPlayHandle(int32_t playHandle) {
     assert(playHandle < kMaxNumPlayHandles);
     if (sourceVoices_[playHandle]) {
         sourceVoices_[playHandle]->DestroyVoice();
@@ -256,7 +256,7 @@ void Audio::DestroyPlayHandle(size_t playHandle) {
 }
 
 
-void Audio::SoundUnload(size_t soundHandle) {
+void Audio::SoundUnload(int32_t soundHandle) {
     // バッファのメモリを解放
     soundData_.at(soundHandle).pBuffer.clear();
     soundData_.at(soundHandle).bufferSize = 0;
