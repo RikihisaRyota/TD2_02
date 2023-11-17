@@ -23,6 +23,8 @@ public:
 	/// </summary>
 	void Initialize(WinApp* winApp, int32_t backBufferWidth = WinApp::kWindowWidth,
 		int32_t backBufferHeight = WinApp::kWindowHeight);
+	
+	void Update();
 
 	/// <summary>
 	/// 描画前処理

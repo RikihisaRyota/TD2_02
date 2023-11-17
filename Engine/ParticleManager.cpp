@@ -172,7 +172,9 @@ void ParticleManager::StaticInitialize() {
 
 void ParticleManager::Initialize() {
 	for (auto& instancing : instancing_) {
-		instancing->particle->Reset();
+		if (instancing->isAlive_) {
+			instancing->particle->Reset();
+		}
 	}
 }
 

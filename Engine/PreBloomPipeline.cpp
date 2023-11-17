@@ -27,8 +27,8 @@ void PreBloomPipeline::CreateRootSignature() {
 	CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-	CD3DX12_ROOT_PARAMETER rootParameters[BloomPipeline::ROOT_PARAMETER_TYP::COUNT]{};
-	rootParameters[BloomPipeline::ROOT_PARAMETER_TYP::TEXTURE].InitAsDescriptorTable(_countof(ranges), ranges);
+	CD3DX12_ROOT_PARAMETER rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::COUNT]{};
+	rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::TEXTURE].InitAsDescriptorTable(_countof(ranges), ranges);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSampler(
 		0,

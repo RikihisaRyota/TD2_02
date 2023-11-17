@@ -9,6 +9,7 @@
 class BloomPipeline {
 public:
 	enum ROOT_PARAMETER_TYP {
+		PRAM,
 		TEXTURE,
 		COUNT,
 	};
