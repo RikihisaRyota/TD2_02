@@ -61,6 +61,7 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), materialBuff_->GetGPUVirtualAddress());
 	for (auto& instancing : instancing_) {
 		if (instancing->isAlive_) {
+
 			// instancing用のStructuredBuffをSRVにセット
 			commandList->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
 
@@ -211,7 +212,7 @@ ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
 	return buffer;
 }
 
-void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle) {
+void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion,uint32_t textureHandle) {
 	for (auto& instancing : instancing_) {
 		if (!instancing->isAlive_) {
 			instancing->particle->Reset();

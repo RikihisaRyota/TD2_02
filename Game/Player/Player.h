@@ -126,6 +126,8 @@ private:
 	// プレイヤーの後ろにパーティクルを追加
 	void ParticleInitialize();
 	void ParticleUpdate();
+	void ParticleCreate(const Vector2& vector);
+
 	void SoundInitialize();
 private:
 
@@ -249,6 +251,7 @@ private:
 	// 所有権はパーティクルマネージャーが持っている
 	Emitter* emitter_;
 	ParticleMotion* particleMotion_;
+	bool isCreateParticle_;
 	Random::RandomNumberGenerator rnd_;
 
 	// 音関係

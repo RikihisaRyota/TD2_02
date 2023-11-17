@@ -33,7 +33,7 @@ public:
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 	void Shutdown();
-	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle);
+	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion,uint32_t textureHandle);
 private:
 	static const size_t kNumInstancing = 100;
 	static bool CompareParticles(const std::unique_ptr<Instancing>& a, const std::unique_ptr<Instancing>& b) {

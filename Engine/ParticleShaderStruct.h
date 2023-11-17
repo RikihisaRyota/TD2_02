@@ -53,6 +53,7 @@ struct Spawn {
 
 struct Emitter {
     Spawn spawn;
+    Angel angle;
     int32_t inOnce;
     int32_t flameInterval;
     int32_t aliveTime;
@@ -64,7 +65,7 @@ struct ParticleMotion {
     Rotate rotate;
     Vector3 position;
     Velocity velocity;
-    Angel angle;
+    Vector3 acceleration_;
     Color color;
     AliveTime aliveTime;
     bool isAlive;
