@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include "Audio.h"
 #include "Input.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
@@ -60,10 +61,12 @@ Player::Player() {
 
 	// パーティクル初期化
 	ParticleInitialize();
+
+	// 音初期化
+	SoundInitialize();
 }
 
-void Player::Initialize()
-{
+void Player::Initialize() {
 	StateRequest(State::kNormal);
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
@@ -86,23 +89,26 @@ void Player::UpdateMatrix() {
 	faceWorldTransform_.UpdateMatrix();
 }
 
-void Player::OnCollision()
-{
+void Player::OnCollision() {
 
 	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
 		StateRequest(State::kNormal);
+		ParticleCreate({ 0.0f,-1.0f });
 	}
 	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
 		StateRequest(State::kGripWall);
 		if (velocity_.x > 0) {
 			isRight_ = true;
+			ParticleCreate({ 1.0f,0.0f });
 		}
 		else if (velocity_.x < 0) {
 			isRight_ = false;
+			ParticleCreate({ -1.0f,0.0f });
 		}
 	}
 	else {
 		StateRequest(State::kNormal);
+		ParticleCreate({ 0.0f,1.0f });
 	}
 	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
@@ -128,10 +134,9 @@ void Player::OnCollision()
 
 }
 
-void Player::SetCollider()
-{
-	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y }, 
-		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y },Vector2{ velocity_.x,velocity_.y });
+void Player::SetCollider() {
+	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ velocity_.x,velocity_.y });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
@@ -185,8 +190,7 @@ void Player::NormalInitialize() {
 	}
 }
 
-void Player::NormalUpdate()
-{
+void Player::NormalUpdate() {
 	countFrame_++;
 
 	Input* input = Input::GetInstance();
@@ -210,7 +214,7 @@ void Player::NormalUpdate()
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
-
+		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
 		StateRequest(State::kJump);
@@ -236,8 +240,7 @@ void Player::NormalUpdate()
 
 }
 
-void Player::JumpInitialize()
-{
+void Player::JumpInitialize() {
 	if (kIs2Jump_) {
 		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
 			jumpCount_ = 0;
@@ -261,8 +264,7 @@ void Player::JumpInitialize()
 
 }
 
-void Player::JumpUpdate()
-{
+void Player::JumpUpdate() {
 	if (kIs2Jump_) {
 		if (jumpCount_ >= 2) {
 			if (isRight_) {
@@ -316,7 +318,7 @@ void Player::JumpUpdate()
 			worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 		}
 	}
-	
+
 	if (velocity_.y <= 0) {
 		velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
 		if (velocity_.y <= -1.5f) {
@@ -360,9 +362,11 @@ void Player::GripWallUpdate() {
 	if (kIsWallDown_) {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
+			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
+			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			if (isRight_) {
 				// 右の壁
 				if (move.x <= -0.3f) {
@@ -398,7 +402,7 @@ void Player::GripWallUpdate() {
 		}
 
 		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
-
+			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			if (isRight_) {
 				// 右の壁
 				if (move.x <= -0.3f) {
@@ -508,11 +512,10 @@ void Player::WallJumpInitialize() {
 	else {
 		velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
 	}
-	
+
 }
 
-void Player::WallJumpUpdate()
-{
+void Player::WallJumpUpdate() {
 
 	if (isRight_) {
 		// 右の壁
@@ -637,45 +640,115 @@ void Player::WallDownJumpUpdate() {
 }
 
 void Player::ParticleInitialize() {
-
-	emitter_ =new Emitter();
+	emitter_ = new Emitter();
 	emitter_->aliveTime = 1;
 	emitter_->spawn.position = worldTransform_.worldPos_;
 	emitter_->spawn.rangeX = 1.5f;
 	emitter_->spawn.rangeY = 1.5f;
-	emitter_->inOnce = 5;
+	emitter_->inOnce = 2;
+	//emitter_->angle.start = DegToRad(0.0f);
+	//emitter_->angle.end = DegToRad(180.0f);
 	emitter_->isAlive = true;
 	particleMotion_ = new ParticleMotion();
-	//particleMotion_->angle.start = DegToRad(0.0f);
-	//particleMotion_->angle.end = DegToRad(180.0f);
-	particleMotion_->color.startColor = { 0.0f,1.0f,0.8f,1.0f };
-	particleMotion_->color.endColor = { 0.0f,1.0f,0.8f,0.0f };
+	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
 	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
 	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
 	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
 	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
 	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+	particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
 	//particleMotion_->velocity.speed = 1.0f;
 	//particleMotion_->velocity.randomRange = 0.0f;
-	particleMotion_->aliveTime.time = 60;
+	particleMotion_->aliveTime.time = 20;
 	particleMotion_->aliveTime.randomRange = 5;
 	particleMotion_->isAlive = true;
-	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, 0);
+	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, TextureManager::Load("Resources/Textures/particle.png"));
+
+	isCreateParticle_ = true;
 }
 
 void Player::ParticleUpdate() {
 	emitter_->aliveTime = 2;
 	emitter_->spawn.position = worldTransform_.worldPos_;
+	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.currentColor = particleMotion_->color.startColor;
 }
 
-void Player::ClearMoveInitialize()
-{
+void Player::ParticleCreate(const Vector2& vector) {
+	if (isCreateParticle_) {
+		isCreateParticle_ = false;
+
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+		
+		emitter->aliveTime = 1;
+		emitter->spawn.position = worldTransform_.worldPos_;
+		emitter_->spawn.rangeX = 1.5f;
+		emitter_->spawn.rangeY = 1.5f;
+		emitter->inOnce = 20;
+		// 右の壁
+		if (vector.x < 0) {
+			emitter->angle.start = DegToRad(90.0f);
+			emitter->angle.end = DegToRad(270.0f);
+			particleMotion->acceleration_ = { 0.0f,-0.08f,0.0f };
+			particleMotion->velocity.speed = 0.8f;
+			particleMotion->velocity.randomRange = 0.3f;
+		}
+		// 左の壁
+		else if (vector.x > 0) {
+			emitter->angle.start = -DegToRad(90.0f);
+			emitter->angle.end = DegToRad(90.0f);
+			particleMotion->acceleration_ = { 0.0f,-0.08f,0.0f };
+			particleMotion->velocity.speed = 0.8f;
+			particleMotion->velocity.randomRange = 0.3f;
+		}
+		// 天井
+		else if (vector.y > 0) {
+			emitter->angle.start = DegToRad(0.0f);
+			emitter->angle.end = DegToRad(180.0f);
+			particleMotion->acceleration_ = { 0.0f,-0.05f,0.0f };
+			particleMotion->velocity.speed = 0.5f;
+			particleMotion->velocity.randomRange = 0.2f;
+		}
+		// 床
+		else if (vector.y < 0) {
+			emitter->angle.start = -DegToRad(210.0f);
+			emitter->angle.end = DegToRad(30.0f);
+			particleMotion->acceleration_ = { 0.0f,-0.05f,0.0f };
+			particleMotion->velocity.speed = 0.2f;
+			particleMotion->velocity.randomRange = 0.05f;
+		}
+		emitter->isAlive = true;
+		
+		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.5f,0.8f),1.0f };
+		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.1f,0.5f),0.0f };
+		particleMotion->color.currentColor = particleMotion->color.startColor;
+		particleMotion->scale.startScale = { 0.3f,0.3f,0.3f };
+		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
+		particleMotion->scale.currentScale = particleMotion->scale.startScale;
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		
+		particleMotion->aliveTime.time = 60;
+		particleMotion->aliveTime.randomRange = 55;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, TextureManager::Load("Resources/Textures/particle.png"));
+	}
+}
+void Player::SoundInitialize() {
+	auto audio = Audio::GetInstance();
+	deathSoundHandle_ = audio->SoundLoadWave("SE/death.wav");
+	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
+}
+
+void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
 }
 
-void Player::ClearMoveUpdate()
-{
+void Player::ClearMoveUpdate() {
 	countFrame_++;
 	if (countFrame_ == 60) {
 		Initialize();
@@ -684,22 +757,22 @@ void Player::ClearMoveUpdate()
 
 void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::NormalInitialize,
-	&Player::JumpInitialize,
-	&Player::GripWallInitialize,
-	&Player::WallJumpInitialize,
-	&Player::WallSideJumpInitialize,
-	&Player::WallDownJumpInitialize,
-	&Player::ClearMoveInitialize,
+		& Player::JumpInitialize,
+		& Player::GripWallInitialize,
+		& Player::WallJumpInitialize,
+		& Player::WallSideJumpInitialize,
+		& Player::WallDownJumpInitialize,
+		& Player::ClearMoveInitialize,
 };
 
 void (Player::* Player::spStateUpdateFuncTable[])() {
 	&Player::NormalUpdate,
-	&Player::JumpUpdate,
-	&Player::GripWallUpdate,
-	&Player::WallJumpUpdate,
-	&Player::WallSideJumpUpdate,
-	&Player::WallDownJumpUpdate,
-	&Player::ClearMoveUpdate,
+		& Player::JumpUpdate,
+		& Player::GripWallUpdate,
+		& Player::WallJumpUpdate,
+		& Player::WallSideJumpUpdate,
+		& Player::WallDownJumpUpdate,
+		& Player::ClearMoveUpdate,
 };
 
 void Player::Update()
@@ -715,6 +788,8 @@ void Player::Update()
 
 		preState_ = state_;
 		stateRequest_ = std::nullopt;
+
+		isCreateParticle_ = true;
 	}
 
 	(this->*spStateUpdateFuncTable[static_cast<size_t>(state_)])();
@@ -738,11 +813,10 @@ void Player::Draw(const ViewProjection& viewProjection) {
 }
 
 void Player::DrawUI(const ViewProjection& viewProjection) {
-	face_->Draw(faceWorldTransform_,viewProjection,faceTextureHandle_[isPlayerFaceRight_]);
+	face_->Draw(faceWorldTransform_, viewProjection, faceTextureHandle_[isPlayerFaceRight_]);
 }
 
-void Player::StateRequest(State state)
-{
+void Player::StateRequest(State state) {
 	if (state_ != state) {
 		stateRequest_ = state;
 	}

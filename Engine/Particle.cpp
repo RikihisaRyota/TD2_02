@@ -18,7 +18,10 @@ void Particle::Update() {
 				// パーティクル
 				ParticleWorldTransform* particle = new ParticleWorldTransform();
 				particle->motion = *originalParticle_;
-				float angle = rnd_.NextFloatRange(particle->motion.angle.start, particle->motion.angle.end);
+				float angle = 0.0f;
+				if (emitter_->angle.start != emitter_->angle.end) {
+					angle = rnd_.NextFloatRange(emitter_->angle.start, emitter_->angle.end);
+				}
 				Vector3 vector = { std::cos(angle),std::sin(angle),0.0f };
 				particle->motion.velocity.velocity = vector * rnd_.NextFloatRange(particle->motion.velocity.speed - particle->motion.velocity.randomRange, particle->motion.velocity.speed + particle->motion.velocity.randomRange);
 				particle->motion.position.x = rnd_.NextFloatRange(emitter_->spawn.position.x - emitter_->spawn.rangeX, emitter_->spawn.position.x + emitter_->spawn.rangeX);
@@ -50,6 +53,7 @@ void Particle::Update() {
 		if (particle->motion.isAlive) {
 			if (particle->motion.aliveTime.time <= 0) {
 				particle->motion.isAlive = false;
+				isAlive_ = false;
 			}
 			else {
 				float t = 1.0f - float(particle->motion.aliveTime.time) / float(particle->motion.aliveTime.maxTime);
@@ -62,6 +66,7 @@ void Particle::Update() {
 				particle->motion.rotate.currentRotate += particle->motion.rotate.addRotate;
 				// 移動
 				particle->motion.position += particle->motion.velocity.velocity;
+				particle->motion.velocity.velocity += particle->motion.acceleration_;
 
 				particle->scale = particle->motion.scale.currentScale;
 				particle->rotate = particle->motion.rotate.currentRotate;

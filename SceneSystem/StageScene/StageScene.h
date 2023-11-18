@@ -17,6 +17,7 @@ public:
 	void Init() override;
 	void Update() override;
 	void Draw() override;
+	void UIDraw() override;
 
 private:
 
@@ -34,5 +35,4 @@ private:
 	std::unique_ptr<FollowCamera> followCamera_;
 
 	std::unique_ptr<Player> player_;
-
 };

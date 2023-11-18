@@ -18,8 +18,13 @@ public:
 		Vector2 texcoord{};
 	};
 
+	struct ConstantDate {
+		float threshold;
+		float knee;
+	};
 	void Initialize(Buffer* original, Buffer* depth);
 	void Update();
+	void PreUpdate();
 	void Shutdown();
 
 	ID3D12RootSignature* GetRootSignature() { return bloomPipeline_->GetRootSignature(); }
@@ -51,4 +56,6 @@ private:
 	// インデックスバッファビュー
 	D3D12_INDEX_BUFFER_VIEW ibView_{};
 	std::vector<uint16_t> indices_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> constantBuffer_;
+	ConstantDate* constantDate_;
 };

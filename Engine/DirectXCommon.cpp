@@ -52,6 +52,10 @@ void DirectXCommon::Initialize(WinApp* winApp, int32_t backBufferWidth, int32_t 
 	BloomInitialize();
 }
 
+void DirectXCommon::Update() {
+	bloom_->PreUpdate();
+}
+
 void DirectXCommon::PreDraw() {
 	// セットするために呼び出すのは効率が悪い
 	ID3D12DescriptorHeap* ppHeaps[] = { srvDescriptorHeap_.Get() };

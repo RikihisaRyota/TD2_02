@@ -64,6 +64,9 @@
     <Filter Include="Game\Background">
       <UniqueIdentifier>{c5169e6a-9dbc-493b-a0de-8796132f125b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Sound">
+      <UniqueIdentifier>{d7c451f4-c9b2-478c-86e2-54398080d180}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Game\TitleSprites">
       <UniqueIdentifier>{4d375346-5710-458b-96ae-5577856216bb}</UniqueIdentifier>
     </Filter>
@@ -271,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="Game\Background\Background.cpp">
       <Filter>Game\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MapChipGraphicsPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Sound\SoundManager.cpp">
+      <Filter>Game\Sound</Filter>
     </ClCompile>
     <ClCompile Include="Game\TitleSprites\TitleSprites.cpp">
       <Filter>Game\TitleSprites</Filter>
@@ -536,6 +545,12 @@
     <ClInclude Include="Game\Background\Background.h">
       <Filter>Game\Background</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\MapChipGraphicsPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Sound\SoundManager.h">
+      <Filter>Game\Sound</Filter>
+    </ClInclude>
     <ClInclude Include="Game\TitleSprites\TitleSprites.h">
       <Filter>Game\TitleSprites</Filter>
     </ClInclude>
@@ -581,6 +596,9 @@
       <Filter>engine\shader</Filter>
     </None>
     <None Include="Resources\Shaders\VerticalBlur.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\MapChip.hlsli">
       <Filter>engine\shader</Filter>
     </None>
   </ItemGroup>
@@ -661,6 +679,12 @@
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\VerticalBlur.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
   </ItemGroup>

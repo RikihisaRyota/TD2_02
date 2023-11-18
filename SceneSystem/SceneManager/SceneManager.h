@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "SceneSystem/IScene/IScene.h"
+#include "Game/Sound/SoundManager.h"
 
 class SceneManager
 {
@@ -13,6 +14,9 @@ private:
 	int currentSceneNo_; // 現在のシーン
 	int preSceneNo_; // 前のシーン
 
+	// 音
+	std::unique_ptr<SoundManager> soundManager_;
+	
 public:
 	SceneManager();
 	~SceneManager();

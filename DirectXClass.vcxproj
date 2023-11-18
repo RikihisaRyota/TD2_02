@@ -107,6 +107,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\BloomPipeline.cpp" />
     <ClCompile Include="Engine\GaussianBlur.cpp" />
     <ClCompile Include="Engine\HorizontalBlurPipeline.cpp" />
+    <ClCompile Include="Engine\MapChipGraphicsPipeline.cpp" />
     <ClCompile Include="Engine\Particle.cpp" />
     <ClCompile Include="Engine\ParticleGraphicsPipline.cpp" />
     <ClCompile Include="Engine\ParticleManager.cpp" />
@@ -153,12 +154,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Game\Background\Background.cpp" />
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
+    <ClCompile Include="Game\Sound\SoundManager.cpp" />
     <ClCompile Include="Game\TitleSprites\TitleSprites.cpp" />
     <ClCompile Include="GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChip.cpp" />
     <ClCompile Include="MapChipEditor.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
+    <ClCompile Include="ModelManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp" />
     <ClCompile Include="SceneSystem\IScene\IScene.cpp" />
     <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp" />
@@ -183,6 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\cMaterial.h" />
     <ClInclude Include="Engine\GaussianBlur.h" />
     <ClInclude Include="Engine\HorizontalBlurPipeline.h" />
+    <ClInclude Include="Engine\MapChipGraphicsPipeline.h" />
     <ClInclude Include="Engine\Particle.h" />
     <ClInclude Include="Engine\ParticleGraphicsPipline.h" />
     <ClInclude Include="Engine\ParticleManager.h" />
@@ -244,6 +250,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Game\TitleSprites\TitleSprites.h" />
+    <ClInclude Include="Game\Sound\SoundManager.h" />
     <ClInclude Include="GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="MapChip.h" />
     <ClInclude Include="MapChipEditor.h" />
@@ -282,6 +289,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Resources\Shaders\Line.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="Resources\Shaders\MapChip.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
@@ -352,6 +363,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Line.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\MapChip.VS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

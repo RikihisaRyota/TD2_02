@@ -5,6 +5,7 @@
 #include "ViewProjection.h"
 #include <optional>
 
+#include "Random.h"
 #include "Collision/Collider.h"
 #include "PlaneRenderer.h"
 #include "ParticleShaderStruct.h"
@@ -125,7 +126,9 @@ private:
 	// プレイヤーの後ろにパーティクルを追加
 	void ParticleInitialize();
 	void ParticleUpdate();
-	
+	void ParticleCreate(const Vector2& vector);
+
+	void SoundInitialize();
 private:
 
 	// モデルのパーツ
@@ -245,10 +248,13 @@ private:
 	// グローバル変数のグループネーム
 	const std::string groupName_ = "Player";
 
-	// 何フレーム間隔でパーティクルを生成するか
-	int32_t flameCount_;
-	const int32_t kMaxFlameTime = 5;
 	// 所有権はパーティクルマネージャーが持っている
 	Emitter* emitter_;
 	ParticleMotion* particleMotion_;
+	bool isCreateParticle_;
+	Random::RandomNumberGenerator rnd_;
+
+	// 音関係
+	int32_t jumpSoundHandle_;
+	int32_t deathSoundHandle_;
 };

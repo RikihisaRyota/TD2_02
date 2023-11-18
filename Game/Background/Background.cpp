@@ -5,6 +5,8 @@
 Background::Background() {
 	model_.reset(Model::Create("background"));
 	worldTransform_.Initialize();
+	// デバック用
+	Initialize();
 }
 
 void Background::Initialize() {

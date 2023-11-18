@@ -25,7 +25,11 @@ SceneManager::SceneManager()
 	sceneArr_[STAGE] = std::make_unique<StageScene>();
 	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
 
+	IScene::sceneNo_ = TITLE;
+	currentSceneNo_ = IScene::sceneNo_;
 	sceneArr_[currentSceneNo_]->Init();
+
+	soundManager_ = std::make_unique<SoundManager>();
 }
 
 SceneManager::~SceneManager()
@@ -48,11 +52,15 @@ int SceneManager::Run()
 		Audio::GetInstance()->Update();
 
 		GlobalVariables::GetInstance()->Update();
+
+		DirectXCommon::GetInstance()->Update();
+
 		// ゲームシーンの毎フレーム処理
 		preSceneNo_ = currentSceneNo_;
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		if (preSceneNo_ != currentSceneNo_) {
 			sceneArr_[currentSceneNo_]->Init();
+			soundManager_->Initialize(currentSceneNo_, preSceneNo_);
 		}
 		sceneArr_[currentSceneNo_]->Update();
 		// ImGui受付終了
@@ -64,10 +72,12 @@ int SceneManager::Run()
 		// 描画終わり
 		DirectXCommon::GetInstance()->PostDraw();
 		DirectXCommon::GetInstance()->PreUIDraw();
+		sceneArr_[currentSceneNo_]->UIDraw();
 		// ImGui描画
 		ImGuiManager::GetInstance()->Draw();
 		DirectXCommon::GetInstance()->PostUIDraw();
 		
+		soundManager_->Update();
 	}
 
 

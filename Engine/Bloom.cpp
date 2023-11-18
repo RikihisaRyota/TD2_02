@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "DirectXCommon.h"
+#include "ImGuiManager.h"
 
 using namespace Microsoft::WRL;
 
@@ -44,7 +45,7 @@ void Bloom::Update() {
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	commandList->IASetIndexBuffer(&ibView_);
-	commandList->SetGraphicsRootDescriptorTable(BloomPipeline::ROOT_PARAMETER_TYP::TEXTURE, originalBuffer_->srvGPUHandle);
+	commandList->SetGraphicsRootDescriptorTable(PreBloomPipeline::ROOT_PARAMETER_TYP::TEXTURE, originalBuffer_->srvGPUHandle);
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 
 	// リソースバリアの変更
@@ -64,6 +65,17 @@ void Bloom::Update() {
 	SetCommandList();
 }
 
+void Bloom::PreUpdate() {
+	ImGui::Begin("Debug");
+	if (ImGui::TreeNode("Bloom")) {
+		ImGui::DragFloat("明るさ以上にブルームをかける", &constantDate_->threshold,0.01f);
+		ImGui::DragFloat("どのくらい明るくするか", &constantDate_->knee,0.01f);
+		ImGui::TreePop();
+	}
+	ImGui::End();
+}
+
+
 void Bloom::Shutdown() {
 	gaussianBlur_->Shutdown();
 	delete gaussianBlur_;
@@ -72,6 +84,7 @@ void Bloom::Shutdown() {
 	vertices_.clear();
 	vertBuff_.Reset();
 	temporaryBuffer_->buffer.Reset();
+	constantBuffer_.Reset();
 	delete temporaryBuffer_;
 	delete bloomPipeline_;
 	delete preBloomPipeline_;
@@ -169,6 +182,13 @@ void Bloom::CreateResource() {
 	ibView_.BufferLocation = idxBuff_->GetGPUVirtualAddress();
 	ibView_.Format = DXGI_FORMAT_R16_UINT;
 	ibView_.SizeInBytes = sizeIB; // 修正: インデックスバッファのバイトサイズを代入
+
+	constantBuffer_ = CreateBuffer(sizeof(ConstantDate));
+	// ライティングバッファへのデータ転送
+	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&constantDate_));
+	// 初期値代入
+	constantDate_->knee = 1.5f;
+	constantDate_->threshold = 0.5f;
 }
 
 void Bloom::SetCommandList() {
@@ -191,6 +211,7 @@ void Bloom::SetCommandList() {
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	commandList->IASetIndexBuffer(&ibView_);
+	commandList->SetGraphicsRootConstantBufferView(BloomPipeline::ROOT_PARAMETER_TYP::PRAM, constantBuffer_->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootDescriptorTable(BloomPipeline::ROOT_PARAMETER_TYP::TEXTURE, originalBuffer_->srvGPUHandle);
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 

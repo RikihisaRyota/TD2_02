@@ -12,6 +12,8 @@ ParticleManager* ParticleManager::GetInstance() {
 }
 
 void ParticleManager::Update() {
+	size_t count = 0;
+
 	for (auto it = instancing_.begin(); it != instancing_.end();) {
 		if ((*it)->isAlive_) {
 			(*it)->particle->Update();
@@ -54,13 +56,14 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
+
+	// CBVをセット（Material）
+	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), materialBuff_->GetGPUVirtualAddress());
 	for (auto& instancing : instancing_) {
 		if (instancing->isAlive_) {
+
 			// instancing用のStructuredBuffをSRVにセット
 			commandList->SetGraphicsRootDescriptorTable(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::WORLDTRANSFORM), instancing->instancingSRVGPUHandle);
-
-			// CBVをセット（Material）
-			commandList->SetGraphicsRootConstantBufferView(static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::MATERIAL), instancing->materialBuff->GetGPUVirtualAddress());
 
 			// SRVをセット
 			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(ParticleGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), instancing->textureHandle);
@@ -73,7 +76,7 @@ void ParticleManager::Draw(const ViewProjection& viewProjection) {
 
 void ParticleManager::StaticInitialize() {
 	// パイプライン生成
-	basicGraphicsPipeline_ = new ParticleGraphicsPipeline();
+	basicGraphicsPipeline_ = std::make_unique<ParticleGraphicsPipeline>();
 	basicGraphicsPipeline_->InitializeGraphicsPipeline();
 	HRESULT result = S_FALSE;
 
@@ -123,21 +126,22 @@ void ParticleManager::StaticInitialize() {
 	ibView_.Format = DXGI_FORMAT_R16_UINT;
 	ibView_.SizeInBytes = sizeIB; // 修正: インデックスバッファのバイトサイズを代入
 #pragma endregion インデックスバッファ
+#pragma region マテリアルバッファ
+	materialBuff_ = CreateBuffer(sizeof(cMaterial));
+	// マテリアルへのデータ転送
+	materialBuff_->Map(0, nullptr, reinterpret_cast<void**>(&material_));
+	material_->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	// Lightingを有効化
+	material_->enableLightint_ = 0;
+	material_->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+#pragma endregion
 #pragma region インスタンシング生成
 	for (size_t i = 0; i < kNumInstancing; i++) {
 		auto device = DirectXCommon::GetInstance()->GetDevice();
 		Emitter* emitter = new Emitter();
 		ParticleMotion* particleMotion = new ParticleMotion();
 		Instancing* instancing = new Instancing();
-#pragma region マテリアルバッファ
-		instancing->materialBuff = CreateBuffer(sizeof(cMaterial));
-		// マテリアルへのデータ転送
-		instancing->materialBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->material));
-		instancing->material->color_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-		// Lightingを有効化
-		instancing->material->enableLightint_ = 0;
-		instancing->material->uvTransform_ = MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
-#pragma endregion
+
 
 		// パーティクル
 		instancing->particle = new Particle();
@@ -169,7 +173,9 @@ void ParticleManager::StaticInitialize() {
 
 void ParticleManager::Initialize() {
 	for (auto& instancing : instancing_) {
-		instancing->particle->Reset();
+		if (instancing->isAlive_) {
+			instancing->particle->Reset();
+		}
 	}
 }
 
@@ -181,13 +187,12 @@ void ParticleManager::Shutdown() {
 
 		// リソースの解放
 		instancing->instancingBuff.Reset();
-		instancing->materialBuff.Reset();
 	}
+	materialBuff_.Reset();
 	// メンバー変数のリセット
 	instancing_.clear();
 	vertBuff_.Reset();
 	idxBuff_.Reset();
-	delete basicGraphicsPipeline_;
 }
 
 ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
@@ -207,11 +212,12 @@ ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
 	return buffer;
 }
 
-void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle) {
+void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion,uint32_t textureHandle) {
 	for (auto& instancing : instancing_) {
 		if (!instancing->isAlive_) {
 			instancing->particle->Reset();
 			instancing->particle->Initialize(emitter, particleMotion);
+
 			instancing->textureHandle = textureHandle;
 			instancing->isAlive_ = true;
 			break;

@@ -1,12 +1,20 @@
 #pragma once
+#include <d3dx12.h>
+#include <wrl.h>
 
 #include <cstdint>
 #include <sstream>
+#include <vector>
 
+#include "cVertexPos.h"
+#include "cDirectionalLight.h"
+#include "cMaterial.h"
 #include "Model.h"
 #include "ViewProjection.h"
 
 #include "Collision/Collider.h"
+#include "MapChipGraphicsPipeline.h"
+
 
 const static uint32_t kBlockSize = 2;
 const static uint32_t kBlockScreenSize = 40;
@@ -19,6 +27,15 @@ const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
 class MapChip : public Collider{
 public:
+	struct MapChipInstancing {
+		uint32_t maxInstance = 10000;
+		uint32_t currentInstance;
+		// ワールドトランスフォームマトリックスリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuff;
+		D3D12_CPU_DESCRIPTOR_HANDLE instancingSRVCPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE instancingSRVGPUHandle;
+		Matrix4x4* mat;
+	};
 	enum Stage
 	{
 		kStage_1,
@@ -55,7 +72,8 @@ public:
 	void SaveCSV();
 	void SaveCSV(uint32_t stageNum);
 	void SaveCSV(std::string fileName);
-	void ChengeStage();
+	void ChangeStage();
+
 #pragma endregion
 #pragma region BlockType
 	std::vector<std::vector<uint32_t>> GetBlocksTypes() { return map_; }
@@ -64,6 +82,8 @@ public:
 	uint32_t GetBlocksType(const Vector3& pos) { return (map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
 	uint32_t GetBlocksType(const Vector2& pos) { return(map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
 #pragma endregion
+	void InstancingInitialize();
+	void InstancingDraw(const ViewProjection& viewProjection);
 	Vector3 GetBlocksCenterWorldPosition(uint32_t x, uint32_t y);
 	std::vector<std::vector<WorldTransform>> GetWorldTransforms() {
 		return blockWorldTransform_;
@@ -75,6 +95,7 @@ public:
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
 	bool InRange(const Vector3& pos);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);
@@ -92,5 +113,41 @@ private:
 	std::vector<std::string> stageName_;
 	// 現在のステージ
 	uint32_t currentStage_;
+
+
+
+#pragma region DirectX関連
+	// グラフィックパイプライン
+	std::unique_ptr<MapChipGraphicsPipeline> basicGraphicsPipeline_ = nullptr;
+#pragma region 頂点バッファ
+	// 頂点バッファ
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
+	// 頂点バッファビュー
+	D3D12_VERTEX_BUFFER_VIEW vbView_{};
+	// 頂点データ配列
+	std::vector<cVertexPos> vertices_;
+#pragma endregion
+#pragma region インデックスバッファ
+	// インデックスバッファ
+	Microsoft::WRL::ComPtr<ID3D12Resource> idxBuff_;
+	// インデックスバッファビュー
+	D3D12_INDEX_BUFFER_VIEW ibView_{};
+	// 頂点インデックスデータ
+	std::vector<uint16_t> indices_;
+#pragma endregion
+#pragma region マテリアル
+	// マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff_;
+	// マテリアル
+	cMaterial* material_ = nullptr;
+#pragma endregion
+#pragma region ライティング
+	// ライティングリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightBuff_;
+	// ライティング
+	cDirectionalLight* directionalLight_ = nullptr;
+#pragma endregion
+	// インスタンシング描画用
+	std::vector<std::unique_ptr<MapChipInstancing>> instancing_;
 };
 
