@@ -53,7 +53,7 @@ ClearSprites::ClearSprites() {
 			}
 		}
 	}
-	
+
 }
 
 void ClearSprites::Init() {
@@ -61,12 +61,18 @@ void ClearSprites::Init() {
 	// 秒に直す
 	int time = StageData::GetClearTime(IScene::stageNo_) / 60;
 	int place = 100;
-	for (int i = 0; i < 3; i++) {
-		timePlace_[2 - i] = time / place;
-		time %= place;
-		place /= 10;
+	if (time >= 999) {
+		for (int i = 0; i < 3; i++) {
+			timePlace_[i] = 9;
+		}
 	}
-
+	else {
+		for (int i = 0; i < 3; i++) {
+			timePlace_[2 - i] = time / place;
+			time %= place;
+			place /= 10;
+		}
+	}
 }
 
 void ClearSprites::Update() {
