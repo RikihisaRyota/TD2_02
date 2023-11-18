@@ -14,17 +14,21 @@ TitleScene::TitleScene()
 {
 	// カメラの初期化
 	viewProjection_.Initialize();
+	titleSprites_ = std::make_unique<TitleSprites>();
 }
 
 void TitleScene::Init()
 {
-
+	titleSprites_->Init();
 }
 
 void TitleScene::Update()
 {
+
+	titleSprites_->Update();
+
 	// フラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		sceneNo_ = SELECT;
 	}
 }
@@ -41,6 +45,7 @@ void TitleScene::Draw()
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	titleSprites_->FarDraw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -82,6 +87,8 @@ void TitleScene::Draw()
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
+	titleSprites_->NearDraw();
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
