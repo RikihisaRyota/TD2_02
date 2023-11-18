@@ -9,6 +9,8 @@
 #include "ModelManager.h"
 #include "TextureManager.h"
 // 俺が追加した
+#include "Game/StageData/StageData.h"
+#include "SceneSystem/IScene/IScene.h"
 #include "ParticleManager.h"
 #include "MyMath.h"
 
@@ -78,6 +80,10 @@ void Player::Initialize() {
 	jumpCount_ = 0;
 	isJump_ = true;
 	velocity_ = {};
+
+	isClear_ = false;
+	time_ = 0;
+	itemCount_ = 0;
 }
 
 void Player::UpdateMatrix() {
@@ -746,12 +752,14 @@ void Player::SoundInitialize() {
 
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
+	StageData::SetData(time_,itemCount_,true,IScene::stageNo_);
 }
 
 void Player::ClearMoveUpdate() {
 	countFrame_++;
 	if (countFrame_ == 60) {
 		Initialize();
+		isClear_ = true;
 	}
 }
 
@@ -804,6 +812,9 @@ void Player::Update()
 	SetCollider();
 
 	ParticleUpdate();
+
+	// クリアタイム
+	time_++;
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {

@@ -14,6 +14,7 @@
 #include "ParticleManager.h"
 #include "ImGuiManager.h"
 #include "SceneSystem/IScene/IScene.h"
+#include "Game/StageData/StageData.h"
 
 StageScene::StageScene()
 {
@@ -29,9 +30,12 @@ StageScene::StageScene()
 	isDebug_ = false;
 
 #pragma region 生成
+	background_ = std::make_unique<Background>();
+	followCamera_ = std::make_unique<FollowCamera>();
+	goal_ = std::make_unique<Goal>();
 	mapChip_ = std::make_unique<MapChip>();
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
-	background_ = std::make_unique<Background>();
+	player_ = std::make_unique<Player>();
 #pragma endregion
 
 	mapChip_->Initialize();
@@ -41,8 +45,7 @@ StageScene::StageScene()
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
 
-	followCamera_ = std::make_unique<FollowCamera>();
-	player_ = std::make_unique<Player>();
+	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 }
 
@@ -50,6 +53,7 @@ void StageScene::Init()
 {
 	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
+	goal_->Initialize();
 	player_->Initialize();
 	followCamera_->Initialize();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
@@ -73,8 +77,8 @@ void StageScene::Update()
 			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
 			viewProjection_.UpdateMatrix();
 		}
-
 	}
+	goal_->Update();
 
 	background_->Update();
 
@@ -100,7 +104,8 @@ void StageScene::Update()
 	}
 
 	// クリアフラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+	if (player_->GetIsClear() ||
+		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
 		sceneNo_ = CLEAR;
 	}
 }
@@ -134,8 +139,9 @@ void StageScene::Draw()
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	background_->Draw(viewProjection_);
+	goal_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
-	player_->Draw(viewProjection_);
+	//player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

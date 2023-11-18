@@ -14,14 +14,18 @@ ClearScene::ClearScene()
 {
 	// カメラの初期化
 	viewProjection_.Initialize();
+
+	clearSprites_ = std::make_unique<ClearSprites>();
 }
 
 void ClearScene::Init()
 {
+	clearSprites_->Init();
 }
 
 void ClearScene::Update()
 {
+	clearSprites_->Update();
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		sceneNo_ = SELECT;
@@ -56,10 +60,6 @@ void ClearScene::Draw()
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
-
-
-
 
 	PrimitiveDrawer::Draw();
 	// 3Dオブジェクト描画後処理
@@ -81,6 +81,7 @@ void ClearScene::Draw()
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
+	clearSprites_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

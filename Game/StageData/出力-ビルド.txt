@@ -1,0 +1,10 @@
+﻿ビルドを開始しました...
+1>------ ビルド開始: プロジェクト: DirectXClass, 構成: Debug x64 ------
+1>ClearSprites.cpp
+1>Goal.cpp
+1>コードを生成中...
+1>DirectXClass.vcxproj -> C:\Users\力久　僚太\Downloads\DirectXClass-TD2_02\DirectXClass-TD2_02\x64\Debug\DirectXClass.exe
+1>        1 個のファイルをコピーしました。
+1>        1 個のファイルをコピーしました。
+========== ビルド: 成功 1、失敗 0、最新の状態 1、スキップ 0 ==========
+========== ビルド は 21:45 に開始され、03.804 秒 かかりました ==========

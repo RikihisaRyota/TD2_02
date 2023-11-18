@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Background/Background.h"
+#include "Game/Goal/Goal.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "DebugCamera.h"
 #include "Game/Player/Player.h"
@@ -29,10 +30,9 @@ private:
 	/// ゲーム用
 	/// </summary>
 	std::unique_ptr<Background> background_;
+	std::unique_ptr<Goal> goal_;
 	std::unique_ptr<MapChip> mapChip_;
 	std::unique_ptr<MapChipEditor> mapChipEditor_;
-
 	std::unique_ptr<FollowCamera> followCamera_;
-
 	std::unique_ptr<Player> player_;
 };

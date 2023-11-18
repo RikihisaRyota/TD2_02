@@ -153,10 +153,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Game\Block\Block.cpp" />
     <ClCompile Include="Game\Background\Background.cpp" />
+    <ClCompile Include="Game\ClearSprites\ClearSprites.cpp" />
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
+    <ClCompile Include="Game\Goal\Goal.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="Game\SelectSprites\SelectSprites.cpp" />
     <ClCompile Include="Game\Sound\SoundManager.cpp" />
+    <ClCompile Include="Game\StageData\StageData.cpp" />
     <ClCompile Include="Game\TitleSprites\TitleSprites.cpp" />
     <ClCompile Include="GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="main.cpp" />
@@ -250,9 +253,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Game\Block\Block.h" />
     <ClInclude Include="Game\Background\Background.h" />
+    <ClInclude Include="Game\ClearSprites\ClearSprites.h" />
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
+    <ClInclude Include="Game\Goal\Goal.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Game\SelectSprites\SelectSprites.h" />
+    <ClInclude Include="Game\StageData\StageData.h" />
     <ClInclude Include="Game\TitleSprites\TitleSprites.h" />
     <ClInclude Include="Game\Sound\SoundManager.h" />
     <ClInclude Include="GlobalVariables\GlobalVariables.h" />

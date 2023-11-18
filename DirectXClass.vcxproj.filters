@@ -76,6 +76,15 @@
     <Filter Include="Ease">
       <UniqueIdentifier>{589284ef-e1ff-4f48-ba8a-5c5c243421ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\ClearSprites">
+      <UniqueIdentifier>{0c7fcbb4-df29-466f-97be-d0374923e5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\StageData">
+      <UniqueIdentifier>{b1f32f1c-d0ad-4236-85fc-b69b9b86d373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Goal">
+      <UniqueIdentifier>{2a9e1cce-2d5c-43e7-85fd-2db0e10a3225}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -295,6 +304,15 @@
     </ClCompile>
     <ClCompile Include="Ease\Ease.cpp">
       <Filter>Ease</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ClearSprites\ClearSprites.cpp">
+      <Filter>Game\ClearSprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\StageData\StageData.cpp">
+      <Filter>Game\StageData</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Goal\Goal.cpp">
+      <Filter>Game\Goal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -571,6 +589,15 @@
     </ClInclude>
     <ClInclude Include="Ease\Ease.h">
       <Filter>Ease</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ClearSprites\ClearSprites.h">
+      <Filter>Game\ClearSprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\StageData\StageData.h">
+      <Filter>Game\StageData</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Goal\Goal.h">
+      <Filter>Game\Goal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

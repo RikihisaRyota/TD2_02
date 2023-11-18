@@ -68,6 +68,8 @@ public:
 	WorldTransform* GetWorldTransform() { return &worldTransform_; }
 
 	void UpdateMatrix();
+
+	bool GetIsClear() { return isClear_; }
 private:
 
 	void OnCollision() override;
@@ -257,4 +259,9 @@ private:
 	// 音関係
 	int32_t jumpSoundHandle_;
 	int32_t deathSoundHandle_;
+
+	// クリアフラグ
+	bool isClear_;
+	int time_;
+	int itemCount_;
 };
