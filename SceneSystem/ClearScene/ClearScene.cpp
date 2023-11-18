@@ -23,7 +23,7 @@ void ClearScene::Init()
 void ClearScene::Update()
 {
 	// フラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		sceneNo_ = SELECT;
 	}
 }

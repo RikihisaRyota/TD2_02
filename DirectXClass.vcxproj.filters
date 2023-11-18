@@ -67,6 +67,9 @@
     <Filter Include="Game\Sound">
       <UniqueIdentifier>{d7c451f4-c9b2-478c-86e2-54398080d180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\TitleSprites">
+      <UniqueIdentifier>{4d375346-5710-458b-96ae-5577856216bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -277,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="Game\Sound\SoundManager.cpp">
       <Filter>Game\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleSprites\TitleSprites.cpp">
+      <Filter>Game\TitleSprites</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -544,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="Game\Sound\SoundManager.h">
       <Filter>Game\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleSprites\TitleSprites.h">
+      <Filter>Game\TitleSprites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
