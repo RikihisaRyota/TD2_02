@@ -16,6 +16,10 @@
 
 SceneManager::SceneManager()
 {
+	IScene::sceneNo_ = TITLE;
+	currentSceneNo_ = IScene::sceneNo_;
+	IScene::stageNo_ = 0;
+
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[SELECT] = std::make_unique<SelectScene>();
 	sceneArr_[STAGE] = std::make_unique<StageScene>();

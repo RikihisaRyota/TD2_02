@@ -11,5 +11,8 @@ public:
 	void Update() override;
 	void Draw() override;
 	void UIDraw() override;
+
+private:
+
 };
 
