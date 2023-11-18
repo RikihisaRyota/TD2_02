@@ -528,7 +528,7 @@ void Player::WallJumpUpdate() {
 		else {
 			velocity_.x -= parameters_[FloatParameterNames::kGravity];
 		}
-		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	else {
 		// 左の壁
@@ -542,7 +542,7 @@ void Player::WallJumpUpdate() {
 			velocity_.x += parameters_[FloatParameterNames::kGravity];
 		}
 
-		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	if (velocity_.y <= 0) {
 		velocity_.y += parameters_[FloatParameterNames::kGravity];
@@ -569,14 +569,14 @@ void Player::WallSideJumpUpdate() {
 		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
 			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX];
 		}
-		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	else {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX] * (-1);
 		if (velocity_.x <= parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1)) {
 			velocity_.x = parameters_[FloatParameterNames::kJumpMaxSpeedX] * (-1);
 		}
-		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 
 	velocity_.y += parameters_[FloatParameterNames::kGravity];
@@ -616,14 +616,14 @@ void Player::WallDownJumpUpdate() {
 		if (velocity_.x <= 0.2f) {
 			velocity_.x = 0.2f;
 		}
-		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 	else {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
 		if (velocity_.x >= -0.2f) {
 			velocity_.x = -0.2f;
 		}
-		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
 	}
 
 	if (velocity_.y <= 0) {

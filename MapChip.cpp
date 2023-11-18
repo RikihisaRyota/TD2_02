@@ -349,6 +349,17 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
+void MapChip::SetCurrentStage(uint32_t stageNum)
+{
+	if (stageNum >= Stage::kCount) {
+		stageNum = Stage::kCount - 1;
+		currentStage_ = stageNum;
+	}
+	else {
+		currentStage_ = stageNum;
+	}
+}
+
 void MapChip::SetBlocks(const Vector3& pos, uint32_t blockType) {
 	int32_t x = int32_t(pos.x / float(kBlockSize));
 	int32_t y = kMaxHeightBlockNum - int32_t(pos.y / float(kBlockSize));

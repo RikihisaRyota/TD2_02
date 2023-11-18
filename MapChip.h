@@ -90,7 +90,7 @@ public:
 	}
 
 	uint32_t GetCurrentStage() { return currentStage_; }
-	void SetCurrentStage(uint32_t stageNum) { currentStage_ = stageNum; }
+	void SetCurrentStage(uint32_t stageNum);
 	void SetBlocks(const Vector3& pos, uint32_t blockType);
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
