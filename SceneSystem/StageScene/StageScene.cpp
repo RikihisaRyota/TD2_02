@@ -141,7 +141,7 @@ void StageScene::Draw()
 	background_->Draw(viewProjection_);
 	goal_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
-	//player_->Draw(viewProjection_);
+	player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

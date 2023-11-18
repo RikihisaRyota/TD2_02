@@ -26,6 +26,7 @@ Player::Player() {
 
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionAttributeBlock);
+	SetCollisionMask(kCollisionAttributeGoal);
 
 	models_.emplace_back((ModelManager::GetInstance()->GetModel("player")));
 	face_.reset(PlaneRenderer::Create());
@@ -130,14 +131,16 @@ void Player::OnCollision() {
 
 			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
 
-				StateRequest(State::kClearMove);
+				
 				break;
 			}
 
-
 		}
 	}
-
+	
+	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
+		StateRequest(State::kClearMove);
+	}
 }
 
 void Player::SetCollider() {

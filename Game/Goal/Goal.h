@@ -6,7 +6,10 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 
-class Goal {
+#include "Collision/Collider.h"
+
+class Goal : public Collider
+{
 private:
 	enum GoalNames {
 		kStage_1,
@@ -38,6 +41,10 @@ private:
 	/// jsonファイルからの呼び出し
 	/// </summary>
 	void ApplyGlobalVariable();
+
+	void OnCollision() override;
+
+	void SetCollider();
 
 	std::string groupName_ = "Goal";
 

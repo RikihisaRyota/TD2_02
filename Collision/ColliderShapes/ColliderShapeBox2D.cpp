@@ -2,9 +2,18 @@
 
 bool ColliderShapeBox2D::IsCollisionBox2DBox2D(BaseColliderShapeType* a, BaseColliderShapeType* b)
 {
-	if (IsCollisionBox2DBox2D(a->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], a->v2Paras_[ColliderShapeBox2D::v2Info::SCALE],
-		b->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], b->v2Paras_[ColliderShapeBox2D::v2Info::SCALE])) {
-		return true;
+	if (a->colliderType_ != BaseColliderShapeType::ColliderType::COLLIDER || b->colliderType_ != BaseColliderShapeType::ColliderType::COLLIDER) {
+		if (IsCollisionBox2DBox2D(a->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], a->v2Paras_[ColliderShapeBox2D::v2Info::SCALE],
+			b->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], b->v2Paras_[ColliderShapeBox2D::v2Info::SCALE])) {
+			return true;
+		}
+	}
+	else {
+		// ここは本来めり込み処理を行いたい
+		if (IsCollisionBox2DBox2D(a->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], a->v2Paras_[ColliderShapeBox2D::v2Info::SCALE],
+			b->v2Paras_[ColliderShapeBox2D::v2Info::CENTER], b->v2Paras_[ColliderShapeBox2D::v2Info::SCALE])) {
+			return true;
+		}
 	}
 
 	return false;

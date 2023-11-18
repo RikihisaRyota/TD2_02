@@ -3,12 +3,23 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "TextureManager.h"
+#include "Collision/CollisionManager.h"
+#include "Collision/ColliderShapes/ColliderShapeBox2D.h"
+#include "Collision/CollisionConfig.h"
+
 Goal::Goal() {
 	model_ = std::make_unique<PlaneRenderer>();
 	model_.reset(PlaneRenderer::Create());
 	texture_ = TextureManager::Load("Resources/Textures/uvChecker.png");
 
 	worldTransform_.Initialize();
+
+	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
+	collisionAttribute_ = 0x00000000;
+	collisionMask_ = 0x00000000;
+
+	SetCollisionAttribute(kCollisionAttributeGoal);
+	SetCollisionMask(kCollisionAttributePlayer);
 }
 
 void Goal::Initialize() {
@@ -19,6 +30,8 @@ void Goal::Update() {
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
+
+	SetCollider();
 }
 
 void Goal::Draw(const ViewProjection& viewProjection) {
@@ -50,4 +63,17 @@ void Goal::ApplyGlobalVariable() {
 	}
 	worldTransform_.translate_ = v2Info_[IScene::stageNo_][V2ItemNames::kPos];
 	worldTransform_.UpdateMatrix();
+}
+
+void Goal::OnCollision()
+{
+
+}
+
+void Goal::SetCollider()
+{
+	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{});
+
+	CollisionManager::GetInstance()->SetCollider(this);
 }

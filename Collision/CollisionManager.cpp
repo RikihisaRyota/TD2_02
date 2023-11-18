@@ -98,7 +98,10 @@ bool CollisionManager::IsCollision(Collider* a, Collider* b) const
 
 bool CollisionManager::IsCollisionBox2DBox2D(Collider* a, Collider* b) const
 {
+
 	if (ColliderShapeBox2D::IsCollisionBox2DBox2D(a->shapeType_.get(), b->shapeType_.get())) {
+		a->editInfo_.collisionMask_ = b->GetCollisionAttribute();
+		b->editInfo_.collisionMask_ = a->GetCollisionAttribute();
 		return true;
 	}
 
