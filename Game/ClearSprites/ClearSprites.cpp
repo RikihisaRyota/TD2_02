@@ -73,6 +73,29 @@ void ClearSprites::Init() {
 			place /= 10;
 		}
 	}
+	// 条件1
+	if (StageData::GetClearFlag(IScene::stageNo_)) {
+		starFlag_[0] = true;
+	}
+	else {
+		starFlag_[0] = false;
+	}
+	const int clearTime = 100 * 60;
+	// 条件2
+	if (StageData::GetClearTime(IScene::stageNo_) <= clearTime) {
+		starFlag_[1] = true;
+	}
+	else {
+		starFlag_[1] = false;
+	}
+	const int clearItem = 3;
+	// 条件3
+	if (StageData::GetClearItemCount(IScene::stageNo_) >= clearItem) {
+		starFlag_[2] = true;
+	}
+	else {
+		starFlag_[2] = false;
+	}
 }
 
 void ClearSprites::Update() {
