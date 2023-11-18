@@ -70,7 +70,6 @@ void StageScene::Update()
 			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
 			viewProjection_.UpdateMatrix();
 		}
-
 	}
 
 	background_->Update();
@@ -132,7 +131,7 @@ void StageScene::Draw()
 	/// </summary>
 	background_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
-	player_->Draw(viewProjection_);
+	//player_->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 
