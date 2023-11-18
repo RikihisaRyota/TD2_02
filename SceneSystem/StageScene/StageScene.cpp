@@ -13,6 +13,7 @@
 
 #include "ParticleManager.h"
 #include "ImGuiManager.h"
+#include "SceneSystem/IScene/IScene.h"
 
 StageScene::StageScene()
 {
@@ -51,6 +52,8 @@ void StageScene::Init()
 	background_->Initialize();
 	player_->Initialize();
 	followCamera_->Initialize();
+	mapChip_->SetCurrentStage(IScene::stageNo_);
+	mapChip_->Initialize();
 }
 
 void StageScene::Update()
