@@ -29,8 +29,8 @@ private:
 
 	enum SpriteNames {
 		kBackground,
-		kTitle,
-		kPushA,
+		kSelect,
+		kDecisionA,
 		kSpriteCount,
 	};
 

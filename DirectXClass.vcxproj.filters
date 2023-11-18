@@ -70,6 +70,12 @@
     <Filter Include="Game\TitleSprites">
       <UniqueIdentifier>{4d375346-5710-458b-96ae-5577856216bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\SelectSprites">
+      <UniqueIdentifier>{9d7001a2-3710-489c-b8fd-9d37cd5ee7b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ease">
+      <UniqueIdentifier>{589284ef-e1ff-4f48-ba8a-5c5c243421ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -283,6 +289,12 @@
     </ClCompile>
     <ClCompile Include="Game\TitleSprites\TitleSprites.cpp">
       <Filter>Game\TitleSprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\SelectSprites\SelectSprites.cpp">
+      <Filter>Game\SelectSprites</Filter>
+    </ClCompile>
+    <ClCompile Include="Ease\Ease.cpp">
+      <Filter>Ease</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -553,6 +565,12 @@
     </ClInclude>
     <ClInclude Include="Game\TitleSprites\TitleSprites.h">
       <Filter>Game\TitleSprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SelectSprites\SelectSprites.h">
+      <Filter>Game\SelectSprites</Filter>
+    </ClInclude>
+    <ClInclude Include="Ease\Ease.h">
+      <Filter>Ease</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,15 +14,20 @@ SelectScene::SelectScene()
 {
 	// カメラの初期化
 	viewProjection_.Initialize();
+
+	selectSprites_ = std::make_unique<SelectSprites>();
 }
 
 void SelectScene::Init()
 {
-
+	selectSprites_->Init();
 }
 
 void SelectScene::Update()
 {
+
+	selectSprites_->Update();
+
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		sceneNo_ = STAGE;
@@ -41,6 +46,7 @@ void SelectScene::Draw()
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	selectSprites_->FarDraw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -57,9 +63,6 @@ void SelectScene::Draw()
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
-
-
 
 
 	PrimitiveDrawer::Draw();
@@ -82,6 +85,8 @@ void SelectScene::Draw()
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
+	
+	selectSprites_->NearDraw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

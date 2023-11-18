@@ -5,15 +5,14 @@
 
 TitleSprites::TitleSprites() {
 	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
-	sprites_[SpriteNames::kBackground].reset(Sprite::Create(tex, Vector2{}));
-	sprites_[SpriteNames::kBackground]->SetColor({ 0.0f,0.0f,0.0f,1.0f });
+	sprites_[SpriteNames::kBackground].reset(Sprite::Create(tex, Vector2{}, { 0.0f,0.0f,0.0f,1.0f }, { 0.5f,0.5f }));
 	sprites_[SpriteNames::kBackground]->SetSize({ 1280.0f,720.0f });
 
 	tex = TextureManager::Load("Resources/Textures/title.png");
-	sprites_[SpriteNames::kTitle].reset(Sprite::Create(tex, Vector2{}));
+	sprites_[SpriteNames::kSelect].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/pushA.png");
-	sprites_[SpriteNames::kPushA].reset(Sprite::Create(tex, Vector2{}));
+	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
@@ -40,8 +39,8 @@ void TitleSprites::FarDraw()
 
 void TitleSprites::NearDraw()
 {
-	sprites_[SpriteNames::kTitle]->Draw();
-	sprites_[SpriteNames::kPushA]->Draw();
+	sprites_[SpriteNames::kSelect]->Draw();
+	sprites_[SpriteNames::kDecisionA]->Draw();
 }
 
 void TitleSprites::SetGlobalVariable()
