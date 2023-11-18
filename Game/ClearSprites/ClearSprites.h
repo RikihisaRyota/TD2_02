@@ -1,9 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "Sprite.h"
-#include <memory>
+#include "Random.h"
 
 class ClearSprites {
 public:
@@ -26,6 +27,7 @@ private:
 
 private:
 	enum Number {
+		kZero,
 		kOne,
 		kTwo,
 		kThree,
@@ -95,6 +97,8 @@ private:
 	Vector2 v2Info_[kSpriteCount][kV2ItemCount];
 
 	std::string groupName_ = "clearSprites";
+
+	Random::RandomNumberGenerator rnd_;
 
 	int timePlace_[3];
 	bool starFlag_[3];

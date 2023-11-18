@@ -35,4 +35,7 @@ private:
 	std::unique_ptr<FollowCamera> followCamera_;
 
 	std::unique_ptr<Player> player_;
+
+	// テスト用
+	int testTime;
 };

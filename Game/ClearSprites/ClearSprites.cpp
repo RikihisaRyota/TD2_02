@@ -60,9 +60,10 @@ void ClearSprites::Init() {
 	SetGlobalVariable();
 	// 秒に直す
 	int time = StageData::GetClearTime(IScene::stageNo_) / 60;
-	float place = 100;
+	int place = 100;
 	for (int i = 0; i < 3; i++) {
-		timePlace_[2 - i] = time/place;
+		timePlace_[2 - i] = time / place;
+		time %= place;
 		place /= 10;
 	}
 
@@ -78,7 +79,6 @@ void ClearSprites::Update() {
 void ClearSprites::Draw() {
 	for (int i = 0; auto & sprite : sprites_) {
 		switch (i) {
-
 		case ClearSprites::kTimeOnesPlace:
 			sprite->SetTextureHandle(number_[timePlace_[0]]);
 			sprite->Draw();
@@ -92,18 +92,32 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:
-			sprite->SetTextureHandle(star_[starFlag_[0]]);
+			if (starFlag_[0]) {
+				sprite->SetTextureHandle(star_[kTrue]);
+			}
+			else {
+				sprite->SetTextureHandle(star_[kFalse]);
+			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarSecond:
-			sprite->SetTextureHandle(star_[starFlag_[1]]);
+			if (starFlag_[1]) {
+				sprite->SetTextureHandle(star_[kTrue]);
+			}
+			else {
+				sprite->SetTextureHandle(star_[kFalse]);
+			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarThird:
-			sprite->SetTextureHandle(star_[starFlag_[2]]);
+			if (starFlag_[2]) {
+				sprite->SetTextureHandle(star_[kTrue]);
+			}
+			else {
+				sprite->SetTextureHandle(star_[kFalse]);
+			}
 			sprite->Draw();
 			break;
-
 		case ClearSprites::kBackground:
 		case ClearSprites::kResult:
 		case ClearSprites::kTime:
@@ -114,6 +128,7 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		}
+		i++;
 	}
 }
 void ClearSprites::SetGlobalVariable() {

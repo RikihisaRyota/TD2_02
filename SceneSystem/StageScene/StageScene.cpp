@@ -13,6 +13,7 @@
 
 #include "ParticleManager.h"
 #include "ImGuiManager.h"
+#include "Game/StageData/StageData.h"
 
 StageScene::StageScene()
 {
@@ -51,6 +52,8 @@ void StageScene::Init()
 	background_->Initialize();
 	player_->Initialize();
 	followCamera_->Initialize();
+
+	testTime = 0;
 }
 
 void StageScene::Update()
@@ -95,9 +98,11 @@ void StageScene::Update()
 		mapChipEditor_->Update();
 	}
 
+	testTime++;
 	// クリアフラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
 		sceneNo_ = CLEAR;
+		StageData::SetData(testTime,2,true,IScene::stageNo_);
 	}
 }
 
