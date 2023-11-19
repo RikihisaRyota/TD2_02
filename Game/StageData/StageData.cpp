@@ -58,7 +58,7 @@ void StageData::ApplyGlobalVariable() {
 		}
 		v2Info_[i][V2ItemNames::kConditionTime].x = static_cast<float>(static_cast<int>(v2Info_[i][V2ItemNames::kConditionTime].x));
 		v2Info_[i][V2ItemNames::kConditionTime].y = static_cast<float>(static_cast<int>(v2Info_[i][V2ItemNames::kConditionTime].y));
-		data_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime].x);
+		data_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime].x) * 60;
 		data_[i].conditionItemCount = int(v2Info_[i][V2ItemNames::kConditionTime].y);
 	}
 }
