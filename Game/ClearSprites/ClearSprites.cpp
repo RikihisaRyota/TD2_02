@@ -80,9 +80,8 @@ void ClearSprites::Init() {
 	else {
 		starFlag_[0] = false;
 	}
-	const int clearTime = 100 * 60;
 	// 条件2
-	if (StageData::GetClearTime(IScene::stageNo_) <= clearTime) {
+	if (StageData::GetClearTime(IScene::stageNo_) <= StageData::GetConditionTime(IScene::stageNo_)) {
 		starFlag_[1] = true;
 	}
 	else {
@@ -90,7 +89,7 @@ void ClearSprites::Init() {
 	}
 	const int clearItem = 3;
 	// 条件3
-	if (StageData::GetClearItemCount(IScene::stageNo_) >= clearItem) {
+	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
 		starFlag_[2] = true;
 	}
 	else {

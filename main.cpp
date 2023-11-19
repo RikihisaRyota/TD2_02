@@ -25,6 +25,7 @@
 #include "SphereRenderer.h"
 #include "PrimitiveDrawer.h"
 #include "Audio.h"
+#include "Game/StageData/StageData.h"
 
 static ResourceLeackChecker leakCheck;
 
@@ -120,6 +121,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	);
 
 	GlobalVariables::GetInstance()->LoadFiles();
+
+	StageData::Initialize();
 
 	std::unique_ptr<SceneManager> sceneManager = std::make_unique<SceneManager>();
 	sceneManager->Run();
