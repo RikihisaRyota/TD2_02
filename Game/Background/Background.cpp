@@ -29,7 +29,7 @@ void Background::Update() {
 	sprite_->SetColor(color_);
 	time_++;
 	static const int kMaxTime = 120;
-	if (time_>= kMaxTime) {
+	/*if (time_>= kMaxTime) {
 		Emitter* emitter = new Emitter();
 		emitter->aliveTime = 1;
 		emitter->spawn.position = {10.0,10.0f,10.0f};
@@ -58,7 +58,7 @@ void Background::Update() {
 		particleMotion->isAlive = true;
 		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
 		time_ = 0;
-	}
+	}*/
 }
 
 void Background::SpriteDraw() {
