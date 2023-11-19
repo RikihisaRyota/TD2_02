@@ -38,7 +38,7 @@ void CollisionManager::CheckCollision()
 		for (; itrB != colliders_.end(); itrB++) {
 			Collider* colliderB = *itrB;
 
-			if (IsMatchedConfig(colliderA, colliderB)) {
+			if (IsNeedCollision(colliderA, colliderB) && IsMatchedConfig(colliderA, colliderB)) {
 
 				if (IsCollision(colliderA,colliderB)) {
 
@@ -52,6 +52,16 @@ void CollisionManager::CheckCollision()
 
 	}
 
+}
+
+bool CollisionManager::IsNeedCollision(Collider* a, Collider* b) const
+{
+	if (a->shapeType_->GetColliderType() == BaseColliderShapeType::ColliderType::UNKNOWN ||
+		b->shapeType_->GetColliderType() == BaseColliderShapeType::ColliderType::UNKNOWN) {
+		return false;
+	}
+
+	return true;
 }
 
 bool CollisionManager::IsMatchedConfig(Collider* a, Collider* b) const
@@ -102,6 +112,8 @@ bool CollisionManager::IsCollisionBox2DBox2D(Collider* a, Collider* b) const
 	if (ColliderShapeBox2D::IsCollisionBox2DBox2D(a->shapeType_.get(), b->shapeType_.get())) {
 		a->editInfo_.collisionMask_ = b->GetCollisionAttribute();
 		b->editInfo_.collisionMask_ = a->GetCollisionAttribute();
+		a->editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS] = b->shapeType_->v2Paras_[ColliderShapeBox2D::v2Info::CENTER];
+		b->editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS] = a->shapeType_->v2Paras_[ColliderShapeBox2D::v2Info::CENTER];
 		return true;
 	}
 

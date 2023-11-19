@@ -74,6 +74,7 @@ MapChip::MapChip() {
 	currentStage_ = 0;
 
 	shapeType_ = std::make_unique<ColliderShapeMapChip2D>(map_, kMaxHeightBlockNum, Vector3{}, Vector3{ 1.0f, 1.0f, 1.0f });
+	shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::RIGID_BODY);
 	collisionAttribute_ = 0x00000000;
 	collisionMask_ = 0x00000000;
 
