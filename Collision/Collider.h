@@ -12,6 +12,7 @@ public:
 		enum EditEnumV2 {
 			V2POS,
 			V2VELOCITY,
+			V2MASKPOS,
 			V2COUNT,
 		};
 

@@ -167,6 +167,12 @@ private:
 
 	bool kIsWallDown_ = false;
 
+	Vector2 goalPos_;
+	Vector2 preClearPos_;
+	Vector3 preClearScale_;
+
+	float clearRot_;
+
 	int countFrame_;
 
 	enum FloatParameterNames {
@@ -180,6 +186,7 @@ private:
 		kWallJumpInitialVelocityY, // 壁キック時のy軸の初速
 		kJumpRotateSpeed, // ジャンプ時のプレイヤーの回転スピード
 		k2JumpMagnification, // 2段ジャンプの倍率
+		kClearRotateSpeed, // クリア時の回転の速さ
 		kCountFloatParameter, // 末尾
 	};
 
@@ -197,6 +204,7 @@ private:
 		"壁キック時のy軸の初速",
 		"ジャンプ時のプレイヤーの回転スピード",
 		"2段ジャンプの倍率",
+		"クリア時の回転の速さ",
 
 	};
 
@@ -226,6 +234,7 @@ private:
 	enum IParameterNames {
 		kGripStayTime, // 壁に捕まって動かないフレーム数
 		k2JumpExtensionFrame, // 2段ジャンプの猶予フレーム
+		kClearFrame, // クリア時にかけるフレーム数
 		kCountIParameter, // 末尾
 	};
 
@@ -235,6 +244,7 @@ private:
 	std::string iParameterItemNames[IParameterNames::kCountIParameter] = {
 		"壁に捕まって動かないフレーム数",
 		"2段ジャンプの猶予フレーム",
+		"クリア時にかけるフレーム数",
 
 	};
 

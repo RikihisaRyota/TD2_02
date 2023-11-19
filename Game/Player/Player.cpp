@@ -14,6 +14,8 @@
 #include "ParticleManager.h"
 #include "MyMath.h"
 
+#include "Ease/Ease.h"
+
 Player::Player() {
 
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::RIGID_BODY);
@@ -50,7 +52,8 @@ Player::Player() {
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 	modelWorldTransforms_[Parts::kMain].parent_ = &worldTransform_;
 	modelWorldTransforms_[Parts::kTail].parent_ = &modelWorldTransforms_[Parts::kMain];
-	modelWorldTransforms_[Parts::kTail].translate_ = { -1.5f,0.5f,0.0f };
+	modelWorldTransforms_[Parts::kTail].translate_ = { -0.9f,0.0f,0.0f };
+	modelWorldTransforms_[Parts::kTail].rotation_.z = 0.5f;
 	faceWorldTransform_.parent_ = &worldTransform_;
 	UpdateMatrix();
 
@@ -75,6 +78,9 @@ Player::Player() {
 }
 
 void Player::Initialize() {
+
+	shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::RIGID_BODY);
+
 	StateRequest(State::kNormal);
 
 	worldTransform_.translate_ = v3Parameters_[kInitialPos];
@@ -144,6 +150,8 @@ void Player::OnCollision() {
 	}
 	
 	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
+		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+		goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
 		StateRequest(State::kClearMove);
 	}
 }
@@ -761,11 +769,34 @@ void Player::SoundInitialize() {
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
 	StageData::SetData(time_,itemCount_,true,IScene::stageNo_);
+
+	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
+	clearRot_ = 0.0f;
+	preClearScale_ = worldTransform_.scale_;
 }
 
 void Player::ClearMoveUpdate() {
 	countFrame_++;
-	if (countFrame_ == 60) {
+	
+	Vector2 pos = Ease::UseEase(preClearPos_, goalPos_, countFrame_, iParameters_[IParameterNames::kClearFrame], Ease::EaseType::Constant);
+
+	if (isRight_) {
+		clearRot_ -= parameters_[FloatParameterNames::kClearRotateSpeed];
+		worldTransform_.rotation_.z += parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+	else {
+		clearRot_ += parameters_[FloatParameterNames::kClearRotateSpeed];
+		worldTransform_.rotation_.z -= parameters_[FloatParameterNames::kJumpRotateSpeed];
+	}
+
+	worldTransform_.scale_ = Ease::UseEase(preClearScale_, Vector3{}, countFrame_, iParameters_[IParameterNames::kClearFrame], Ease::EaseType::Constant);
+
+	pos -= goalPos_;
+
+	worldTransform_.translate_.x = pos.x * std::cosf(clearRot_) - pos.y * std::sinf(clearRot_) + goalPos_.x;
+	worldTransform_.translate_.y = pos.x * std::sinf(clearRot_) + pos.y * std::cosf(clearRot_) + goalPos_.y;
+
+	if (countFrame_ >= iParameters_[IParameterNames::kClearFrame]) {
 		Initialize();
 		isClear_ = true;
 	}

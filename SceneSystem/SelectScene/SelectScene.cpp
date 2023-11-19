@@ -25,13 +25,13 @@ void SelectScene::Init()
 
 void SelectScene::Update()
 {
-
+	// この中に遷移フラグあり
 	selectSprites_->Update();
 
 	// フラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+	/*if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		sceneNo_ = STAGE;
-	}
+	}*/
 }
 
 void SelectScene::Draw()

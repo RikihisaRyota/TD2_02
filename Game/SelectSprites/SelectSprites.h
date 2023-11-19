@@ -79,6 +79,7 @@ private:
 		kSelect,
 		kDecisionA,
 		kSelectLS,
+		kStarFram,
 		kSpriteCount,
 	};
 
@@ -86,6 +87,7 @@ private:
 		"セレクトの",
 		"決定Aの",
 		"選択の",
+		"星のフレームの"
 	};
 
 	enum V2ItemNames {
