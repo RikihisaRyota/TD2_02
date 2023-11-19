@@ -136,6 +136,7 @@ private:
 	// モデルのパーツ
 	enum Parts {
 		kMain, // 胴体 
+		kTail, // しっぽ
 		kCountParts, // 末尾
 	};
 	
