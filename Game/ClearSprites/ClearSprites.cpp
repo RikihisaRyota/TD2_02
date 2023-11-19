@@ -17,7 +17,7 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTime].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
-	tex = TextureManager::Load("Resources/Textures/stage0.png");
+	tex = TextureManager::Load("Resources/Textures/time0.png");
 	sprites_[SpriteNames::kTimeOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -37,7 +37,7 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kConditionThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	for (uint32_t i = 0; i < kNumberCount; i++) {
-		number_[i] = TextureManager::Load("Resources/Textures/stage" + std::to_string(i) + ".png");
+		number_[i] = TextureManager::Load("Resources/Textures/time" + std::to_string(i) + ".png");
 	}
 
 	star_[kTrue] = TextureManager::Load("Resources/Textures/starGet.png");
