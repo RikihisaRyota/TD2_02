@@ -21,6 +21,11 @@ SelectSprites::SelectSprites() {
 	tex = TextureManager::Load("Resources/Textures/selectLS.png");
 	sprites_[SpriteNames::kSelectLS].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/stageSelectFram.png");
+	sprites_[SpriteNames::kStarFram].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	sprites_[SpriteNames::kStarFram]->SetSize({ sprites_[SpriteNames::kStarFram]->GetSize().x * 0.8f, sprites_[SpriteNames::kStarFram]->GetSize().y });
+
+
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
