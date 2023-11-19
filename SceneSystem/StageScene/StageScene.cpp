@@ -122,8 +122,8 @@ void StageScene::Draw()
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
 	// スプライト描画後処理
+	background_->SpriteDraw();
 	Sprite::PostDraw();
 	DirectXCommon::GetInstance()->ClearDepthBuffer();
 #pragma endregion

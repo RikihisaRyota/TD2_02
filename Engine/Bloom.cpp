@@ -188,7 +188,7 @@ void Bloom::CreateResource() {
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&constantDate_));
 	// 初期値代入
 	constantDate_->knee = 1.5f;
-	constantDate_->threshold = 0.5f;
+	constantDate_->threshold = 0.8f;
 }
 
 void Bloom::SetCommandList() {
