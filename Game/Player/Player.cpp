@@ -29,6 +29,7 @@ Player::Player() {
 	SetCollisionMask(kCollisionAttributeGoal);
 
 	models_.emplace_back((ModelManager::GetInstance()->GetModel("player")));
+	models_.emplace_back((ModelManager::GetInstance()->GetModel("playerTail")));
 	face_.reset(PlaneRenderer::Create());
 	faceTextureHandle_[0] = TextureManager::Load("Resources/Textures/playerFaceRight.png");
 	faceTextureHandle_[1] = TextureManager::Load("Resources/Textures/playerFaceLeft.png");
@@ -39,13 +40,17 @@ Player::Player() {
 	faceWorldTransform_.UpdateMatrix();
 	isPlayerFaceRight_ = false;
 
-	modelWorldTransforms_.push_back(WorldTransform());
-	modelWorldTransforms_[Parts::kMain].Initialize();
+	for (int i = 0; i < Parts::kCountParts; i++) {
+		modelWorldTransforms_.push_back(WorldTransform());
+		modelWorldTransforms_[i].Initialize();
+	}
 
 	worldTransform_.Initialize();
 	worldTransform_.translate_ = { 50.0f,20.0f,0.0f };
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 	modelWorldTransforms_[Parts::kMain].parent_ = &worldTransform_;
+	modelWorldTransforms_[Parts::kTail].parent_ = &modelWorldTransforms_[Parts::kMain];
+	modelWorldTransforms_[Parts::kTail].translate_ = { -1.5f,0.5f,0.0f };
 	faceWorldTransform_.parent_ = &worldTransform_;
 	UpdateMatrix();
 
