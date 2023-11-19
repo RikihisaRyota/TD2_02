@@ -37,6 +37,7 @@ StageScene::StageScene()
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
 	player_ = std::make_unique<Player>();
 #pragma endregion
+	background_->SetPlayer(player_.get());
 
 	mapChip_->Initialize();
 	mapChip_->SetViewProjection(&viewProjection_);

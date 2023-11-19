@@ -61,7 +61,17 @@ void Particle::Update() {
 				// 色
 				particle->motion.color.currentColor = Lerp(particle->motion.color.startColor, particle->motion.color.endColor, std::clamp(t, 0.0f, 1.0f));
 				// スケール
-				particle->motion.scale.currentScale = Lerp(particle->motion.scale.startScale, particle->motion.scale.endScale, std::clamp(t, 0.0f, 1.0f));
+				if (particle->motion.scale.interimScale == Vector3(0.0f, 0.0f, 0.0f)) {
+					particle->motion.scale.currentScale = Lerp(particle->motion.scale.startScale, particle->motion.scale.endScale, std::clamp(t, 0.0f, 1.0f));
+				}
+				else {
+					if (t <= 0.5f) {
+						particle->motion.scale.currentScale = Lerp(particle->motion.scale.startScale, particle->motion.scale.interimScale, std::clamp(t, 0.0f, 0.5f));
+					}
+					else {
+						particle->motion.scale.currentScale = Lerp(particle->motion.scale.interimScale, particle->motion.scale.endScale, std::clamp(t, 0.5f, 1.0f));
+					}
+				}
 				// 回転
 				particle->motion.rotate.currentRotate += particle->motion.rotate.addRotate;
 				// 移動
@@ -87,7 +97,7 @@ void Particle::Update() {
 	isAlive_ = false;
 	for (auto& particle : particleWorldTransform_) {
 		if (particle->motion.isAlive) {
-			isAlive_=true;
+			isAlive_ = true;
 			break;
 		}
 	}

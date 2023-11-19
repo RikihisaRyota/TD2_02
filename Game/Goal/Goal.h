@@ -8,6 +8,7 @@
 
 #include "Collision/Collider.h"
 
+class Player;
 class Goal : public Collider
 {
 private:
