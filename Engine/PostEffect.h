@@ -20,6 +20,7 @@ class PostEffect {
 public:
 	void Initialize(Buffer* buffer);
 	void Update();
+	void Render();
 	void Shutdown();
 
 	ID3D12RootSignature* GetRootSignature() { return postEffectPipeline_->GetRootSignature(); }

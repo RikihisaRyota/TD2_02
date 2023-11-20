@@ -30,7 +30,7 @@ public:
 	};
 	void Initialize(Buffer* original);
 	void Render();
-	void PreUpdate();
+	void Update();
 	void Shutdown();
 
 	ID3D12RootSignature* GetRootSignature() { return bloomPipeline_->GetRootSignature(); }
