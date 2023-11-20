@@ -1,4 +1,4 @@
-#include "PreBloomPipeline.h"
+#include "PostBloomPipeline.h"
 
 #include <d3dx12.h>
 #include <cassert>
@@ -6,14 +6,15 @@
 #include "ConvertString.h"
 #include "DirectXCommon.h"
 #include "ShaderCompiler.h"
+
 using namespace Microsoft::WRL;
 
-void PreBloomPipeline::InitializeGraphicsPipeline() {
+void PostBloomPipeline::InitializeGraphicsPipeline() {
 	CreateState();
 	CreatePSO();
 }
 
-void PreBloomPipeline::CreateState() {
+void PostBloomPipeline::CreateState() {
 	CreateRootSignature();
 	CreateInputLayout();
 	CreateBlendState();
@@ -22,14 +23,18 @@ void PreBloomPipeline::CreateState() {
 	CreateShaderCompile();
 }
 
-void PreBloomPipeline::CreateRootSignature() {
+void PostBloomPipeline::CreateRootSignature() {
 	HRESULT hr = S_FALSE;
-	CD3DX12_DESCRIPTOR_RANGE ranges[1]{};
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	CD3DX12_DESCRIPTOR_RANGE ranges[Bloom::kBlurLevel]{};
+	for (size_t i = 0; i < Bloom::kBlurLevel; i++) {
+		ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, UINT(i));
+	}
 
-	CD3DX12_ROOT_PARAMETER rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::COUNT]{};
-	rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::TEXTURE].InitAsDescriptorTable(_countof(ranges), ranges);
-
+	CD3DX12_ROOT_PARAMETER rootParameters[PostBloomPipeline::ROOT_PARAMETER_TYP::COUNT]{};
+	//rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::PRAM].InitAsConstantBufferView(PreBloomPipeline::ROOT_PARAMETER_TYP::PRAM, 0);
+	for (size_t i = 0; i < Bloom::kBlurLevel; ++i) {
+		rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
+	}
 	CD3DX12_STATIC_SAMPLER_DESC staticSampler(
 		0,
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
@@ -62,7 +67,7 @@ void PreBloomPipeline::CreateRootSignature() {
 	assert(SUCCEEDED(hr));
 }
 
-void PreBloomPipeline::CreateInputLayout() {
+void PostBloomPipeline::CreateInputLayout() {
 	//InputLayout
 	inputLayout_[0] =
 	{// xyz座標(1行で書いたほうが見やすい)
@@ -77,41 +82,47 @@ void PreBloomPipeline::CreateInputLayout() {
 	};
 }
 
-void PreBloomPipeline::CreateBlendState() {
-	//全ての色要素を書き込む
+void PostBloomPipeline::CreateBlendState() {
+	blendDesc_.RenderTarget[0].BlendEnable = true;
+	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
-void PreBloomPipeline::CreateRasterizerState() {
+void PostBloomPipeline::CreateRasterizerState() {
 	//裏面（時計回り）を表示しない
 	rasterizerDesc_.CullMode = D3D12_CULL_MODE_BACK;
 	//三角形の中を塗りつぶす
 	rasterizerDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 }
 
-void PreBloomPipeline::CreateShaderCompile() {
+void PostBloomPipeline::CreateShaderCompile() {
 	//Shaderをコンパイルする
 	vertexShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/PreBloom.VS.hlsl",
+		L"Resources/Shaders/PostBloom.VS.hlsl",
 		L"vs_6_0");
 	assert(vertexShaderBlob_ != nullptr);
 
 	pixelShaderBlob_ = ShaderCompiler::Compile(
-		L"Resources/Shaders/PreBloom.PS.hlsl",
+		L"Resources/Shaders/PostBloom.PS.hlsl",
 		L"ps_6_0");
 	assert(pixelShaderBlob_ != nullptr);
 }
 
-void PreBloomPipeline::CreateDepthStencil() {
+void PostBloomPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
-	depthStencilDesc_.DepthEnable = true;
+	depthStencilDesc_.DepthEnable = false;
 	// 書き込みをする
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される
 	depthStencilDesc_.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 }
 
-void PreBloomPipeline::CreatePSO() {
+void PostBloomPipeline::CreatePSO() {
 	HRESULT hr = S_FALSE;
 	//PSO生成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicPipelineStateDesc{};

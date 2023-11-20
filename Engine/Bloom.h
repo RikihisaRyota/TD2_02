@@ -7,12 +7,14 @@
 #include "BloomPipeline.h"
 #include "cBuffer.h"
 #include "GaussianBlur.h"
-#include "PreBloomPipeline.h"
+#include "PostBloomPipeline.h"
 #include "Vector2.h"
 #include "Vector4.h"
 
 class Bloom {
 public:
+	static const uint32_t kBlurLevel = 5;
+
 	struct VertexPos {
 		Vector4 position{};
 		Vector2 texcoord{};
@@ -22,8 +24,8 @@ public:
 		float threshold;
 		float knee;
 	};
-	void Initialize(Buffer* original, Buffer* depth);
-	void Update();
+	void Initialize(Buffer* original);
+	void Render();
 	void PreUpdate();
 	void Shutdown();
 
@@ -40,12 +42,11 @@ private:
 	void SetCommandList();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 	BloomPipeline* bloomPipeline_;
-	PreBloomPipeline* preBloomPipeline_;
+	PostBloomPipeline* postBloomPipeline_;
 	// 描画用バッファ
 	Buffer* temporaryBuffer_;
 	Buffer* originalBuffer_;
-	Buffer* originalDepthBuffer_;
-	GaussianBlur* gaussianBlur_;
+	GaussianBlur* gaussianBlur_[kBlurLevel];
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertBuff_;
 	// 頂点バッファビュー

@@ -6,10 +6,14 @@
 
 #pragma comment(lib,"dxcompiler.lib")
 
-class PreBloomPipeline {
+class PostBloomPipeline {
 public:
 	enum ROOT_PARAMETER_TYP {
-		TEXTURE,
+		TEXTURE0,
+		TEXTURE1,
+		TEXTURE2,
+		TEXTURE3,
+		TEXTURE4,
 		COUNT,
 	};
 public:

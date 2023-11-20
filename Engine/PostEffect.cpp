@@ -68,6 +68,9 @@ void PostEffect::CreateResource() {
 		&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PRESENT, &clearValue,
 		IID_PPV_ARGS(&temporaryBuffer_->buffer));
 	temporaryBuffer_->buffer->SetName(L"PostEffectBuffer");
+	temporaryBuffer_->width = WinApp::kWindowWidth;
+	temporaryBuffer_->height= WinApp::kWindowHeight;
+
 	assert(SUCCEEDED(result));
 	common->GetSRVCPUGPUHandle(temporaryBuffer_->srvCPUHandle, temporaryBuffer_->srvGPUHandle);
 	temporaryBuffer_->rtvHandle = common->GetRTVCPUDescriptorHandle();

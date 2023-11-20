@@ -63,12 +63,11 @@ void DirectXCommon::PreDraw() {
 
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 	// リソースバリアを変更(表示状態->描画対象)
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		mainBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
+	CD3DX12_RESOURCE_BARRIER barrier[]{
+		mainBuffer_->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
+	};
 	// TransitionBarrierを張る
-	commandList_->ResourceBarrier(1, &barrier);
+	commandList_->ResourceBarrier(_countof(barrier), barrier);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = mainBuffer_->rtvHandle;
 	commandList_->OMSetRenderTargets(1, &rtvHandle, false, &mainDepthBuffer_->dpsCPUHandle);
 
@@ -79,10 +78,10 @@ void DirectXCommon::PreDraw() {
 
 	// ビューポートの設定
 	CD3DX12_VIEWPORT viewport =
-		CD3DX12_VIEWPORT(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight);
+		CD3DX12_VIEWPORT(0.0f, 0.0f,FLOAT(mainBuffer_->width),FLOAT(mainBuffer_->height));
 	commandList_->RSSetViewports(1, &viewport);
 	// シザリング矩形の設定
-	CD3DX12_RECT rect = CD3DX12_RECT(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight);
+	CD3DX12_RECT rect = CD3DX12_RECT(0, 0, LONG(mainBuffer_->width), LONG(mainBuffer_->height));
 	commandList_->RSSetScissorRects(1, &rect);
 }
 
@@ -90,46 +89,39 @@ void DirectXCommon::PostDraw() {
 	HRESULT hr = S_FALSE;
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
-
-	bloom_->Update();
+	bloom_->Render();
 	// リソースバリアの変更
-	CD3DX12_RESOURCE_BARRIER barrier[2];
-	barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
-		backBuffers_[bbIndex]->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		mainBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	commandList_->ResourceBarrier(2, barrier);
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[]
+		{
+			backBuffers_[bbIndex]->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
+			mainBuffer_->TransitionBarrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
+		};
+		commandList_->ResourceBarrier(_countof(barrier), barrier);
+	}
+
 	commandList_->OMSetRenderTargets(1, &backBuffers_[bbIndex]->rtvHandle, false, &mainDepthBuffer_->dpsCPUHandle);
 
 	postEffect_->Update();
 
-	// リソースバリアの変更
-	barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
-		mainBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PRESENT);
-
-	barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		backBuffers_[bbIndex]->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT);
-
-	commandList_->ResourceBarrier(2, barrier);
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[]
+		{
+			backBuffers_[bbIndex]->TransitionBarrier(D3D12_RESOURCE_STATE_PRESENT)
+		};
+		commandList_->ResourceBarrier(_countof(barrier), barrier);
+	}
 }
 
 void DirectXCommon::PreUIDraw() {
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
-	// リソースバリアを変更(表示状態->描画対象)
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		backBuffers_[bbIndex]->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	// TransitionBarrierを張る
-	commandList_->ResourceBarrier(1, &barrier);
+	// リソースバリアの変更
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] = {
+			backBuffers_[bbIndex]->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
+		};
+		commandList_->ResourceBarrier(_countof(barrier), barrier);
+	}
 	commandList_->OMSetRenderTargets(1, &backBuffers_[bbIndex]->rtvHandle, false, &mainDepthBuffer_->dpsCPUHandle);
 
 	// ビューポートの設定
@@ -145,13 +137,15 @@ void DirectXCommon::PostUIDraw() {
 	HRESULT hr = S_FALSE;
 	UINT bbIndex = swapChain_->GetCurrentBackBufferIndex();
 
-	// リソースバリアの変更(コピー先->描画)
-	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		backBuffers_[bbIndex]->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PRESENT);
+	// リソースバリアの変更
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] = {
+			backBuffers_[bbIndex]->TransitionBarrier(D3D12_RESOURCE_STATE_PRESENT),
+			mainBuffer_->TransitionBarrier(D3D12_RESOURCE_STATE_PRESENT),
 
-	commandList_->ResourceBarrier(1, &barrier);
+		};
+		commandList_->ResourceBarrier(_countof(barrier), barrier);
+	}
 
 	WaitForGPU();
 }
@@ -367,6 +361,9 @@ void DirectXCommon::CreateRenderTargets() {
 		hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&backBuffers_[i]->buffer));
 		backBuffers_[i]->buffer->SetName((L"SwapChainBuffer" + std::to_wstring(i)).c_str());
 		assert(SUCCEEDED(hr));
+		backBuffers_[i]->width = WinApp::kWindowWidth;
+		backBuffers_[i]->height = WinApp::kWindowHeight;
+		backBuffers_[i]->states = D3D12_RESOURCE_STATE_PRESENT;
 		backBuffers_[i]->rtvHandle = GetRTVCPUDescriptorHandle();
 		// レンダーターゲットビューの生成
 		device_->CreateRenderTargetView(backBuffers_[i]->buffer.Get(), &rtvDesc, backBuffers_[i]->rtvHandle);
@@ -390,6 +387,9 @@ void DirectXCommon::CreateRenderTargets() {
 		IID_PPV_ARGS(&mainBuffer_->buffer));
 	assert(SUCCEEDED(result));
 	mainBuffer_->buffer->SetName(L"mainBuffer");
+	mainBuffer_->states = D3D12_RESOURCE_STATE_PRESENT;
+	mainBuffer_->width = uint32_t(resourceDesc.Width);
+	mainBuffer_->height = uint32_t(resourceDesc.Height);
 	GetSRVCPUGPUHandle(mainBuffer_->srvCPUHandle, mainBuffer_->srvGPUHandle);
 	mainBuffer_->rtvHandle = GetRTVCPUDescriptorHandle();
 	device_->CreateShaderResourceView(mainBuffer_->buffer.Get(), &srvDesc, mainBuffer_->srvCPUHandle);
@@ -400,6 +400,9 @@ void DirectXCommon::CreateDepthBuffer() {
 	// DepthStemcilTextureをウィンドウのサイズで作成
 	mainDepthBuffer_->buffer = CreateDepthStencilTextureResource(WinApp::kWindowWidth, WinApp::kWindowHeight);
 	mainDepthBuffer_->buffer->SetName(L"mainDepthBuffer");
+	mainDepthBuffer_->width = WinApp::kWindowWidth;
+	mainDepthBuffer_->height= WinApp::kWindowHeight;
+
 	// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないにで、ShaderVisibleはfalse
 	dsvHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
@@ -431,7 +434,7 @@ void DirectXCommon::PostEffectInitialize() {
 
 void DirectXCommon::BloomInitialize() {
 	bloom_ = new Bloom();
-	bloom_->Initialize(mainBuffer_, mainDepthBuffer_);
+	bloom_->Initialize(mainBuffer_);
 }
 
 void DirectXCommon::WaitForGPU() {

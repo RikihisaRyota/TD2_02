@@ -12,7 +12,6 @@
 
 
 class GaussianBlur {
-	friend class PostEffect;
 private:
 	enum BufferType {
 		kVerticalBlur,
@@ -25,15 +24,16 @@ private:
 		Vector2 texcoord{};
 	};
 public:
-	void Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState);
-	void Update();
+	void Initialize(Buffer* buffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState);
+	void Render();
 	void Shutdown();
 
 	ID3D12RootSignature* GetVerticalBlurRootSignature() { return verticalBlurPipelinePipeline_->GetRootSignature(); }
 	ID3D12PipelineState* GetVerticalBlurPipelineState() { return verticalBlurPipelinePipeline_->GetPipelineState(); }
 	ID3D12RootSignature* GetHorizontalBlurRootSignature() { return horizontalBlurPipeline_->GetRootSignature(); }
 	ID3D12PipelineState* GetHorizontalBlurPipelineState() { return horizontalBlurPipeline_->GetPipelineState(); }
-	ID3D12Resource* GetBuffer(size_t num) { return buffer_.at(num)->buffer.Get(); }
+	//ID3D12Resource* GetBuffer(size_t num) { return buffer_.at(num)->buffer.Get(); }
+	Buffer* GetResultBuffer() { return buffer_.at(BufferType::kHorizontalBlur); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(size_t num) { return buffer_.at(num)->rtvHandle; }
 private:
 	static const uint32_t kNumWeights = 8;
@@ -42,7 +42,6 @@ private:
 	void CreateResource();
 	void SetCommandList();
 	void ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE handle);
-	void ClearDepthBuffer(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 	VerticalBlurPipeline* verticalBlurPipelinePipeline_;
 	HorizontalBlurPipeline* horizontalBlurPipeline_;
@@ -62,7 +61,6 @@ private:
 	ID3D12PipelineState* pipelineState_;
 	ID3D12RootSignature* rootSignature_;
 	Buffer* originalBuffer_;
-	Buffer* depthBuffer_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> constantBuffer_;
 	float weights_[kNumWeights]{};
