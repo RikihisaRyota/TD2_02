@@ -13,6 +13,7 @@
 #include "SceneSystem/ClearScene/ClearScene.h"
 
 #include "GlobalVariables/GlobalVariables.h"
+#include "Game/Nedle/Nedle.h"
 
 SceneManager::SceneManager()
 {
@@ -80,6 +81,7 @@ int SceneManager::Run()
 		soundManager_->Update();
 	}
 
+	NedleManager::GetInstance()->Finalize();
 
 	return 0;
 }

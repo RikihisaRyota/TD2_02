@@ -16,6 +16,7 @@
 #include "WinApp.h"
 #include "Collision/CollisionManager.h"
 #include "TextureManager.h"
+#include "Game/Nedle/Nedle.h"
 
 using namespace Microsoft::WRL;
 
@@ -27,6 +28,20 @@ void MapChip::SetCollider() {
 }
 
 void MapChip::Update() {
+
+	NedleManager* nedleManager = NedleManager::GetInstance();
+
+	if (nedleManager->IsCreatNedle()) {
+		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
+			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
+				
+				if (map_[y][x] == uint32_t(Blocks::kRedBlock)) {
+					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
+				}
+			}
+		}
+	}
+
 	SetCollider();
 }
 

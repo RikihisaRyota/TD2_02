@@ -76,6 +76,10 @@ private:
 
 	void SetCollider();
 
+	void NoTatchUpdate();
+
+	void NoTatchReturnUpdate();
+
 	/// <summary>
 	/// jsonファイルへの書き込み
 	/// </summary>
@@ -170,6 +174,11 @@ private:
 	Vector2 goalPos_;
 	Vector2 preClearPos_;
 	Vector3 preClearScale_;
+	Vector3 preScale_;
+
+	float scaleTheta_;
+
+	int noTatchCountFrame_;
 
 	float clearRot_;
 

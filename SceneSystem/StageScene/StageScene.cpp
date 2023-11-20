@@ -15,6 +15,7 @@
 #include "ImGuiManager.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "Game/StageData/StageData.h"
+#include "Game/Nedle/Nedle.h"
 
 StageScene::StageScene()
 {
@@ -45,12 +46,14 @@ StageScene::StageScene()
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
 
+	NedleManager::GetInstance()->Init();
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 }
 
 void StageScene::Init()
 {
+	NedleManager::GetInstance()->Init();
 	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
 	goal_->Initialize();
@@ -83,6 +86,8 @@ void StageScene::Update()
 	background_->Update();
 
 	mapChip_->Update();
+
+	NedleManager::GetInstance()->Update();
 
 	player_->Update();
 
@@ -142,6 +147,7 @@ void StageScene::Draw()
 	goal_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
+	NedleManager::GetInstance()->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

@@ -33,7 +33,13 @@ void FollowCamera::Update() {
 	ApplyGlobalVariable();
 
 	if (target_) {
-		interTarget_ = Lerp(interTarget_, target_->worldPos_, fParameters_[kInterpolationRate]);
+		Vector3 pos = target_->worldPos_;
+
+		if (pos.y < fParameters_[FParameterNames::kMinPosY]) {
+			pos.y = fParameters_[FParameterNames::kMinPosY];
+		}
+
+		interTarget_ = Lerp(interTarget_, pos, fParameters_[kInterpolationRate]);
 
 		viewProjection_.translate_ = interTarget_ + v3Parameters_[kOffset];
 	}
@@ -54,7 +60,13 @@ void FollowCamera::Reset()
 	// 追従対象がいれば
 	if (target_) {
 		// 追従座標の初期化
-		interTarget_ = target_->worldPos_;
+		Vector3 pos = target_->worldPos_;
+
+		if (pos.y < fParameters_[FParameterNames::kMinPosY]) {
+			pos.y = fParameters_[FParameterNames::kMinPosY];
+		}
+
+		interTarget_ = pos;
 	}
 
 	viewProjection_.translate_ = interTarget_;

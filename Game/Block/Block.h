@@ -1,5 +1,9 @@
 #pragma once
 #include "ViewProjection.h"
+#include "WorldTransform.h"
+#include "Collision/Collider.h"
+#include <list>
+#include "Model.h"
 
 class IBlock
 {
@@ -32,18 +36,6 @@ private:
 
 };
 
-class HogeBlock : public IBlock
-{
-public:
-	HogeBlock();
-	~HogeBlock();
 
-	void Init();
 
-	void Update();
 
-	void OnCollision();
-
-private:
-
-};
