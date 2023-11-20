@@ -24,6 +24,10 @@ public:
 		float threshold;
 		float knee;
 	};
+
+	struct PostConstantDate {
+		float intensity;
+	};
 	void Initialize(Buffer* original);
 	void Render();
 	void PreUpdate();
@@ -58,5 +62,7 @@ private:
 	D3D12_INDEX_BUFFER_VIEW ibView_{};
 	std::vector<uint16_t> indices_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> constantBuffer_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> postConstantBuffer_;
 	ConstantDate* constantDate_;
+	PostConstantDate* postConstantDate_;
 };

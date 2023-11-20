@@ -75,6 +75,7 @@ void Bloom::PreUpdate() {
 	if (ImGui::TreeNode("Bloom")) {
 		ImGui::DragFloat("明るさ以上にブルームをかける", &constantDate_->threshold, 0.01f);
 		ImGui::DragFloat("どのくらい明るくするか", &constantDate_->knee, 0.01f);
+		ImGui::DragFloat("明るさ", &postConstantDate_->intensity, 0.1f);
 		constantDate_->threshold = std::clamp(constantDate_->threshold,0.0f,1.0f);
 		constantDate_->knee = std::max(constantDate_->knee,0.0f);
 		ImGui::TreePop();
@@ -94,6 +95,7 @@ void Bloom::Shutdown() {
 	vertBuff_.Reset();
 	temporaryBuffer_->buffer.Reset();
 	constantBuffer_.Reset();
+	postConstantBuffer_.Reset();
 	delete temporaryBuffer_;
 	delete bloomPipeline_;
 	delete postBloomPipeline_;
@@ -201,6 +203,12 @@ void Bloom::CreateResource() {
 	// 初期値代入
 	constantDate_->knee = 1.5f;
 	constantDate_->threshold = 0.8f;
+
+	postConstantBuffer_ = CreateBuffer(sizeof(PostConstantDate));
+	// ライティングバッファへのデータ転送
+	postConstantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&postConstantDate_));
+	// 初期値代入
+	postConstantDate_->intensity = 1.0f;
 }
 
 void Bloom::SetCommandList() {
@@ -227,36 +235,11 @@ void Bloom::SetCommandList() {
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	commandList->IASetIndexBuffer(&ibView_);
+	commandList->SetGraphicsRootConstantBufferView(PostBloomPipeline::ROOT_PARAMETER_TYP::PRAM, postConstantBuffer_->GetGPUVirtualAddress());
 	for (size_t i = 0; i < Bloom::kBlurLevel; i++) {
-		commandList->SetGraphicsRootDescriptorTable(UINT(i),gaussianBlur_[i]->GetResultBuffer()->srvGPUHandle);
+		commandList->SetGraphicsRootDescriptorTable(UINT(i + 1),gaussianBlur_[i]->GetResultBuffer()->srvGPUHandle);
 	}
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
-
-	//// リソースバリアの変更
-	//{
-	//	CD3DX12_RESOURCE_BARRIER barrier[]
-	//	{
-	//		temporaryBuffer_->TransitionBarrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
-	//		originalBuffer_->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
-	//	};
-	//	commandList->ResourceBarrier(_countof(barrier), barrier);
-	//}
-	//commandList->OMSetRenderTargets(1, &originalBuffer_->rtvHandle, false, nullptr);
-
-	//commandList->SetGraphicsRootSignature(bloomPipeline_->GetRootSignature());
-	//commandList->SetPipelineState(bloomPipeline_->GetPipelineState());
-	//commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//commandList->IASetVertexBuffers(0, 1, &vbView_);
-	//commandList->IASetIndexBuffer(&ibView_);
-	//commandList->SetGraphicsRootDescriptorTable(BloomPipeline::ROOT_PARAMETER_TYP::TEXTURE, temporaryBuffer_->srvGPUHandle);
-	//commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
-
-
-	//CD3DX12_RESOURCE_BARRIER barrier_0 = CD3DX12_RESOURCE_BARRIER::Transition(
-	//	temporaryBuffer_->buffer.Get(),
-	//	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-	//	D3D12_RESOURCE_STATE_PRESENT);
-	//commandList->ResourceBarrier(1, &barrier_0);
 }
 ComPtr<ID3D12Resource> Bloom::CreateBuffer(UINT size) {
 	auto device = DirectXCommon::GetInstance()->GetDevice();

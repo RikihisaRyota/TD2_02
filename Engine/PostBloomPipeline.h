@@ -9,6 +9,7 @@
 class PostBloomPipeline {
 public:
 	enum ROOT_PARAMETER_TYP {
+		PRAM,
 		TEXTURE0,
 		TEXTURE1,
 		TEXTURE2,

@@ -14,15 +14,21 @@ struct PixelShaderOutPut
     float4 color : SV_TARGET0;
 };
 
+struct Pram
+{
+    float intensity;
+};
+ConstantBuffer<Pram> param_ : register(b0);
+
 PixelShaderOutPut main(VertexShaderOutPut input)
 {
     PixelShaderOutPut output;
     float4 bloom = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    bloom += tex0.Sample(smp, input.texcoord);
-    bloom += tex1.Sample(smp, input.texcoord);
-    bloom += tex2.Sample(smp, input.texcoord);
-    bloom += tex3.Sample(smp, input.texcoord);
-    bloom += tex4.Sample(smp, input.texcoord);
+    bloom += tex0.Sample(smp, input.texcoord)*param_.intensity;
+    bloom += tex1.Sample(smp, input.texcoord)*param_.intensity;
+    bloom += tex2.Sample(smp, input.texcoord)*param_.intensity;
+    bloom += tex3.Sample(smp, input.texcoord)*param_.intensity;
+    bloom += tex4.Sample(smp, input.texcoord)*param_.intensity;
     bloom /= NUM_TEXTURES;
     bloom.a = 1.0f;
 

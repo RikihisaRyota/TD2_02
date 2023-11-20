@@ -31,9 +31,9 @@ void PostBloomPipeline::CreateRootSignature() {
 	}
 
 	CD3DX12_ROOT_PARAMETER rootParameters[PostBloomPipeline::ROOT_PARAMETER_TYP::COUNT]{};
-	//rootParameters[PreBloomPipeline::ROOT_PARAMETER_TYP::PRAM].InitAsConstantBufferView(PreBloomPipeline::ROOT_PARAMETER_TYP::PRAM, 0);
+	rootParameters[PostBloomPipeline::ROOT_PARAMETER_TYP::PRAM].InitAsConstantBufferView(PostBloomPipeline::ROOT_PARAMETER_TYP::PRAM, 0);
 	for (size_t i = 0; i < Bloom::kBlurLevel; ++i) {
-		rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
+		rootParameters[i + 1].InitAsDescriptorTable(1, &ranges[i]);
 	}
 	CD3DX12_STATIC_SAMPLER_DESC staticSampler(
 		0,
