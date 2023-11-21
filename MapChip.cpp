@@ -26,9 +26,6 @@ void MapChip::OnCollision() {
 	}*/
 }
 
-
-}
-
 void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
 	CollisionManager::GetInstance()->SetCollider(this);
