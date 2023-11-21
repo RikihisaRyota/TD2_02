@@ -57,6 +57,11 @@ int SceneManager::Run()
 
 		DirectXCommon::GetInstance()->Update();
 
+		ImGui::Begin("fps");
+		ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
+		ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
+		ImGui::End();
+
 		StageData::Update();
 		// ゲームシーンの毎フレーム処理
 		preSceneNo_ = currentSceneNo_;

@@ -22,8 +22,6 @@ void ParticleManager::Update() {
 				(*it)->instancingDate[i] = (*it)->particle->GetParticleForGPU(i);
 			}
 			if (!(*it)->particle->GetIsAlive()) {
-				// パーティクルの解放
-				//delete (*it)->particle;
 				(*it)->isAlive_ = false;
 			}
 			else {
