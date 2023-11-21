@@ -85,6 +85,9 @@
     <Filter Include="Game\Goal">
       <UniqueIdentifier>{2a9e1cce-2d5c-43e7-85fd-2db0e10a3225}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Nedle">
+      <UniqueIdentifier>{b13b3ddc-2066-4893-b740-81d4f4467ad5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -313,6 +316,9 @@
     </ClCompile>
     <ClCompile Include="Game\Goal\Goal.cpp">
       <Filter>Game\Goal</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Nedle\Nedle.cpp">
+      <Filter>Game\Nedle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -599,6 +605,9 @@
     <ClInclude Include="Game\Goal\Goal.h">
       <Filter>Game\Goal</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Nedle\Nedle.h">
+      <Filter>Game\Nedle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -606,7 +615,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
     <None Include="Resources\Shaders\Basic.hlsli">
       <Filter>engine\shader</Filter>
     </None>
@@ -646,6 +654,7 @@
     <None Include="Resources\Shaders\MapChip.hlsli">
       <Filter>engine\shader</Filter>
     </None>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Basic.PS.hlsl">

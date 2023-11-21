@@ -15,6 +15,7 @@
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
+#include "Game/Nedle/Nedle.h"
 
 SceneManager::SceneManager()
 {
@@ -71,6 +72,7 @@ int SceneManager::Run()
 			soundManager_->Initialize(currentSceneNo_, preSceneNo_);
 		}
 		sceneArr_[currentSceneNo_]->Update();
+
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
@@ -87,7 +89,6 @@ int SceneManager::Run()
 		
 		soundManager_->Update();
 	}
-
 
 	return 0;
 }

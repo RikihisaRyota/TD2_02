@@ -32,6 +32,7 @@ private:
 
 	enum FParameterNames {
 		kInterpolationRate, // カメラの遅延数値
+		kMinPosY, 
 		kCountFloatParameter, // 末尾
 	};
 
@@ -40,6 +41,7 @@ private:
 
 	std::string fParameterItemNames[FParameterNames::kCountFloatParameter] = {
 		"カメラの遅延数値",
+		"カメラのこれ以上下に行かないy座標"
 	};
 
 	enum V3ParameterNames {
