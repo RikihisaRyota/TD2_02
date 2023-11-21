@@ -50,7 +50,7 @@ PixelShaderOutPut main(VertexShaderInput input)
     
     float2 center = float2(0.5f, 0.5f); // 画面中央
     float radius = clamp(gTime.time,0.0f,1.0f); // 円の半径
-    float distance = length(input.texcoord - center);
+    float distance = length((input.texcoord - center) * float2(1280.0f / 720.0f, 1.0f));
     if (distance <= radius)
     {
         // 円の内側
