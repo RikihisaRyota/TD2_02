@@ -131,7 +131,7 @@ void PostEffect::CreateResource() {
 #pragma region ConstantBuffer
 	timeBuff_ = CreateBuffer(sizeof(Time));
 	timeBuff_->Map(0, nullptr, reinterpret_cast<void**>(&time_));
-	time_->time = 0.0f;
+	time_->time = 1.0f;
 	count_ = 120.0f;
 	countMax_ = 120.0f;
 #pragma endregion

@@ -314,6 +314,14 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
 				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
 				break;
+			case uint32_t(Blocks::kItemBlock):
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kNeedleBlock):
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
+				break;
 			default:
 				break;
 			}
