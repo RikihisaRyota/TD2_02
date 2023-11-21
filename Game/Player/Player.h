@@ -70,6 +70,8 @@ public:
 
 	void UpdateMatrix();
 
+	const bool GetIsChangeCamera() const { return isChangeCamera_; }
+
 	bool GetIsClear() { return isClear_; }
 private:
 
@@ -175,6 +177,8 @@ private:
 	bool kIs2WallJump_ = true;
 
 	bool kIsWallDown_ = false;
+
+	bool isChangeCamera_;
 
 	Vector2 goalPos_;
 	Vector2 preClearPos_;

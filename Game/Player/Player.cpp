@@ -95,6 +95,7 @@ void Player::Initialize() {
 	isJump_ = true;
 	velocity_ = {};
 
+	isChangeCamera_ = false;
 	isClear_ = false;
 	time_ = 0;
 	itemCount_ = 0;
@@ -192,7 +193,7 @@ void Player::NoTatchUpdate()
 
 	float scale = std::sinf(scaleTheta_) * amplitude;
 
-	worldTransform_.scale_ = { 1.0f - scale,1.0f + scale,scale };
+	worldTransform_.scale_ = { 1.0f - scale,1.0f + scale,1.0f };
 
 }
 
@@ -831,6 +832,7 @@ void Player::SoundInitialize() {
 	auto audio = Audio::GetInstance();
 	deathSoundHandle_ = audio->SoundLoadWave("SE/death.wav");
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
+	isChangeCamera_ = true;
 }
 
 void Player::ClearMoveInitialize() {
@@ -840,6 +842,7 @@ void Player::ClearMoveInitialize() {
 	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
 	clearRot_ = 0.0f;
 	preClearScale_ = worldTransform_.scale_;
+	isChangeCamera_ = true;
 }
 
 void Player::ClearMoveUpdate() {

@@ -33,6 +33,8 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
+
+	WorldTransform* GetWorldTransform() { return &worldTransform_; }
 private:
 	/// <summary>
 	/// jsonファイルへの書き込み
