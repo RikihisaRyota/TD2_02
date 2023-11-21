@@ -15,6 +15,7 @@
 #include "MyMath.h"
 
 #include "Ease/Ease.h"
+#include <numbers>
 
 Player::Player() {
 
@@ -51,8 +52,8 @@ Player::Player() {
 	worldTransform_.translate_ = { 50.0f,20.0f,0.0f };
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 	modelWorldTransforms_[Parts::kMain].parent_ = &worldTransform_;
-	modelWorldTransforms_[Parts::kTail].parent_ = &modelWorldTransforms_[Parts::kMain];
-	modelWorldTransforms_[Parts::kTail].translate_ = { -0.9f,0.0f,0.0f };
+	modelWorldTransforms_[Parts::kTail].parent_ = &worldTransform_;
+	modelWorldTransforms_[Parts::kTail].translate_ = { -0.9f,-0.1f,0.0f };
 	modelWorldTransforms_[Parts::kTail].rotation_.z = 0.5f;
 	faceWorldTransform_.parent_ = &worldTransform_;
 	UpdateMatrix();
@@ -142,8 +143,12 @@ void Player::OnCollision() {
 
 			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
 
-				
-				break;
+			}
+			else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
+
+			}
+			else if (no == uint32_t(MapChip::Blocks::kItemBlock)) {
+				itemCount_++;
 			}
 
 		}
@@ -161,6 +166,31 @@ void Player::SetCollider() {
 		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ velocity_.x,velocity_.y });
 
 	CollisionManager::GetInstance()->SetCollider(this);
+}
+
+void Player::NoTatchUpdate()
+{
+	const uint16_t cycle = 200;
+
+	const float pi = std::numbers::pi_v<float>;
+
+	const float step = 2.0f * pi / cycle;
+
+	scaleTheta_ += step;
+
+	scaleTheta_ = std::fmod(scaleTheta_, 2.0f * pi);
+	
+	const float amplitude = 0.2f;
+
+	float scale = std::sinf(scaleTheta_) * amplitude;
+
+	worldTransform_.scale_ = { 1.0f - scale,1.0f + scale,scale };
+
+}
+
+void Player::NoTatchReturnUpdate()
+{
+	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 }
 
 void Player::SetGlobalVariable() {
@@ -210,6 +240,7 @@ void Player::NormalInitialize() {
 	if (preState_ != State::kJump) {
 		jumpCount_ = 0;
 	}
+	noTatchCountFrame_ = 0;
 }
 
 void Player::NormalUpdate() {
@@ -233,6 +264,21 @@ void Player::NormalUpdate() {
 		isPlayerFaceRight_ = true;
 	}
 
+	if (move.x == 0.0f) {
+		noTatchCountFrame_++;
+
+		if (noTatchCountFrame_ >= 120) {
+			if (noTatchCountFrame_ == 120) {
+				scaleTheta_ = 0.0f;
+			}
+			NoTatchUpdate();
+		}
+	}
+	else {
+		NoTatchReturnUpdate();
+		noTatchCountFrame_ = 0;
+	}
+
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
@@ -253,6 +299,13 @@ void Player::NormalUpdate() {
 	}
 	else if (move.x < 0) {
 		isRight_ = false;
+	}
+
+	if (isRight_) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 	}
 
 	velocity_.x = 0.0f;
@@ -356,6 +409,12 @@ void Player::JumpUpdate() {
 
 void Player::GripWallInitialize() {
 	worldTransform_.rotation_ = {};
+	if (isRight_) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}
 	velocity_ = {};
 	countFrame_ = 0;
 
@@ -385,7 +444,7 @@ void Player::GripWallUpdate() {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
 			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
 			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
@@ -420,7 +479,7 @@ void Player::GripWallUpdate() {
 	}
 	else {
 		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
-			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 
 		if (input->PressedGamePadButton(Input::GamePadButton::A)) {

@@ -52,6 +52,8 @@ public:
 		kNone,
 		kBlock,
 		kRedBlock,
+		kItemBlock,
+		kNeedleBlock,
 
 		kCount,
 	};

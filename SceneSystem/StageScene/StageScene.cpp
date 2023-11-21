@@ -15,6 +15,7 @@
 #include "ImGuiManager.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "Game/StageData/StageData.h"
+#include "Game/Nedle/Nedle.h"
 
 StageScene::StageScene()
 {
@@ -46,12 +47,14 @@ StageScene::StageScene()
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
 
+	NedleManager::GetInstance()->Init();
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 }
 
 void StageScene::Init()
 {
+	NedleManager::GetInstance()->Init();
 	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
 	goal_->Initialize();
@@ -85,16 +88,14 @@ void StageScene::Update()
 
 	mapChip_->Update();
 
+	NedleManager::GetInstance()->Update();
+
 	player_->Update();
 
 	collisionManager->CheckCollision();
 
 	ParticleManager::GetInstance()->Update();
 
-	ImGui::Begin("fps");
-	ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
-	ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
-	ImGui::End();
 	if (!isDebug_) {
 		followCamera_->Update();
 		viewProjection_ = followCamera_->GetViewProjection();
@@ -143,6 +144,7 @@ void StageScene::Draw()
 	goal_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
+	NedleManager::GetInstance()->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

@@ -4,6 +4,8 @@
 
 #include "DirectXCommon.h"
 
+#include "ImGuiManager.h"
+
 using namespace Microsoft::WRL;
 
 void PostEffect::Initialize(Buffer* buffer) {
@@ -18,11 +20,18 @@ void PostEffect::Initialize(Buffer* buffer) {
 }
 
 void PostEffect::Update() {
-	count_ += 1.0f;
-	time_->time = count_ / countMax_;
-	/*if (count_ >= countMax_) {
-		count_ = 0.0f;
-	}*/
+	ImGui::Begin("Debug");
+	if (ImGui::TreeNode("PostEffect")) {
+		ImGui::DragFloat("time", &count_, 1.0f);
+		ImGui::DragFloat("MaxTime", &countMax_, 1.0f);
+		time_->time = count_ / countMax_;
+		ImGui::TreePop();
+	}
+	ImGui::End();
+
+}
+
+void PostEffect::Render() {
 	SetCommandList();
 }
 
@@ -122,8 +131,8 @@ void PostEffect::CreateResource() {
 #pragma region ConstantBuffer
 	timeBuff_ = CreateBuffer(sizeof(Time));
 	timeBuff_->Map(0, nullptr, reinterpret_cast<void**>(&time_));
-	time_->time = 0.0f;
-	count_ = 0.0f;
+	time_->time = 1.0f;
+	count_ = 120.0f;
 	countMax_ = 120.0f;
 #pragma endregion
 }

@@ -70,7 +70,7 @@ void Bloom::Render() {
 	SetCommandList();
 }
 
-void Bloom::PreUpdate() {
+void Bloom::Update() {
 	ImGui::Begin("Debug");
 	if (ImGui::TreeNode("Bloom")) {
 		ImGui::DragFloat("明るさ以上にブルームをかける", &constantDate_->threshold, 0.01f);

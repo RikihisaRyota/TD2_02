@@ -16,10 +16,15 @@
 #include "WinApp.h"
 #include "Collision/CollisionManager.h"
 #include "TextureManager.h"
+#include "Game/Nedle/Nedle.h"
 
 using namespace Microsoft::WRL;
 
-void MapChip::OnCollision() {}
+void MapChip::OnCollision() 
+{
+
+
+}
 
 void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
@@ -27,6 +32,20 @@ void MapChip::SetCollider() {
 }
 
 void MapChip::Update() {
+
+	NedleManager* nedleManager = NedleManager::GetInstance();
+
+	if (nedleManager->IsCreatNedle()) {
+		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
+			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
+				
+				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
+					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
+				}
+			}
+		}
+	}
+
 	SetCollider();
 }
 
@@ -84,6 +103,8 @@ MapChip::MapChip() {
 	//shapeType_->mapChip2D_.SetNoCollider(0);
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
+	shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
 	InstancingInitialize();
@@ -298,6 +319,14 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 			case uint32_t(Blocks::kRedBlock):
 				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
 				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kItemBlock):
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kNeedleBlock):
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
 				break;
 			default:
 				break;

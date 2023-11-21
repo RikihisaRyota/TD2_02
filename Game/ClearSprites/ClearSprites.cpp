@@ -36,6 +36,21 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/result90s.png");
 	sprites_[SpriteNames::kConditionThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/goStageSelect.png");
+	sprites_[SpriteNames::kSelectStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/goNextStage.png");
+	sprites_[SpriteNames::kNextStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/decisionA.png");
+	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/selectLS.png");
+	sprites_[SpriteNames::kSelectLS].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/rank.png");
+	sprites_[SpriteNames::kRank].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
 	for (uint32_t i = 0; i < kNumberCount; i++) {
 		number_[i] = TextureManager::Load("Resources/Textures/time" + std::to_string(i) + ".png");
 	}

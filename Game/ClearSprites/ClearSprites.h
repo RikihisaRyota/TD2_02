@@ -60,6 +60,11 @@ private:
 		kConditionFirst,
 		kConditionSecond,
 		kConditionThird,
+		kSelectStage,
+		kNextStage,
+		kDecisionA,
+		kSelectLS,
+		kRank,
 
 		kSpriteCount,
 	};
@@ -77,6 +82,10 @@ private:
 		"条件1",
 		"条件2",
 		"条件3",
+		"セレクトステージ",
+		"次のステージ",
+		"Aボタン",
+		"Lスティック"
 	};
 
 	enum V2ItemNames {

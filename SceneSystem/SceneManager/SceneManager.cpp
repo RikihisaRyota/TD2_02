@@ -15,6 +15,7 @@
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
+#include "Game/Nedle/Nedle.h"
 
 SceneManager::SceneManager()
 {
@@ -57,6 +58,11 @@ int SceneManager::Run()
 
 		DirectXCommon::GetInstance()->Update();
 
+		ImGui::Begin("fps");
+		ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
+		ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
+		ImGui::End();
+
 		StageData::Update();
 		// ゲームシーンの毎フレーム処理
 		preSceneNo_ = currentSceneNo_;
@@ -66,6 +72,7 @@ int SceneManager::Run()
 			soundManager_->Initialize(currentSceneNo_, preSceneNo_);
 		}
 		sceneArr_[currentSceneNo_]->Update();
+
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
@@ -82,7 +89,6 @@ int SceneManager::Run()
 		
 		soundManager_->Update();
 	}
-
 
 	return 0;
 }

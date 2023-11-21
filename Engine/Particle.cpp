@@ -91,8 +91,14 @@ void Particle::Update() {
 			break;
 		}
 	}
-	// 生存しているパーティクルをソート
-	std::sort(particleWorldTransform_.begin(), particleWorldTransform_.end(), &Particle::CompareParticles);
+	// 死んでいたら消す
+	particleWorldTransform_.erase(std::remove_if(
+		particleWorldTransform_.begin(), particleWorldTransform_.end(),
+		[](const std::unique_ptr<ParticleWorldTransform>& particle) {
+			return !particle->motion.isAlive;
+		}),
+		particleWorldTransform_.end()
+	);
 
 	isAlive_ = false;
 	for (auto& particle : particleWorldTransform_) {
