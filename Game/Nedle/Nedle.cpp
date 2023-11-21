@@ -16,7 +16,7 @@ Nedle::Nedle(const WorldTransform& worldTransform)
 		editInfo_.v2Paras_.push_back(Vector2());
 	}
 
-	SetCollisionAttribute(kCollisionAttributeBlock);
+	SetCollisionAttribute(kCollisionAttributeOut);
 	SetCollisionMask(kCollisionAttributePlayer);
 
 	model_.reset(ModelManager::GetInstance()->GetModel("player"));

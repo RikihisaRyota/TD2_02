@@ -30,6 +30,7 @@ Player::Player() {
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionAttributeBlock);
 	SetCollisionMask(kCollisionAttributeGoal);
+	SetCollisionMask(kCollisionAttributeOut);
 
 	models_.emplace_back((ModelManager::GetInstance()->GetModel("player")));
 	models_.emplace_back((ModelManager::GetInstance()->GetModel("playerTail")));
@@ -153,11 +154,18 @@ void Player::OnCollision() {
 
 		}
 	}
+
+	if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
+		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+		StateRequest(State::kDeadMove);
+		return;
+	}
 	
 	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
 		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
 		goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
 		StateRequest(State::kClearMove);
+		return;
 	}
 }
 
@@ -861,24 +869,34 @@ void Player::ClearMoveUpdate() {
 	}
 }
 
+void Player::DeadModeInitialize()
+{
+}
+
+void Player::DeadModeUpdate()
+{
+}
+
 void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::NormalInitialize,
-		& Player::JumpInitialize,
-		& Player::GripWallInitialize,
-		& Player::WallJumpInitialize,
-		& Player::WallSideJumpInitialize,
-		& Player::WallDownJumpInitialize,
-		& Player::ClearMoveInitialize,
+	&Player::JumpInitialize,
+	&Player::GripWallInitialize,
+	&Player::WallJumpInitialize,
+	&Player::WallSideJumpInitialize,
+	&Player::WallDownJumpInitialize,
+	&Player::ClearMoveInitialize,
+	&Player::DeadModeInitialize,
 };
 
 void (Player::* Player::spStateUpdateFuncTable[])() {
 	&Player::NormalUpdate,
-		& Player::JumpUpdate,
-		& Player::GripWallUpdate,
-		& Player::WallJumpUpdate,
-		& Player::WallSideJumpUpdate,
-		& Player::WallDownJumpUpdate,
-		& Player::ClearMoveUpdate,
+	&Player::JumpUpdate,
+	&Player::GripWallUpdate,
+	&Player::WallJumpUpdate,
+	&Player::WallSideJumpUpdate,
+	&Player::WallDownJumpUpdate,
+	&Player::ClearMoveUpdate,
+	&Player::DeadModeUpdate,
 };
 
 void Player::Update()
