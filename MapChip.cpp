@@ -19,7 +19,11 @@
 
 using namespace Microsoft::WRL;
 
-void MapChip::OnCollision() {}
+void MapChip::OnCollision() {
+	/*for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
+		map yx.first;
+	}*/
+}
 
 void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
@@ -307,6 +311,7 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
 				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
 				break;
+			
 			default:
 				break;
 			}
