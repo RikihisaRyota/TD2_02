@@ -93,6 +93,7 @@ void Input::Update() {
 		if (devJoysticks_[i].type_ == PadType::DirectInput) {
 			devJoysticks_[i].device_->Acquire();
 			devJoysticks_[i].device_->GetDeviceState(sizeof(DIJOYSTATE2), &devJoysticks_[i].state_.directInput_);
+			devJoysticks_[i].statePre_ = devJoysticks_[i].state_;
 		}
 		else if (devJoysticks_[i].type_ == PadType::XInput) {
 			XINPUT_STATE xInputState;
@@ -336,18 +337,42 @@ Vector2 Input::GetGamePadLStick()
 	return Vector2(static_cast<float>(xInputState_.Gamepad.sThumbLX) / SHRT_MAX, static_cast<float>(xInputState_.Gamepad.sThumbLY) / SHRT_MAX);
 }
 
-Vector2 Input::GetGamePadRStick()
-{
-	if ((xInputState_.Gamepad.sThumbRX <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
-		xInputState_.Gamepad.sThumbRX > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) &&
-		(xInputState_.Gamepad.sThumbRY <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
-			xInputState_.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
-	{
+Vector2 Input::GetPreGamePadLStick() {
+	if ((preXInputState_.Gamepad.sThumbLX <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+		preXInputState_.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
+		(preXInputState_.Gamepad.sThumbLY <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+			preXInputState_.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)) {
+		preXInputState_.Gamepad.sThumbLX = 0;
+		preXInputState_.Gamepad.sThumbLY = 0;
+	}
+
+	return Vector2(static_cast<float>(preXInputState_.Gamepad.sThumbLX) / SHRT_MAX, static_cast<float>(preXInputState_.Gamepad.sThumbLY) / SHRT_MAX);
+}
+
+Vector2 Input::GetGamePadRStick() {
+	if ((xInputState_.Gamepad.sThumbRX <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+		xInputState_.Gamepad.sThumbRX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) &&
+		(xInputState_.Gamepad.sThumbRY <  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+			xInputState_.Gamepad.sThumbRY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)) {
 		xInputState_.Gamepad.sThumbRX = 0;
 		xInputState_.Gamepad.sThumbRY = 0;
 	}
 
 	return Vector2(static_cast<float>(xInputState_.Gamepad.sThumbRX) / SHRT_MAX, static_cast<float>(xInputState_.Gamepad.sThumbRY) / SHRT_MAX);
+}
+
+Vector2 Input::GetPreGamePadRStick()
+{
+	if ((preXInputState_.Gamepad.sThumbRX <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+		preXInputState_.Gamepad.sThumbRX > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) &&
+		(preXInputState_.Gamepad.sThumbRY <  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE &&
+			preXInputState_.Gamepad.sThumbRY > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
+	{
+		preXInputState_.Gamepad.sThumbRX = 0;
+		preXInputState_.Gamepad.sThumbRY = 0;
+	}
+
+	return Vector2(static_cast<float>(preXInputState_.Gamepad.sThumbRX) / SHRT_MAX, static_cast<float>(xInputState_.Gamepad.sThumbRY) / SHRT_MAX);
 }
 
 bool Input::PressedGamePadButton(GamePadButton button)

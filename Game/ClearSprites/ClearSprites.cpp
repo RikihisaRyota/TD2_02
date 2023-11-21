@@ -3,9 +3,12 @@
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/StageData/StageData.h"
+#include "MapChip.h"
 #include "SceneSystem/IScene/IScene.h"
 
 ClearSprites::ClearSprites() {
+	input_ = Input::GetInstance();
+
 	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
 	sprites_[SpriteNames::kBackground].reset(Sprite::Create(tex, Vector2{}));
 	sprites_[SpriteNames::kBackground]->SetColor({ 0.0f,0.0f,0.0f,1.0f });
@@ -58,6 +61,12 @@ ClearSprites::ClearSprites() {
 	star_[kTrue] = TextureManager::Load("Resources/Textures/starGet.png");
 	star_[kFalse] = TextureManager::Load("Resources/Textures/starNotGet.png");
 
+	nextStage_[kTrue] = TextureManager::Load("Resources/Textures/goNextStageChoice.png");
+	nextStage_[kFalse] = TextureManager::Load("Resources/Textures/goNextStage.png");
+
+	selectStage_[kTrue] = TextureManager::Load("Resources/Textures/goStageSelectChoice.png");
+	selectStage_[kFalse] = TextureManager::Load("Resources/Textures/goStageSelect.png");
+
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			if (j == V2ItemNames::kScale) {
@@ -73,6 +82,12 @@ ClearSprites::ClearSprites() {
 
 void ClearSprites::Init() {
 	SetGlobalVariable();
+	if (IScene::stageNo_ != MapChip::kCount - 1) {
+		nextStageFlag_ = true;
+	}
+	else {
+		nextStageFlag_ = false;
+	}
 	// 秒に直す
 	int time = StageData::GetClearTime(IScene::stageNo_) / 60;
 	int place = 100;
@@ -114,6 +129,17 @@ void ClearSprites::Init() {
 
 void ClearSprites::Update() {
 
+	if (IScene::stageNo_ != MapChip::kCount - 1 &&
+		input_->GetGamePadLStick().x != 0.0f &&
+		input_->GetPreGamePadLStick().x == 0.0f) {
+		nextStageFlag_ ^= true;
+	}
+	if (nextStageFlag_) {
+
+	}
+	else {
+
+	}
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -160,6 +186,34 @@ void ClearSprites::Draw() {
 				sprite->SetTextureHandle(star_[kFalse]);
 			}
 			sprite->Draw();
+			break;
+		case ClearSprites::kSelectStage:
+			if (IScene::stageNo_ == MapChip::kCount - 1) {
+				sprite->SetTextureHandle(selectStage_[kTrue]);
+				sprite->SetPosition(Vector2(640.0f, 600.0f));
+			}
+			else {
+				if (nextStageFlag_) {
+					sprite->SetTextureHandle(selectStage_[kFalse]);
+				}
+				else {
+					sprite->SetTextureHandle(selectStage_[kTrue]);
+				}
+				sprite->SetPosition(Vector2(450.0f, 600.0f));
+			}
+			sprite->Draw();
+			break;
+		case ClearSprites::kNextStage:
+			if (IScene::stageNo_ != MapChip::kCount - 1) {
+				if (nextStageFlag_) {
+					sprite->SetTextureHandle(nextStage_[kTrue]);
+				}
+				else {
+					sprite->SetTextureHandle(nextStage_[kFalse]);
+				}
+				sprite->Draw();
+
+			}
 			break;
 		case ClearSprites::kBackground:
 		case ClearSprites::kResult:

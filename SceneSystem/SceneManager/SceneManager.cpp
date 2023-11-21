@@ -17,8 +17,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/Nedle/Nedle.h"
 
-SceneManager::SceneManager()
-{
+SceneManager::SceneManager() {
 	IScene::sceneNo_ = TITLE;
 	currentSceneNo_ = IScene::sceneNo_;
 	IScene::stageNo_ = 0;
@@ -33,14 +32,13 @@ SceneManager::SceneManager()
 	sceneArr_[currentSceneNo_]->Init();
 
 	soundManager_ = std::make_unique<SoundManager>();
+
+	sceneChange_ = std::make_unique<SceneChange>();
 }
 
-SceneManager::~SceneManager()
-{
-}
+SceneManager::~SceneManager() {}
 
-int SceneManager::Run()
-{
+int SceneManager::Run() {
 	// メインループ
 	while (true) {
 		// メッセージ処理
@@ -68,11 +66,23 @@ int SceneManager::Run()
 		preSceneNo_ = currentSceneNo_;
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		if (preSceneNo_ != currentSceneNo_) {
-			sceneArr_[currentSceneNo_]->Init();
-			soundManager_->Initialize(currentSceneNo_, preSceneNo_);
+			soundManager_->SetScene(preSceneNo_, currentSceneNo_);
+			// シーン遷移開始
+			sceneChange_->SetSceneChange(true);
 		}
-		sceneArr_[currentSceneNo_]->Update();
-
+		// シーン遷移していなかったら
+		if (!sceneChange_->GetSceneChange()) {
+			sceneArr_[currentSceneNo_]->Update();
+		}
+		else {
+			sceneChange_->Update();
+			if (sceneChange_->GetInitialize()) {
+				sceneArr_[currentSceneNo_]->Init();
+				soundManager_->Initialize();
+				sceneArr_[currentSceneNo_]->Update();
+				sceneChange_->SetInitialize(false);
+			}
+		}
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
@@ -83,10 +93,12 @@ int SceneManager::Run()
 		DirectXCommon::GetInstance()->PostDraw();
 		DirectXCommon::GetInstance()->PreUIDraw();
 		sceneArr_[currentSceneNo_]->UIDraw();
+		// シーン遷移の描画
+		sceneChange_->Draw();
 		// ImGui描画
 		ImGuiManager::GetInstance()->Draw();
 		DirectXCommon::GetInstance()->PostUIDraw();
-		
+
 		soundManager_->Update();
 	}
 

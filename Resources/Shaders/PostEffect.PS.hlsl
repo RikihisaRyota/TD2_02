@@ -48,20 +48,20 @@ PixelShaderOutPut main(VertexShaderInput input)
     output.color = tex.Sample(smp, input.texcoord);
     float4 textureColor = output.color;
     
-    float2 center = float2(0.5f, 0.5f); // 画面中央
-    float radius = clamp(gTime.time,0.0f,1.0f); // 円の半径
-    float distance = length((input.texcoord - center) * float2(1280.0f / 720.0f, 1.0f));
-    if (distance <= radius)
-    {
-        // 円の内側
-        output.color = tex.Sample(smp, input.texcoord);
-    }
-    else
-    {
-        // 円の外側
-        output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    //float2 center = float2(0.5f, 0.5f); // 画面中央
+    //float radius = clamp(gTime.time,0.0f,1.0f); // 円の半径
+    //float distance = length((input.texcoord - center) * float2(1280.0f / 720.0f, 1.0f));
+    //if (distance <= radius)
+    //{
+    //    // 円の内側
+    //    output.color = tex.Sample(smp, input.texcoord);
+    //}
+    //else
+    //{
+    //    // 円の外側
+    //    output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    }
+    //}
     //// モーションブラー
     //float2 motionBlurOffset = float2(sin(input.texcoord.y * motionBlurAmount), cos(input.texcoord.x * motionBlurAmount));
     //output.color = tex.Sample(smp, motionBlurOffset);

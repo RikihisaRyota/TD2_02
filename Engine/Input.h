@@ -179,8 +179,12 @@ public: // メンバ関数
 	bool GetJoystickStatePrevious(int32_t stickNo, XINPUT_STATE& out) const;
 
 	Vector2 GetGamePadLStick();
+	
+	Vector2 GetPreGamePadLStick();
 
 	Vector2 GetGamePadRStick();
+
+	Vector2 GetPreGamePadRStick();
 
 	bool PressedGamePadButton(GamePadButton button);
 

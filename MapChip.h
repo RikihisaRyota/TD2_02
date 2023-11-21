@@ -46,6 +46,8 @@ public:
 		kStage_6,
 		kStage_7,
 		kStage_8,
+		kStage_9,
+		kStage_10,
 		kCount,
 	};
 	enum class Blocks {

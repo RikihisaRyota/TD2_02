@@ -26,6 +26,17 @@ Vector3 Ease::UseEase(const Vector3& a, const Vector3& b, float t) {
 	return result;
 }
 
+Vector4 Ease::UseEase(const Vector4& a, const Vector4& b, float t) {
+	Vector4 result = {};
+
+	result.x = UseEase(a.x, b.x, t);
+	result.y = UseEase(a.y, b.y, t);
+	result.z = UseEase(a.z, b.z, t);
+	result.w = UseEase(a.w, b.w, t);
+
+	return result;
+}
+
 float Ease::MakeEaseT(int nowFrame, int maxFrame, EaseType easeType, int index) {
 
 	float t = 1.0f / maxFrame * nowFrame;
@@ -589,6 +600,14 @@ Vector3 Ease::UseEase(const Vector3& a, const Vector3& b, float t, EaseType ease
 	float easeT = MakeEaseT(t, easeType, index);
 
 	Vector3 result = UseEase(a, b, easeT);
+
+	return result;
+}
+
+Vector4 Ease::UseEase(const Vector4& a, const Vector4& b, float nowFrame, float maxFrame, EaseType easeType, int index) {
+	float t = MakeEaseT(nowFrame, maxFrame, easeType, index);
+
+	Vector4 result = UseEase(a, b, t);
 
 	return result;
 }

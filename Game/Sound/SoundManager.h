@@ -17,8 +17,10 @@ public:
 
 	SoundManager();
 
-	void Initialize(int currentScene, int preScene);
+	void Initialize();
 	void Update();
+
+	void SetScene(int currentScene, int preScene);
 private:
 	Audio* audio_;
 	std::vector<int32_t> soundHandle_;
