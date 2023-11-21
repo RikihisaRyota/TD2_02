@@ -20,7 +20,11 @@
 
 using namespace Microsoft::WRL;
 
-void MapChip::OnCollision() {}
+void MapChip::OnCollision() 
+{
+
+
+}
 
 void MapChip::SetCollider() {
 	shapeType_->mapChip2D_.SetMapChip(map_);
@@ -35,7 +39,7 @@ void MapChip::Update() {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 				
-				if (map_[y][x] == uint32_t(Blocks::kRedBlock)) {
+				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
 					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
 				}
 			}
@@ -99,6 +103,8 @@ MapChip::MapChip() {
 	//shapeType_->mapChip2D_.SetNoCollider(0);
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
+	shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
 	InstancingInitialize();

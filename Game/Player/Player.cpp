@@ -143,8 +143,12 @@ void Player::OnCollision() {
 
 			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
 
-				
-				break;
+			}
+			else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
+
+			}
+			else if (no == uint32_t(MapChip::Blocks::kItemBlock)) {
+				itemCount_++;
 			}
 
 		}
