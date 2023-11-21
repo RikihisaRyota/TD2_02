@@ -12,6 +12,8 @@
 #include "SceneSystem/StageScene/StageScene.h"
 #include "SceneSystem/ClearScene/ClearScene.h"
 
+#include "Game/StageData/StageData.h"
+
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/Nedle/Nedle.h"
 
@@ -56,6 +58,7 @@ int SceneManager::Run()
 
 		DirectXCommon::GetInstance()->Update();
 
+		StageData::Update();
 		// ゲームシーンの毎フレーム処理
 		preSceneNo_ = currentSceneNo_;
 		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();

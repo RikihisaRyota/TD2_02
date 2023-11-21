@@ -8,6 +8,7 @@
 
 #include "Collision/Collider.h"
 
+class Player;
 class Goal : public Collider
 {
 private:
@@ -24,6 +25,7 @@ private:
 	};
 	enum V2ItemNames {
 		kPos,
+		kScale,
 		kV2ItemCount,
 	};
 public:
@@ -61,6 +63,7 @@ private:
 
 	std::string v2ItemNames_[kV2ItemCount] = {
 		"ポジション",
+		"スケール",
 	};
 
 	Vector3 v2Info_[kGoalCount][kV2ItemCount];

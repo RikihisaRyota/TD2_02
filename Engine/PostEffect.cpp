@@ -4,6 +4,8 @@
 
 #include "DirectXCommon.h"
 
+#include "ImGuiManager.h"
+
 using namespace Microsoft::WRL;
 
 void PostEffect::Initialize(Buffer* buffer) {
@@ -18,11 +20,18 @@ void PostEffect::Initialize(Buffer* buffer) {
 }
 
 void PostEffect::Update() {
-	count_ += 1.0f;
-	time_->time = count_ / countMax_;
-	/*if (count_ >= countMax_) {
-		count_ = 0.0f;
-	}*/
+	ImGui::Begin("Debug");
+	if (ImGui::TreeNode("PostEffect")) {
+		ImGui::DragFloat("time", &count_, 1.0f);
+		ImGui::DragFloat("MaxTime", &countMax_, 1.0f);
+		time_->time = count_ / countMax_;
+		ImGui::TreePop();
+	}
+	ImGui::End();
+
+}
+
+void PostEffect::Render() {
 	SetCommandList();
 }
 
@@ -68,6 +77,9 @@ void PostEffect::CreateResource() {
 		&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PRESENT, &clearValue,
 		IID_PPV_ARGS(&temporaryBuffer_->buffer));
 	temporaryBuffer_->buffer->SetName(L"PostEffectBuffer");
+	temporaryBuffer_->width = WinApp::kWindowWidth;
+	temporaryBuffer_->height= WinApp::kWindowHeight;
+
 	assert(SUCCEEDED(result));
 	common->GetSRVCPUGPUHandle(temporaryBuffer_->srvCPUHandle, temporaryBuffer_->srvGPUHandle);
 	temporaryBuffer_->rtvHandle = common->GetRTVCPUDescriptorHandle();
@@ -120,7 +132,7 @@ void PostEffect::CreateResource() {
 	timeBuff_ = CreateBuffer(sizeof(Time));
 	timeBuff_->Map(0, nullptr, reinterpret_cast<void**>(&time_));
 	time_->time = 0.0f;
-	count_ = 0.0f;
+	count_ = 120.0f;
 	countMax_ = 120.0f;
 #pragma endregion
 }

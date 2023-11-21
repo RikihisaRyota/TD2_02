@@ -80,13 +80,7 @@ void BloomPipeline::CreateInputLayout() {
 
 void BloomPipeline::CreateBlendState() {
 	//全ての色要素を書き込む
-	blendDesc_.RenderTarget[0].BlendEnable = true;
-	blendDesc_.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc_.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-	blendDesc_.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc_.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	//全ての色要素を書き込む
 	blendDesc_.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 }
 
@@ -112,7 +106,7 @@ void BloomPipeline::CreateShaderCompile() {
 
 void BloomPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
-	depthStencilDesc_.DepthEnable = true;
+	depthStencilDesc_.DepthEnable = false;
 	// 書き込みをする
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される

@@ -9,7 +9,7 @@
 class HorizontalBlurPipeline {
 public:
 	enum ROOT_PARAMETER_TYP {
-		PARM,
+		PRAM,
 		TEXTURE,
 		COUNT,
 	};

@@ -62,6 +62,7 @@ void Goal::ApplyGlobalVariable() {
 		}
 	}
 	worldTransform_.translate_ = v2Info_[IScene::stageNo_][V2ItemNames::kPos];
+	worldTransform_.scale_ = v2Info_[IScene::stageNo_][V2ItemNames::kScale];
 	worldTransform_.UpdateMatrix();
 }
 

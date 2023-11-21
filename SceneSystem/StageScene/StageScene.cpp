@@ -38,6 +38,7 @@ StageScene::StageScene()
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
 	player_ = std::make_unique<Player>();
 #pragma endregion
+	background_->SetPlayer(player_.get());
 
 	mapChip_->Initialize();
 	mapChip_->SetViewProjection(&viewProjection_);
@@ -123,8 +124,8 @@ void StageScene::Draw()
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
-
 	// スプライト描画後処理
+	background_->SpriteDraw();
 	Sprite::PostDraw();
 	DirectXCommon::GetInstance()->ClearDepthBuffer();
 #pragma endregion

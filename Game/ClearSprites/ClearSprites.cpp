@@ -17,7 +17,7 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTime].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
-	tex = TextureManager::Load("Resources/Textures/stage0.png");
+	tex = TextureManager::Load("Resources/Textures/time0.png");
 	sprites_[SpriteNames::kTimeOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -36,8 +36,23 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/result90s.png");
 	sprites_[SpriteNames::kConditionThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/goStageSelect.png");
+	sprites_[SpriteNames::kSelectStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/goNextStage.png");
+	sprites_[SpriteNames::kNextStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/decisionA.png");
+	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/selectLS.png");
+	sprites_[SpriteNames::kSelectLS].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/rank.png");
+	sprites_[SpriteNames::kRank].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
 	for (uint32_t i = 0; i < kNumberCount; i++) {
-		number_[i] = TextureManager::Load("Resources/Textures/stage" + std::to_string(i) + ".png");
+		number_[i] = TextureManager::Load("Resources/Textures/time" + std::to_string(i) + ".png");
 	}
 
 	star_[kTrue] = TextureManager::Load("Resources/Textures/starGet.png");
@@ -80,9 +95,8 @@ void ClearSprites::Init() {
 	else {
 		starFlag_[0] = false;
 	}
-	const int clearTime = 100 * 60;
 	// 条件2
-	if (StageData::GetClearTime(IScene::stageNo_) <= clearTime) {
+	if (StageData::GetClearTime(IScene::stageNo_) <= StageData::GetConditionTime(IScene::stageNo_)) {
 		starFlag_[1] = true;
 	}
 	else {
@@ -90,7 +104,7 @@ void ClearSprites::Init() {
 	}
 	const int clearItem = 3;
 	// 条件3
-	if (StageData::GetClearItemCount(IScene::stageNo_) >= clearItem) {
+	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
 		starFlag_[2] = true;
 	}
 	else {

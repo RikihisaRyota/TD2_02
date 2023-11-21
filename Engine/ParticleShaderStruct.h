@@ -13,6 +13,7 @@ struct ParticleForGPU {
 
 struct Scale {
     Vector3 startScale;
+    Vector3 interimScale;
     Vector3 endScale;
     Vector3 currentScale;
 };

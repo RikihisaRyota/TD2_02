@@ -263,7 +263,7 @@
     <ClCompile Include="Engine\PostEffectPipeline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\PreBloomPipeline.cpp">
+    <ClCompile Include="Engine\PostBloomPipeline.cpp">
       <Filter>engine\graphicsPipeline</Filter>
     </ClCompile>
     <ClCompile Include="Engine\VerticalBlurPipeline.cpp">
@@ -548,7 +548,7 @@
     <ClInclude Include="Engine\cBuffer.h">
       <Filter>engine\base\constantBuffer</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\PreBloomPipeline.h">
+    <ClInclude Include="Engine\PostBloomPipeline.h">
       <Filter>engine\graphicsPipeline</Filter>
     </ClInclude>
     <ClInclude Include="Engine\PostEffectPipeline.h">
@@ -711,10 +711,10 @@
     <FxCompile Include="Resources\Shaders\PostEffect.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\PreBloom.PS.hlsl">
+    <FxCompile Include="Resources\Shaders\PostBloom.PS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
-    <FxCompile Include="Resources\Shaders\PreBloom.VS.hlsl">
+    <FxCompile Include="Resources\Shaders\PostBloom.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\Sprite.PS.hlsl">

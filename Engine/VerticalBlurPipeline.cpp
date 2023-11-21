@@ -105,7 +105,7 @@ void VerticalBlurPipeline::CreateShaderCompile() {
 
 void VerticalBlurPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
-	depthStencilDesc_.DepthEnable = true;
+	depthStencilDesc_.DepthEnable = false;
 	// 書き込みをする
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される

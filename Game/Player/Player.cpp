@@ -727,8 +727,8 @@ void Player::ParticleInitialize() {
 	//emitter_->angle.end = DegToRad(180.0f);
 	emitter_->isAlive = true;
 	particleMotion_ = new ParticleMotion();
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
+	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
 	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
 	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
@@ -749,8 +749,8 @@ void Player::ParticleInitialize() {
 void Player::ParticleUpdate() {
 	emitter_->aliveTime = 2;
 	emitter_->spawn.position = worldTransform_.worldPos_;
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f) };
+	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.4f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
 }
 

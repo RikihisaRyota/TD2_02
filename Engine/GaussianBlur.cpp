@@ -6,7 +6,7 @@
 
 using namespace Microsoft::WRL;
 
-void GaussianBlur::Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState) {
+void GaussianBlur::Initialize(Buffer* buffer, ID3D12RootSignature* rootSignature, ID3D12PipelineState* pipelineState) {
 	verticalBlurPipelinePipeline_ = new VerticalBlurPipeline();
 	verticalBlurPipelinePipeline_->InitializeGraphicsPipeline();
 	horizontalBlurPipeline_ = new HorizontalBlurPipeline();
@@ -14,7 +14,6 @@ void GaussianBlur::Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSig
 	rootSignature_ = rootSignature;
 	pipelineState_ = pipelineState;
 	originalBuffer_ = buffer;
-	depthBuffer_ = depthBuffer;
 
 	for (size_t i = 0; i < BufferType::kCount; i++) {
 		Buffer* buff = new Buffer();
@@ -24,16 +23,18 @@ void GaussianBlur::Initialize(Buffer* buffer, Buffer* depthBuffer, ID3D12RootSig
 
 }
 
-void GaussianBlur::Update() {
+void GaussianBlur::Render() {
 	SetCommandList();
 }
 
 void GaussianBlur::Shutdown() {
 	for (auto& buffer : buffer_) {
 		buffer->buffer.Reset();
+		delete buffer;
 	}
 	vertBuff_.Reset();
 	idxBuff_.Reset();
+	constantBuffer_.Reset();
 	delete verticalBlurPipelinePipeline_;
 	delete horizontalBlurPipeline_;
 }
@@ -72,10 +73,18 @@ void GaussianBlur::CreateResource() {
 	// ヒーププロパティ
 	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	// リソース設定
-	CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+	CD3DX12_RESOURCE_DESC resourceDesc[BufferType::kCount];
+	resourceDesc[BufferType::kVerticalBlur] = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM,
-		WinApp::kWindowWidth,
-		WinApp::kWindowHeight,
+		originalBuffer_->width / 2,
+		originalBuffer_->height,
+		1, 0, 1, 0,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		D3D12_TEXTURE_LAYOUT_UNKNOWN, 0);
+	resourceDesc[BufferType::kHorizontalBlur] = CD3DX12_RESOURCE_DESC::Tex2D(
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		originalBuffer_->width / 2,
+		originalBuffer_->height / 2,
 		1, 0, 1, 0,
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		D3D12_TEXTURE_LAYOUT_UNKNOWN, 0);
@@ -83,13 +92,21 @@ void GaussianBlur::CreateResource() {
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };
 	D3D12_CLEAR_VALUE clearValue = CD3DX12_CLEAR_VALUE(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, clearColor);
+	const wchar_t* kBufferName[] = {
+		L"Vertical",
+		L"Horizontal"
+	};
+
 	// バッファーを作成
 	for (size_t i = 0; i < BufferType::kCount; i++) {
 		result = device->CreateCommittedResource(
-			&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_PRESENT, &clearValue,
+			&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc[i], D3D12_RESOURCE_STATE_COMMON, &clearValue,
 			IID_PPV_ARGS(&buffer_.at(i)->buffer));
 		assert(SUCCEEDED(result));
-		buffer_.at(i)->buffer->SetName((L"GaussianBuffer" + std::to_wstring(i)).c_str());
+		buffer_.at(i)->states = D3D12_RESOURCE_STATE_COMMON;
+		buffer_.at(i)->buffer->SetName((std::wstring(L"GaussianBuffer") + kBufferName[i]).c_str());
+		buffer_.at(i)->width = uint32_t(resourceDesc[i].Width);
+		buffer_.at(i)->height = uint32_t(resourceDesc[i].Height);
 		common->GetSRVCPUGPUHandle(buffer_.at(i)->srvCPUHandle, buffer_.at(i)->srvGPUHandle);
 		buffer_.at(i)->rtvHandle = common->GetRTVCPUDescriptorHandle();
 		device->CreateShaderResourceView(buffer_.at(i)->buffer.Get(), &srvDesc, buffer_.at(i)->srvCPUHandle);
@@ -145,30 +162,20 @@ void GaussianBlur::CreateResource() {
 
 void GaussianBlur::SetCommandList() {
 	ID3D12GraphicsCommandList* commandList = DirectXCommon::GetInstance()->GetCommandList();
-	// リソースバリアを変更(表示状態->描画対象)
-	CD3DX12_RESOURCE_BARRIER barrier[3];
-	barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kVerticalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kHorizontalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PRESENT);
-	barrier[2] = CD3DX12_RESOURCE_BARRIER::Transition(
-		originalBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(3, barrier);
-	commandList->OMSetRenderTargets(1, &buffer_.at(kVerticalBlur)->rtvHandle, false, &depthBuffer_->dpsCPUHandle);
+	// リソースバリアの変更
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] = {
+			buffer_.at(kVerticalBlur)->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
+		};
+		commandList->ResourceBarrier(_countof(barrier), barrier);
+	}
+	commandList->OMSetRenderTargets(1, &buffer_.at(kVerticalBlur)->rtvHandle, false, nullptr);
 	ClearRenderTarget(buffer_.at(kVerticalBlur)->rtvHandle);
-	ClearDepthBuffer(depthBuffer_->dpsCPUHandle);
 	// ビューポートの設定
-	CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight);
+	CD3DX12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f,FLOAT(buffer_[BufferType::kVerticalBlur]->width),FLOAT(buffer_[BufferType::kVerticalBlur]->height));
 	commandList->RSSetViewports(1, &viewport);
 	// シザリング矩形の設定
-	CD3DX12_RECT rect = CD3DX12_RECT(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight);
+	CD3DX12_RECT rect = CD3DX12_RECT(0, 0, LONG(buffer_[BufferType::kVerticalBlur]->width), LONG(buffer_[BufferType::kVerticalBlur]->height));
 	commandList->RSSetScissorRects(1, &rect);
 
 	commandList->SetPipelineState(verticalBlurPipelinePipeline_->GetPipelineState());
@@ -180,30 +187,22 @@ void GaussianBlur::SetCommandList() {
 	commandList->SetGraphicsRootDescriptorTable(VerticalBlurPipeline::ROOT_PARAMETER_TYP::TEXTURE, originalBuffer_->srvGPUHandle);
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 
+	// リソースバリアの変更
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] = {
+			buffer_.at(kHorizontalBlur)->TransitionBarrier(D3D12_RESOURCE_STATE_RENDER_TARGET),
+			buffer_.at(kVerticalBlur)->TransitionBarrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
 
-	// リソースバリアを変更(表示状態->描画対象)
-	barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kVerticalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kHorizontalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	barrier[2] = CD3DX12_RESOURCE_BARRIER::Transition(
-		originalBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PRESENT);
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(3, barrier);
-	commandList->OMSetRenderTargets(1, &buffer_.at(kHorizontalBlur)->rtvHandle, false, &depthBuffer_->dpsCPUHandle);
+		};
+		commandList->ResourceBarrier(_countof(barrier), barrier);
+	}
+	commandList->OMSetRenderTargets(1, &buffer_.at(kHorizontalBlur)->rtvHandle, false, nullptr);
 	ClearRenderTarget(buffer_.at(kHorizontalBlur)->rtvHandle);
-	ClearDepthBuffer(depthBuffer_->dpsCPUHandle);
 	// ビューポートの設定
-	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight);
+	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, FLOAT(buffer_[BufferType::kHorizontalBlur]->width), FLOAT(buffer_[BufferType::kHorizontalBlur]->height));
 	commandList->RSSetViewports(1, &viewport);
 	// シザリング矩形の設定
-	rect = CD3DX12_RECT(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight);
+	rect = CD3DX12_RECT(0, 0, LONG(buffer_[BufferType::kHorizontalBlur]->width), LONG(buffer_[BufferType::kHorizontalBlur]->height));
 	commandList->RSSetScissorRects(1, &rect);
 
 	commandList->SetPipelineState(horizontalBlurPipeline_->GetPipelineState());
@@ -211,53 +210,24 @@ void GaussianBlur::SetCommandList() {
 	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vbView_);
 	commandList->IASetIndexBuffer(&ibView_);
-	commandList->SetGraphicsRootConstantBufferView(VerticalBlurPipeline::ROOT_PARAMETER_TYP::PRAM, constantBuffer_->GetGPUVirtualAddress());
-	commandList->SetGraphicsRootDescriptorTable(VerticalBlurPipeline::ROOT_PARAMETER_TYP::TEXTURE, buffer_.at(kVerticalBlur)->srvGPUHandle);
+	commandList->SetGraphicsRootConstantBufferView(HorizontalBlurPipeline::ROOT_PARAMETER_TYP::PRAM, constantBuffer_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootDescriptorTable(HorizontalBlurPipeline::ROOT_PARAMETER_TYP::TEXTURE, buffer_.at(kVerticalBlur)->srvGPUHandle);
 	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
 
-	// リソースバリアを変更(表示状態->描画対象)
-	barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kVerticalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_PRESENT);
-	barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
-		buffer_.at(kHorizontalBlur)->buffer.Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	barrier[2] = CD3DX12_RESOURCE_BARRIER::Transition(
-		originalBuffer_->buffer.Get(),
-		D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATE_RENDER_TARGET);
-	// TransitionBarrierを張る
-	commandList->ResourceBarrier(3, barrier);
+	// リソースバリアの変更
+	{
+		CD3DX12_RESOURCE_BARRIER barrier[] = {
+			buffer_.at(kHorizontalBlur)->TransitionBarrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
 
-	commandList->OMSetRenderTargets(1, &originalBuffer_->rtvHandle, false, &depthBuffer_->dpsCPUHandle);
-	ClearRenderTarget(originalBuffer_->rtvHandle);
-	ClearDepthBuffer(depthBuffer_->dpsCPUHandle);
-	// ビューポートの設定
-	viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, WinApp::kWindowWidth, WinApp::kWindowHeight);
-	commandList->RSSetViewports(1, &viewport);
-	// シザリング矩形の設定
-	rect = CD3DX12_RECT(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight);
-	commandList->RSSetScissorRects(1, &rect);
-
-	commandList->SetPipelineState(pipelineState_);
-	commandList->SetGraphicsRootSignature(rootSignature_);
-	commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->IASetVertexBuffers(0, 1, &vbView_);
-	commandList->IASetIndexBuffer(&ibView_);
-	commandList->SetGraphicsRootDescriptorTable(0, buffer_.at(kHorizontalBlur)->srvGPUHandle);
-	commandList->DrawIndexedInstanced(static_cast<UINT>(indices_.size()), 1, 0, 0, 0);
+		};
+		commandList->ResourceBarrier(_countof(barrier), barrier);
+	}
 }
 
 void GaussianBlur::ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE handle) {
 	// 全画面のクリア
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };
 	DirectXCommon::GetInstance()->GetCommandList()->ClearRenderTargetView(handle, clearColor, 0, nullptr);
-}
-
-void GaussianBlur::ClearDepthBuffer(D3D12_CPU_DESCRIPTOR_HANDLE handle) {
-	DirectXCommon::GetInstance()->GetCommandList()->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> GaussianBlur::CreateBuffer(UINT size) {

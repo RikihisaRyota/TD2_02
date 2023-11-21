@@ -28,7 +28,7 @@ void HorizontalBlurPipeline::CreateRootSignature() {
 	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
 	CD3DX12_ROOT_PARAMETER rootParameters[ROOT_PARAMETER_TYP::COUNT]{};
-	rootParameters[HorizontalBlurPipeline::ROOT_PARAMETER_TYP::PARM].InitAsConstantBufferView(HorizontalBlurPipeline::ROOT_PARAMETER_TYP::PARM, 0);
+	rootParameters[HorizontalBlurPipeline::ROOT_PARAMETER_TYP::PRAM].InitAsConstantBufferView(HorizontalBlurPipeline::ROOT_PARAMETER_TYP::PRAM, 0);
 	rootParameters[HorizontalBlurPipeline::ROOT_PARAMETER_TYP::TEXTURE].InitAsDescriptorTable(_countof(ranges), ranges);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSampler(
@@ -105,7 +105,7 @@ void HorizontalBlurPipeline::CreateShaderCompile() {
 
 void HorizontalBlurPipeline::CreateDepthStencil() {
 	// Depthの機能を有効化する
-	depthStencilDesc_.DepthEnable = true;
+	depthStencilDesc_.DepthEnable = false;
 	// 書き込みをする
 	depthStencilDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	// 比較関数はLessEqual。つまり、近ければ描画される
