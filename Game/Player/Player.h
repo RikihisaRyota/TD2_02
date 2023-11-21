@@ -196,6 +196,7 @@ private:
 		kJumpRotateSpeed, // ジャンプ時のプレイヤーの回転スピード
 		k2JumpMagnification, // 2段ジャンプの倍率
 		kClearRotateSpeed, // クリア時の回転の速さ
+		kWallGravity,
 		kCountFloatParameter, // 末尾
 	};
 
@@ -214,7 +215,7 @@ private:
 		"ジャンプ時のプレイヤーの回転スピード",
 		"2段ジャンプの倍率",
 		"クリア時の回転の速さ",
-
+		"壁ずり時の落下加速度"
 	};
 
 	enum V3ParameterNames {

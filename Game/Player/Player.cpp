@@ -440,7 +440,7 @@ void Player::GripWallUpdate() {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
 			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
 			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
@@ -475,7 +475,7 @@ void Player::GripWallUpdate() {
 	}
 	else {
 		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
-			velocity_.y += parameters_[FloatParameterNames::kFallingGravity];
+			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 
 		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
