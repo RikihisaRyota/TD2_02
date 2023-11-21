@@ -5,7 +5,7 @@
 #include "SceneSystem/IScene/IScene.h"
 #include "Input.h"
 #include "Ease/Ease.h"
-
+#include <numbers>
 
 SelectSprites::SelectSprites() {
 	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
@@ -205,14 +205,41 @@ void SelectSprites::SetStageNo()
 	}
 }
 
+void SelectSprites::TransformationInit()
+{
+	countFrame_ = 0;
+	scaleTheta_ = 0.0f;
+}
+
+void SelectSprites::TransformationUpdate()
+{
+	const float pi = std::numbers::pi_v<float>;
+
+	const float step = 2.0f * pi / iInfo_[IItemNames::kTransformationFrame];
+
+	scaleTheta_ += step;
+
+	scaleTheta_ = std::fmod(scaleTheta_, 2.0f * pi);
+
+	const float amplitude = 15.0f;
+
+	float scale = std::sinf(scaleTheta_) * amplitude;
+
+	//stages_[2]->SetPosition({ stageBasePos_.x,stageBasePos_.y + scale });
+	stages_[2]->SetSize({ kStageTexSize_ + scale,kStageTexSize_ + scale });
+}
+
 void SelectSprites::SelectInitialize()
 {
 	SetStageNo();
+	TransformationInit();
 }
 
 void SelectSprites::SelectUpdate()
 {
 	Input* input = Input::GetInstance();
+
+	TransformationUpdate();
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
 		// シーン切り替え
