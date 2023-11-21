@@ -51,7 +51,7 @@ void FollowCamera::Update() {
 void FollowCamera::SetTarget(const WorldTransform* target)
 {
 	target_ = target;
-	Reset();
+	//Reset();
 }
 
 void FollowCamera::Reset()
