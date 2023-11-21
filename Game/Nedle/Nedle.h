@@ -106,8 +106,6 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	void Finalize();
-
 private:
 	NedleManager() = default;
 	~NedleManager() = default;
@@ -120,7 +118,7 @@ private:
 
 private:
 
-	std::list<Nedle*> nedles_;
+	std::list<std::unique_ptr<Nedle>> nedles_;
 
 	const std::string groupName_ = "Nedle";
 

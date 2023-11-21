@@ -64,6 +64,12 @@ int SceneManager::Run()
 			soundManager_->Initialize(currentSceneNo_, preSceneNo_);
 		}
 		sceneArr_[currentSceneNo_]->Update();
+
+		ImGui::Begin("fps");
+		ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
+		ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
+		ImGui::End();
+
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
@@ -80,8 +86,6 @@ int SceneManager::Run()
 		
 		soundManager_->Update();
 	}
-
-	NedleManager::GetInstance()->Finalize();
 
 	return 0;
 }

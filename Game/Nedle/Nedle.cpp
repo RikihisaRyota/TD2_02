@@ -175,7 +175,7 @@ bool NedleManager::IsCreatNedle()
 
 void NedleManager::CreateNeadle(const WorldTransform& worldTransform)
 {
-	nedles_.push_back(new Nedle(worldTransform));
+	nedles_.push_back(std::make_unique<Nedle>(worldTransform));
 }
 
 void NedleManager::Clear()
@@ -187,29 +187,25 @@ void NedleManager::Update()
 {
 	countFrame_++;
 
-	nedles_.remove_if([](Nedle* nedle) {
+	nedles_.remove_if([](std::unique_ptr<Nedle>& nedle) {
 		if (!nedle->IsLife()) {
-			delete nedle;
+			nedle.reset();
+			nedle = nullptr;
 			return true;
 		}
 		return false;
 	});
 
-	for (Nedle* nedle : nedles_) {
+	for (const std::unique_ptr<Nedle>& nedle : nedles_) {
 		nedle->Update();
 	}
 }
 
 void NedleManager::Draw(const ViewProjection& viewProjection)
 {
-	for (Nedle* nedle : nedles_) {
+	for (const std::unique_ptr<Nedle>& nedle : nedles_) {
 		nedle->Draw(viewProjection);
 	}
-}
-
-void NedleManager::Finalize()
-{
-	Clear();
 }
 
 void NedleManager::SetGlobalVariable()
