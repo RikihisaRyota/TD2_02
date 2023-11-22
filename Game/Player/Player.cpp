@@ -112,7 +112,13 @@ void Player::UpdateMatrix() {
 
 void Player::OnCollision() {
 
-	if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
+	if ((velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0 &&
+		editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) ||
+		(velocity_.x == 0 && state_ == State::kFloarAndWall)) {
+		StateRequest(State::kFloarAndWall);
+		ParticleCreate({ 0.0f,-1.0f });
+	}
+	else if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
 		StateRequest(State::kNormal);
 		ParticleCreate({ 0.0f,-1.0f });
 	}
@@ -273,7 +279,7 @@ void Player::NormalUpdate() {
 		isPlayerFaceRight_ = true;
 	}
 
-	if (move.x == 0.0f) {
+	/*if (move.x == 0.0f) {
 		noTatchCountFrame_++;
 
 		if (noTatchCountFrame_ >= 120) {
@@ -286,7 +292,7 @@ void Player::NormalUpdate() {
 	else {
 		NoTatchReturnUpdate();
 		noTatchCountFrame_ = 0;
-	}
+	}*/
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
@@ -880,6 +886,70 @@ void Player::DeadModeUpdate()
 {
 }
 
+void Player::FloarAndWallInit()
+{
+	
+	noTatchCountFrame_ = 0;
+
+	worldTransform_.rotation_ = {};
+	if (isRight_) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}
+	velocity_ = {};
+	countFrame_ = 0;
+
+	jumpCount_ = 0;
+}
+
+void Player::FloarAndWallUpdate()
+{
+
+	Input* input = Input::GetInstance();
+
+	Vector2 move = input->GetGamePadLStick();
+
+	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+
+		if ((isRight_ && move.x >= 0) || (!isRight_ && move.x <= 0)) {
+			StateRequest(State::kWallJump);
+		}
+		else {
+			StateRequest(State::kJump);
+
+			if (move.x > 0) {
+				isPlayerFaceRight_ = false;
+				isRight_ = true;
+				worldTransform_.rotation_.y = 0.0f;
+			}
+			else if (move.x < 0) {
+				isPlayerFaceRight_ = true;
+				isRight_ = false;
+				worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+			}
+		}
+	}
+	else {
+		if (!isRight_ && move.x > 0.2f) {
+			StateRequest(State::kNormal);
+			isPlayerFaceRight_ = false;
+			isRight_ = true;
+			worldTransform_.rotation_.y = 0.0f;
+		}
+		else if (isRight_ && move.x < -0.2f) {
+			StateRequest(State::kNormal);
+			isPlayerFaceRight_ = true;
+			isRight_ = false;
+			worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+		}
+	}
+	
+
+}
+
 void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::NormalInitialize,
 	&Player::JumpInitialize,
@@ -889,6 +959,7 @@ void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::WallDownJumpInitialize,
 	&Player::ClearMoveInitialize,
 	&Player::DeadModeInitialize,
+	&Player::FloarAndWallInit,
 };
 
 void (Player::* Player::spStateUpdateFuncTable[])() {
@@ -900,6 +971,7 @@ void (Player::* Player::spStateUpdateFuncTable[])() {
 	&Player::WallDownJumpUpdate,
 	&Player::ClearMoveUpdate,
 	&Player::DeadModeUpdate,
+	&Player::FloarAndWallUpdate,
 };
 
 void Player::Update()

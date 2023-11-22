@@ -23,6 +23,8 @@ public:
 		kWallDownJump,
 		kClearMove,
 		kDeadMove,
+		kFloarAndWall,
+
 	};
 
 	Player();
