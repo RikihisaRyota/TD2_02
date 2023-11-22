@@ -39,7 +39,7 @@ void SoundManager::Update() {
 	}
 }
 
-void SoundManager::SetScene(int currentScene, int preScene) {
+void SoundManager::SetScene(int preScene, int currentScene) {
 	preScene_ = preScene;
 	currentScene_ = currentScene;
 }

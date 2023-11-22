@@ -20,6 +20,7 @@
 SceneManager::SceneManager() {
 	IScene::sceneNo_ = TITLE;
 	currentSceneNo_ = IScene::sceneNo_;
+	currentSceneChangeSceneNo_ = currentSceneNo_;
 	IScene::stageNo_ = 0;
 
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -27,8 +28,6 @@ SceneManager::SceneManager() {
 	sceneArr_[STAGE] = std::make_unique<StageScene>();
 	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
 
-	IScene::sceneNo_ = TITLE;
-	currentSceneNo_ = IScene::sceneNo_;
 	sceneArr_[currentSceneNo_]->Init();
 
 	soundManager_ = std::make_unique<SoundManager>();
@@ -63,10 +62,10 @@ int SceneManager::Run() {
 
 		StageData::Update();
 		// ゲームシーンの毎フレーム処理
-		preSceneNo_ = currentSceneNo_;
-		currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
-		if (preSceneNo_ != currentSceneNo_) {
-			soundManager_->SetScene(preSceneNo_, currentSceneNo_);
+		preSceneChangeSceneNo_ = currentSceneChangeSceneNo_;
+		currentSceneChangeSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
+		if (preSceneChangeSceneNo_ != currentSceneChangeSceneNo_) {
+			soundManager_->SetScene(preSceneChangeSceneNo_, currentSceneChangeSceneNo_);
 			// シーン遷移開始
 			sceneChange_->SetSceneChange(true);
 		}
@@ -77,9 +76,10 @@ int SceneManager::Run() {
 		else {
 			sceneChange_->Update();
 			if (sceneChange_->GetInitialize()) {
+				currentSceneNo_ = currentSceneChangeSceneNo_;
+				preSceneNo_ = preSceneChangeSceneNo_;
 				sceneArr_[currentSceneNo_]->Init();
 				soundManager_->Initialize();
-				sceneArr_[currentSceneNo_]->Update();
 				sceneChange_->SetInitialize(false);
 			}
 		}
