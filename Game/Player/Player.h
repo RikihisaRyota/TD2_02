@@ -130,6 +130,10 @@ private:
 
 	void DeadModeUpdate();
 
+	void FloarAndWallInit();
+
+	void FloarAndWallUpdate();
+
 	static void (Player::* spStateInitFuncTable[])();
 	
 	static void (Player::* spStateUpdateFuncTable[])();
