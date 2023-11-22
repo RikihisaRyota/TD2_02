@@ -37,6 +37,10 @@ private:
 
 	void SetStageNo();
 
+	void TransformationInit();
+
+	void TransformationUpdate();
+
 	void SelectInitialize();
 
 	void SelectUpdate();
@@ -64,13 +68,17 @@ private:
 
 	int countFrame_;
 
+	float scaleTheta_;
+
 	enum IItemNames {
 		kMaxMoveFrame,
+		kTransformationFrame,
 		kIItemCount,
 	};
 
 	std::string iItemNames_[IItemNames::kIItemCount] = {
-		"移動フレーム"
+		"移動フレーム",
+		"真ん中のステージ変化のフレーム",
 	};
 
 	int iInfo_[IItemNames::kIItemCount];

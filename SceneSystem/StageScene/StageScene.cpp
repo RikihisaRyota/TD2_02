@@ -86,7 +86,7 @@ void StageScene::Update()
 
 	background_->Update();
 
-	mapChip_->Update();
+	mapChip_->Update(viewProjection_);
 
 	NedleManager::GetInstance()->Update();
 

@@ -8,3 +8,5 @@ const uint32_t kCollisionAttributePlayer = 0b1;
 const uint32_t kCollisionAttributeBlock = 0b1 << 1;
 // ゴール
 const uint32_t kCollisionAttributeGoal = 0b1 << 2;
+// 当たったらアウト
+const uint32_t kCollisionAttributeOut = 0b1 << 3;

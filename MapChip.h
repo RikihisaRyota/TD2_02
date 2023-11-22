@@ -27,6 +27,10 @@ const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
 class MapChip : public Collider{
 public:
+	struct GPUParam {
+		Matrix4x4 mat;
+		Vector4 color;
+	};
 	struct MapChipInstancing {
 		uint32_t maxInstance = 10000;
 		uint32_t currentInstance;
@@ -34,7 +38,12 @@ public:
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuff;
 		D3D12_CPU_DESCRIPTOR_HANDLE instancingSRVCPUHandle;
 		D3D12_GPU_DESCRIPTOR_HANDLE instancingSRVGPUHandle;
-		Matrix4x4* mat;
+		std::vector<std::pair<int,int>> instanceCount;
+		GPUParam* gpuPram;
+	};
+	struct MapColor {
+		Vector4 color;
+		bool isActive;
 	};
 	enum Stage
 	{
@@ -63,10 +72,10 @@ public:
 
 	void OnCollision() override;
 	void SetCollider();
-	void Update();
 
 	MapChip();
 	void Initialize();
+	void Update(const ViewProjection& viewProjection);
 	void Draw(const ViewProjection& viewProjection);
 
 #pragma region Load,Save
@@ -117,6 +126,10 @@ private:
 	std::vector<std::string> stageName_;
 	// 現在のステージ
 	uint32_t currentStage_;
+
+	Vector4 normalColor_;
+	Vector4 touchingColor_;
+
 
 
 

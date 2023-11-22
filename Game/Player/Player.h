@@ -22,6 +22,7 @@ public:
 		kWallSideJump,
 		kWallDownJump,
 		kClearMove,
+		kDeadMove,
 	};
 
 	Player();
@@ -122,6 +123,10 @@ private:
 	void ClearMoveInitialize();
 
 	void ClearMoveUpdate();
+
+	void DeadModeInitialize();
+
+	void DeadModeUpdate();
 
 	static void (Player::* spStateInitFuncTable[])();
 	

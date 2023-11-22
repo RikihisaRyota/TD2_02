@@ -17,13 +17,52 @@
 #include "Collision/CollisionManager.h"
 #include "TextureManager.h"
 #include "Game/Nedle/Nedle.h"
+#include "ImGuiManager.h"
 
 using namespace Microsoft::WRL;
 
 void MapChip::OnCollision() {
-	/*for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
-		map yx.first;
-	}*/
+	for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
+		auto blockType = map_[yx.first][yx.second];
+		switch (blockType) {
+		case uint32_t(MapChip::Blocks::kBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount) {
+				if (pair == yx) {
+					instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[i].color = touchingColor_;
+					break;
+				}
+				i++;
+			}
+			break;
+		case uint32_t(MapChip::Blocks::kRedBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount) {
+				if (pair == yx) {
+					instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[i].color = touchingColor_;
+					break;
+				}
+				i++;
+			}
+			break;
+		case uint32_t(MapChip::Blocks::kItemBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount) {
+				if (pair == yx) {
+					instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[i].color = touchingColor_;
+					break;
+				}
+				i++;
+			}
+			break;
+		case uint32_t(MapChip::Blocks::kNeedleBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount) {
+				if (pair == yx) {
+					instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[i].color = touchingColor_;
+					break;
+				}
+				i++;
+			}
+			break;
+		}
+	}
 }
 
 void MapChip::SetCollider() {
@@ -31,17 +70,80 @@ void MapChip::SetCollider() {
 	CollisionManager::GetInstance()->SetCollider(this);
 }
 
-void MapChip::Update() {
+void MapChip::Update(const ViewProjection& viewProjection) {
 
 	NedleManager* nedleManager = NedleManager::GetInstance();
 
 	if (nedleManager->IsCreatNedle()) {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
-				
+
 				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
 					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
 				}
+			}
+		}
+	}
+	ImGui::Begin("Debug");
+	if (ImGui::TreeNode("MapChip")) {
+		ImGui::DragFloat4("normalColor", &normalColor_.x, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat4("touchingColor", &touchingColor_.x, 0.01f, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
+	ImGui::End();
+
+	for (auto& instancing : instancing_) {
+		instancing->currentInstance = 0;
+		instancing->instanceCount.clear();
+	}
+	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
+
+	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
+	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
+
+	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
+	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
+	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
+	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
+	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
+	yMin = kMaxHeightBlockNum - yMin;
+	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
+	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
+	yMax = kMaxHeightBlockNum - yMax;
+	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
+
+	
+	for (int32_t y = yMin; y < yMax; y++) {
+		for (int32_t x = xMin; x < xMax; x++) {
+			auto block = map_[y][x];
+			switch (block) {
+			case uint32_t(Blocks::kBlock):
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kRedBlock):
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kItemBlock):
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kNeedleBlock):
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
+				break;
+
+			default:
+				break;
 			}
 		}
 	}
@@ -114,6 +216,8 @@ MapChip::MapChip() {
 
 void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
+	normalColor_ = {0.5f,0.5f,0.5f,1.0f};
+	touchingColor_= { 1.0f,1.0f,1.0f,1.0f };
 }
 
 void MapChip::LoadCSV() {
@@ -274,8 +378,8 @@ void MapChip::InstancingInitialize() {
 	for (size_t i = 0; i < size_t(MapChip::Blocks::kCount) - 1; i++) {
 		auto device = DirectXCommon::GetInstance()->GetDevice();
 		MapChipInstancing* instancing = new MapChipInstancing();
-		instancing->instancingBuff = CreateBuffer(sizeof(Matrix4x4) * instancing->maxInstance);
-		instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->mat));
+		instancing->instancingBuff = CreateBuffer(sizeof(GPUParam) * instancing->maxInstance);
+		instancing->instancingBuff->Map(0, nullptr, reinterpret_cast<void**>(&instancing->gpuPram));
 		// シェーダーリソースビュー
 		D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
 		desc.Format = DXGI_FORMAT_UNKNOWN;
@@ -291,51 +395,6 @@ void MapChip::InstancingInitialize() {
 	}
 }
 void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
-	for (auto& instancing : instancing_) {
-		instancing->currentInstance = 0;
-	}
-	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
-
-	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
-	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
-
-	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
-	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
-	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
-	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
-	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
-	yMin = kMaxHeightBlockNum - yMin;
-	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
-	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
-	yMax = kMaxHeightBlockNum - yMax;
-	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
-
-	for (int32_t y = yMin; y < yMax; y++) {
-		for (int32_t x = xMin; x < xMax; x++) {
-			auto block = map_[y][x];
-			switch (block) {
-			case uint32_t(Blocks::kBlock):
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kRedBlock):
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kItemBlock):
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kNeedleBlock):
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->mat[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance] = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
-				break;
-			
-			default:
-				break;
-			}
-		}
-	}
 	auto commandList = DirectXCommon::GetInstance()->GetCommandList();
 	// ルートシグネチャの設定
 	commandList->SetGraphicsRootSignature(basicGraphicsPipeline_->GetRootSignature());
@@ -348,8 +407,8 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
-	for (uint32_t i=0; auto & instancing : instancing_) {
-		if (instancing->mat!=nullptr) {
+	for (uint32_t i = 0; auto & instancing : instancing_) {
+		if (instancing->gpuPram != nullptr) {
 			// 頂点バッファの設定
 			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
 
@@ -382,8 +441,7 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
-void MapChip::SetCurrentStage(uint32_t stageNum)
-{
+void MapChip::SetCurrentStage(uint32_t stageNum) {
 	if (stageNum >= Stage::kCount) {
 		stageNum = Stage::kCount - 1;
 		currentStage_ = stageNum;
