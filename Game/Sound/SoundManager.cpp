@@ -23,9 +23,7 @@ SoundManager::SoundManager() {
 	isLoop_ = true;
 }
 
-void SoundManager::Initialize(int currentScene, int preScene) {
-	preScene_ = preScene;
-	currentScene_ = currentScene;
+void SoundManager::Initialize() {
 
 	audio_->SoundPlayLoopEnd(playHandle_.at(preScene_));
 	playHandle_.at(preScene_) = -1;
@@ -39,4 +37,9 @@ void SoundManager::Update() {
 		audio_->SetValume(playHandle_.at(currentScene_), 0.5f);
 		isLoop_ = true;
 	}
+}
+
+void SoundManager::SetScene(int preScene, int currentScene) {
+	preScene_ = preScene;
+	currentScene_ = currentScene;
 }

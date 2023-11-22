@@ -99,14 +99,13 @@ void Particle::Update() {
 		}),
 		particleWorldTransform_.end()
 	);
-
-	isAlive_ = false;
-	for (auto& particle : particleWorldTransform_) {
-		if (particle->motion.isAlive) {
-			isAlive_ = true;
-			break;
-		}
+	if (particleWorldTransform_.empty()) {
+		isAlive_ = false;
 	}
+	else {
+		isAlive_ = true;
+	}
+
 }
 
 void Particle::Reset() {

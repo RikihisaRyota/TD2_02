@@ -41,8 +41,8 @@ void Background::Update() {
 		emitter->angle.end = DegToRad(360.0f);
 		emitter->isAlive = true;
 		ParticleMotion* particleMotion = new ParticleMotion();
-		particleMotion->color.startColor = { rnd_.NextFloatRange(0.2f,0.5f),rnd_.NextFloatRange(0.2f,0.5f),rnd_.NextFloatRange(0.5f,1.0f),rnd_.NextFloatRange(0.0f,0.1f) };
-		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.0f) };
+		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.2f) };
+		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.4f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.0f) };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
 		float scale = rnd_.NextFloatRange(10.0f, 20.0f);
 		particleMotion->scale.startScale = {0.01f,0.01f,0.01f };

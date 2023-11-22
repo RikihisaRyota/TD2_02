@@ -26,10 +26,16 @@ private:
 	void ApplyGlobalVariable();
 
 private:
+	enum SpriteOnOFF {
+		kOn,
+		kOff,
+
+		kCount,
+	};
 
 	enum SpriteNames {
 		kBackground,
-		kSelect,
+		kTitle,
 		kDecisionA,
 		kSpriteCount,
 	};
@@ -54,5 +60,7 @@ private:
 	Vector2 v2Info_[kSpriteCount][kV2ItemCount];
 
 	std::string groupName_ = "titleSprites";
+
+	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
 };
 

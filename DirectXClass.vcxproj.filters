@@ -320,6 +320,9 @@
     <ClCompile Include="Game\Nedle\Nedle.cpp">
       <Filter>Game\Nedle</Filter>
     </ClCompile>
+    <ClCompile Include="SceneSystem\SceneChange\SceneChange.cpp">
+      <Filter>SceneSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -607,6 +610,9 @@
     </ClInclude>
     <ClInclude Include="Game\Nedle\Nedle.h">
       <Filter>Game\Nedle</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneSystem\SceneChange\SceneChange.h">
+      <Filter>SceneSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

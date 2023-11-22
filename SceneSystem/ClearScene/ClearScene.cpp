@@ -10,30 +10,32 @@
 #include "SphereRenderer.h"
 #include "Model.h"
 
-ClearScene::ClearScene()
-{
+ClearScene::ClearScene() {
 	// カメラの初期化
 	viewProjection_.Initialize();
 
 	clearSprites_ = std::make_unique<ClearSprites>();
 }
 
-void ClearScene::Init()
-{
+void ClearScene::Init() {
 	clearSprites_->Init();
 }
 
-void ClearScene::Update()
-{
+void ClearScene::Update() {
 	clearSprites_->Update();
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
-		sceneNo_ = SELECT;
+		if (clearSprites_->GetNextScene()) {
+			sceneNo_ = STAGE;
+			stageNo_++;
+		}
+		else {
+			sceneNo_ = SELECT;
+		}
 	}
 }
 
-void ClearScene::Draw()
-{
+void ClearScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = DirectXCommon::GetInstance()->GetCommandList();
 

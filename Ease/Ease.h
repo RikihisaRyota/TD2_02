@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector2.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 class Ease {
 public:
@@ -42,6 +43,8 @@ public:
 
 	static Vector3 UseEase(const Vector3& a, const Vector3& b, float t);
 
+	static Vector4 UseEase(const Vector4& a, const Vector4& b, float t);
+
 	static float MakeEaseT(int nowFrame, int maxFrame, EaseType easeType, int index = 2);
 	//返ってくるのはイージングに使うtの値
 	static float MakeEaseT(float nowFrame, int maxFrame, EaseType easeType, int index = 2);
@@ -76,6 +79,8 @@ public:
 	static Vector3 UseEase(const Vector3& a, const Vector3& b, float nowFrame, float maxFrame, EaseType easeType, int index = 2);
 
 	static Vector3 UseEase(const Vector3& a, const Vector3& b, float t, EaseType easeType, int index = 2);
+
+	static Vector4 UseEase(const Vector4& a, const Vector4& b, float nowFrame, float maxFrame, EaseType easeType, int index = 2);
 
 	//返ってくる値はイージングされた値
 	//aにt=0のときの値、bにt=1の時の値

@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 
+#include "Input.h"
 #include "Sprite.h"
 #include "Random.h"
 
@@ -13,6 +14,7 @@ public:
 	void Update();
 	void Draw();
 
+	bool GetNextScene() { return nextStageFlag_; }
 private:
 
 	/// <summary>
@@ -40,11 +42,11 @@ private:
 		kNumberCount,
 	};
 
-	enum Star {
+	enum Flag {
 		kTrue,
 		kFalse,
 
-		kStarCount,
+		kFlagCount,
 	};
 
 	enum SpriteNames {
@@ -99,9 +101,13 @@ private:
 		"スケール",
 	};
 
+	Input* input_;
+
 	std::unique_ptr<Sprite> sprites_[kSpriteCount];
 	uint32_t number_[kNumberCount];
-	uint32_t star_[kStarCount];
+	uint32_t star_[kFlagCount];
+	uint32_t nextStage_[kFlagCount];
+	uint32_t selectStage_[kFlagCount];
 
 	Vector2 v2Info_[kSpriteCount][kV2ItemCount];
 
@@ -111,5 +117,6 @@ private:
 
 	int timePlace_[3];
 	bool starFlag_[3];
+	bool nextStageFlag_;
 };
 

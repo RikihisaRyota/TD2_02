@@ -172,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
     <ClCompile Include="SceneSystem\ClearScene\ClearScene.cpp" />
     <ClCompile Include="SceneSystem\IScene\IScene.cpp" />
+    <ClCompile Include="SceneSystem\SceneChange\SceneChange.cpp" />
     <ClCompile Include="SceneSystem\SceneManager\SceneManager.cpp" />
     <ClCompile Include="SceneSystem\SelectScene\SelectScene.cpp" />
     <ClCompile Include="SceneSystem\StageScene\StageScene.cpp" />
@@ -269,6 +270,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="SceneSystem\ClearScene\ClearScene.h" />
     <ClInclude Include="SceneSystem\IScene\IScene.h" />
+    <ClInclude Include="SceneSystem\SceneChange\SceneChange.h" />
     <ClInclude Include="SceneSystem\SceneManager\SceneManager.h" />
     <ClInclude Include="SceneSystem\SelectScene\SelectScene.h" />
     <ClInclude Include="SceneSystem\StageScene\StageScene.h" />

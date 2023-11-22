@@ -2,6 +2,7 @@
 
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
+#include "Input.h"
 
 TitleSprites::TitleSprites() {
 	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
@@ -9,7 +10,7 @@ TitleSprites::TitleSprites() {
 	sprites_[SpriteNames::kBackground]->SetSize({ 1280.0f,720.0f });
 
 	tex = TextureManager::Load("Resources/Textures/title.png");
-	sprites_[SpriteNames::kSelect].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	sprites_[SpriteNames::kTitle].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/pushA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -19,6 +20,9 @@ TitleSprites::TitleSprites() {
 			v2Info_[i][j] = {};
 		}
 	}
+
+	testTextureHandle_[kOn] = TextureManager::Load("Resources/Textures/title.png");
+	testTextureHandle_[kOff] = TextureManager::Load("Resources/Textures/title_test.png");
 }
 
 void TitleSprites::Init() {
@@ -26,7 +30,12 @@ void TitleSprites::Init() {
 }
 
 void TitleSprites::Update() {
-	
+	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+		sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOff]);
+	}
+	else {
+		sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOn]);
+	}
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -39,7 +48,8 @@ void TitleSprites::FarDraw()
 
 void TitleSprites::NearDraw()
 {
-	sprites_[SpriteNames::kSelect]->Draw();
+	
+	sprites_[SpriteNames::kTitle]->Draw();
 	sprites_[SpriteNames::kDecisionA]->Draw();
 }
 

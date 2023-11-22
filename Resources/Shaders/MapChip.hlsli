@@ -4,4 +4,5 @@ struct VertexShaderOutput
     float3 normal : NORMAL0;
     float2 texcoord : TEXCOORD0;
     float4 ray : VECTOR;
+    uint instanceID : UINT;
 };

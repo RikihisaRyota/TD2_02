@@ -47,12 +47,7 @@ void Model::Draw(const WorldTransform& worldTransform, const ViewProjection& vie
 			ToonDraw(worldTransform, viewProjection, i);
 		}
 		uint32_t tex = textureHadle;
-		if (tex == 10) {
-			tex = 0;
-		}
-		else {
-			tex = materials_[i]->GetTextureHandle();
-		}
+		tex = materials_[i]->GetTextureHandle();
 		BasicDraw(worldTransform, viewProjection, tex, i);
 	}
 }
@@ -235,11 +230,12 @@ std::string Model::LoadMaterialTemplateFile(const std::string& filepath, const s
 		if (identifier == "newmtl") {
 			Material* material = new Material();
 			materials_.emplace_back(material);
-		}else if(identifier == "map_Kd") {
+		}
+		else if (identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
 			// 連結してファイルパスにする
-			materialData = "Resources/Models/" + filepath + "/"  + textureFilename;
+			materialData = "Resources/Models/" + filepath + "/" + textureFilename;
 			materials_.back()->SetTextureHandle(TextureManager::Load(materialData));
 		}
 	}

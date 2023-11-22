@@ -3,6 +3,7 @@
 struct WorldTransform
 {
     matrix world; // ワールド変換行列
+    float4 color;
 };
 
 StructuredBuffer<WorldTransform> gWorldTransform : register(t0);
@@ -32,5 +33,6 @@ VertexShaderOutput main(VertexShaderInput input, uint instanceID : SV_InstanceID
     output.texcoord = input.texcoord;
     output.ray = input.position;
     output.ray = mul(output.ray, gWorldTransform[instanceID].world);
+    output.instanceID = instanceID;
     return output;
 }

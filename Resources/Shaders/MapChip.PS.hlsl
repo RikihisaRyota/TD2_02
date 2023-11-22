@@ -3,6 +3,14 @@
 Texture2D<float4> gTexture : register(t1);
 SamplerState gSampler : register(s0);
 
+struct WorldTransform
+{
+    matrix world; // ワールド変換行列
+    float4 color;
+};
+
+StructuredBuffer<WorldTransform> gWorldTransform : register(t0);
+
 struct ViewProjection
 {
     matrix view; // ビュー変換行列
@@ -61,7 +69,7 @@ PixelShaderOutput main(VertexShaderOutput input)
         float4 specular = gDirectionLight.color * t * gDirectionLight.sharpness;
         // アンビエント
         float4 ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
-        output.color = gMaterial.color * textureColor * (diffuse + specular + ambient);
+        output.color = gWorldTransform[input.instanceID].color * textureColor * (diffuse + specular + ambient);
     }
     else if (gMaterial.enableLighting == 2)
     {
@@ -76,11 +84,11 @@ PixelShaderOutput main(VertexShaderOutput input)
         float4 specular = gDirectionLight.color * t * gDirectionLight.sharpness;
         // アンビエント
         float4 ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
-        output.color = gMaterial.color * textureColor * (diffuse + specular + ambient);
+        output.color = gWorldTransform[input.instanceID].color * textureColor * (diffuse + specular + ambient);
     }
     else
     {
-        output.color = gMaterial.color * textureColor;
+        output.color = gWorldTransform[input.instanceID].color * textureColor;
     }
     //if (output.color.a == 0.0f)
     //{
