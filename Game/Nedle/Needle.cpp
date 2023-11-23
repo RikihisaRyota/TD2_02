@@ -1,12 +1,13 @@
-#include "Nedle.h"
+#include "Needle.h"
 #include "Collision/CollisionConfig.h"
 #include "Collision/CollisionManager.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "ModelManager.h"
 #include "Ease/Ease.h"
+#include <numbers>
 
-Needle::Needle(const Vector3& position)
+Needle::Needle()
 {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
 	collisionAttribute_ = 0x00000000;
@@ -19,11 +20,9 @@ Needle::Needle(const Vector3& position)
 	SetCollisionAttribute(kCollisionAttributeOut);
 	SetCollisionMask(kCollisionAttributePlayer);
 
-	model_.reset(ModelManager::GetInstance()->GetModel("player"));
+	model_.reset(ModelManager::GetInstance()->GetModel("needle"));
 
 	worldTransform_.Initialize();
-	worldTransform_.translate_ = position;
-	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
 
 	isLife_ = true;
@@ -35,6 +34,19 @@ Needle::Needle(const Vector3& position)
 Needle::~Needle()
 {
 	model_.release();
+}
+
+void Needle::Init(const Vector3& pos)
+{
+	worldTransform_.Reset();
+	worldTransform_.rotation_.z = std::numbers::pi_v<float>;
+	worldTransform_.translate_ = pos;
+	pos_ = worldTransform_.translate_;
+	worldTransform_.UpdateMatrix();
+	isLife_ = true;
+	velocity_ = {};
+	state_ = State::kCreate;
+	stateRequest_ = State::kCreate;
 }
 
 void Needle::Update()
@@ -53,12 +65,16 @@ void Needle::Update()
 
 	worldTransform_.UpdateMatrix();
 
-	SetCollider();
+	if (isLife_) {
+		SetCollider();
+	}
 }
 
 void Needle::Draw(const ViewProjection& viewProjection)
 {
-	model_->Draw(worldTransform_, viewProjection);
+	if (isLife_) {
+		model_->Draw(worldTransform_, viewProjection);
+	}
 }
 
 void Needle::OnCollision()
@@ -156,6 +172,16 @@ NeedleManager* NeedleManager::GetInstance()
 	return &instance;
 }
 
+void NeedleManager::FirstInit()
+{
+	for (std::unique_ptr<Needle>& needle : needles_) {
+		needle.reset();
+		needle = std::make_unique<Needle>();
+	}
+	Init();
+	SetGlobalVariable();
+}
+
 void NeedleManager::Init()
 {
 	Clear();
@@ -175,36 +201,34 @@ bool NeedleManager::IsCreatNedle()
 
 void NeedleManager::CreateNeadle(const Vector3& position)
 {
-	needles_.push_back(std::make_unique<Needle>(position));
+	for (std::unique_ptr<Needle>& needle : needles_) {
+		if (!needle->IsLife()) {
+			needle->Init(position);
+			return;
+		}
+	}
 }
 
 void NeedleManager::Clear()
 {
-	needles_.clear();
+	for (std::unique_ptr<Needle>& needle : needles_) {
+		needle->SetIsLife(false);
+	}
 }
 
 void NeedleManager::Update()
 {
 	countFrame_++;
 
-	needles_.remove_if([](std::unique_ptr<Needle>& nedle) {
-		if (!nedle->IsLife()) {
-			nedle.reset();
-			nedle = nullptr;
-			return true;
-		}
-		return false;
-	});
-
-	for (const std::unique_ptr<Needle>& nedle : needles_) {
-		nedle->Update();
+	for (const std::unique_ptr<Needle>& needle : needles_) {
+		needle->Update();
 	}
 }
 
 void NeedleManager::Draw(const ViewProjection& viewProjection)
 {
-	for (const std::unique_ptr<Needle>& nedle : needles_) {
-		nedle->Draw(viewProjection);
+	for (const std::unique_ptr<Needle>& needle : needles_) {
+		needle->Draw(viewProjection);
 	}
 }
 
