@@ -84,7 +84,7 @@ public:
 		//kBlockTopRight,
 		//kBlockTopRightLeft,
 
-		//kBlockNomalCount,
+		//kBlockNormalCount,
 	};
 public:
 
