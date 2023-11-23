@@ -14,7 +14,8 @@ public:
 	void UIDraw() override;
 
 private:
-
 	std::unique_ptr<SelectSprites> selectSprites_;
+
+	
 };
 

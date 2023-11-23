@@ -1,11 +1,12 @@
 #pragma once
 
+#include <array>
 #include <vector>
-
-#include "Sprite.h"
+#include <optional>
 #include <memory>
 
-#include <optional>
+#include "Sprite.h"
+#include "../StageData/StageData.h"
 
 class SelectSprites {
 public:
@@ -150,5 +151,7 @@ private:
 	Vector2 starBasePos_;
 
 	std::string groupName_ = "selectSprites";
+
+	std::vector<std::array<bool, StageData::kMaxCondition>> condition_;
 };
 

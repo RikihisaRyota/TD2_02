@@ -104,6 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Ease\Ease.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BasicGraphicsPipline.cpp" />
+    <ClCompile Include="Engine\BlockWorldTransform.cpp" />
     <ClCompile Include="Engine\Bloom.cpp" />
     <ClCompile Include="Engine\BloomPipeline.cpp" />
     <ClCompile Include="Engine\GaussianBlur.cpp" />
@@ -190,6 +191,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\AABB.h" />
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BasicGraphicsPipline.h" />
+    <ClInclude Include="Engine\BlockWorldTransform.h" />
     <ClInclude Include="Engine\Bloom.h" />
     <ClInclude Include="Engine\BloomPipeline.h" />
     <ClInclude Include="Engine\cBuffer.h" />

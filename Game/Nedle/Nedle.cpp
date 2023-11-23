@@ -6,7 +6,7 @@
 #include "ModelManager.h"
 #include "Ease/Ease.h"
 
-Nedle::Nedle(const WorldTransform& worldTransform)
+Nedle::Nedle(const Vector3& position)
 {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
 	collisionAttribute_ = 0x00000000;
@@ -22,7 +22,7 @@ Nedle::Nedle(const WorldTransform& worldTransform)
 	model_.reset(ModelManager::GetInstance()->GetModel("player"));
 
 	worldTransform_.Initialize();
-	worldTransform_.translate_ = worldTransform.translate_;
+	worldTransform_.translate_ = position;
 	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
 
@@ -173,9 +173,9 @@ bool NedleManager::IsCreatNedle()
 	return false;
 }
 
-void NedleManager::CreateNeadle(const WorldTransform& worldTransform)
+void NedleManager::CreateNeadle(const Vector3& position)
 {
-	nedles_.push_back(std::make_unique<Nedle>(worldTransform));
+	nedles_.push_back(std::make_unique<Nedle>(position));
 }
 
 void NedleManager::Clear()
