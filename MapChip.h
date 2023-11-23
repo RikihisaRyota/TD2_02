@@ -94,7 +94,7 @@ public:
 	void SetCollider();
 
 	MapChip();
-	void Initialize();
+	void Initialize(const ViewProjection& viewProjection);
 	void Update(const ViewProjection& viewProjection);
 	void Draw(const ViewProjection& viewProjection);
 
@@ -131,6 +131,7 @@ public:
 private:
 	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
+	void SetInstancing(const ViewProjection& viewProjection);
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);

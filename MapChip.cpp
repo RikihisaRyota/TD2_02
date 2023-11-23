@@ -92,62 +92,8 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 	}
 	ImGui::End();
 
-	for (auto& instancing : instancing_) {
-		instancing->currentInstance = 0;
-		instancing->instanceCount.clear();
-	}
-	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
-
-	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
-	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
-
-	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
-	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
-	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
-	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
-	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
-	yMin = kMaxHeightBlockNum - yMin;
-	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
-	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
-	yMax = kMaxHeightBlockNum - yMax;
-	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
-
-
-	for (int32_t y = yMin; y < yMax; y++) {
-		for (int32_t x = xMin; x < xMax; x++) {
-			auto block = map_[y][x];
-			switch (block) {
-			case uint32_t(Blocks::kBlock):
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kRedBlock):
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kItemBlock):
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
-				break;
-			case uint32_t(Blocks::kNeedleBlock):
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
-
+	SetInstancing(viewProjection);
+	
 	SetCollider();
 }
 
@@ -228,10 +174,12 @@ MapChip::MapChip() {
 	InstancingInitialize();
 }
 
-void MapChip::Initialize() {
+void MapChip::Initialize(const ViewProjection& viewProjection) {
 	map_ = maps_[currentStage_];
 	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
 	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	SetInstancing(viewProjection);
 }
 
 void MapChip::LoadCSV() {
@@ -506,4 +454,63 @@ ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
 		IID_PPV_ARGS(&buffer));
 	assert(SUCCEEDED(result));
 	return buffer;
+}
+
+void MapChip::SetInstancing(const ViewProjection& viewProjection) {
+	for (auto& instancing : instancing_) {
+		instancing->currentInstance = 0;
+		instancing->instanceCount.clear();
+	}
+	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
+
+	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
+	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
+
+	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
+	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
+	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
+	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
+	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
+	yMin = kMaxHeightBlockNum - yMin;
+	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
+	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
+	yMax = kMaxHeightBlockNum - yMax;
+	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
+
+
+	for (int32_t y = yMin; y < yMax; y++) {
+		for (int32_t x = xMin; x < xMax; x++) {
+			auto block = map_[y][x];
+			switch (block) {
+			case uint32_t(Blocks::kBlock):
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kRedBlock):
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kItemBlock):
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
+				break;
+			case uint32_t(Blocks::kNeedleBlock):
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
 }
