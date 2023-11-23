@@ -55,12 +55,13 @@ StageScene::StageScene()
 void StageScene::Init()
 {
 	NedleManager::GetInstance()->Init();
-	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
 	goal_->Initialize();
 	player_->Initialize();
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	followCamera_->Initialize();
+	followCamera_->Update();
+	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
 	mapChip_->Initialize();
 }

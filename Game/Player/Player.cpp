@@ -73,6 +73,8 @@ Player::Player() {
 	SetGlobalVariable();
 
 	// パーティクル初期化
+	emitter_ = new Emitter();
+	particleMotion_ = new ParticleMotion();
 	ParticleInitialize();
 
 	// 音初期化
@@ -99,6 +101,8 @@ void Player::Initialize() {
 	isClear_ = false;
 	time_ = 0;
 	itemCount_ = 0;
+
+	ParticleInitialize();
 }
 
 void Player::UpdateMatrix() {
@@ -167,7 +171,7 @@ void Player::OnCollision() {
 		StateRequest(State::kDeadMove);
 		return;
 	}
-	
+
 	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
 		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
 		goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
@@ -183,8 +187,7 @@ void Player::SetCollider() {
 	CollisionManager::GetInstance()->SetCollider(this);
 }
 
-void Player::NoTatchUpdate()
-{
+void Player::NoTatchUpdate() {
 	const uint16_t cycle = 200;
 
 	const float pi = std::numbers::pi_v<float>;
@@ -194,7 +197,7 @@ void Player::NoTatchUpdate()
 	scaleTheta_ += step;
 
 	scaleTheta_ = std::fmod(scaleTheta_, 2.0f * pi);
-	
+
 	const float amplitude = 0.2f;
 
 	float scale = std::sinf(scaleTheta_) * amplitude;
@@ -203,8 +206,7 @@ void Player::NoTatchUpdate()
 
 }
 
-void Player::NoTatchReturnUpdate()
-{
+void Player::NoTatchReturnUpdate() {
 	worldTransform_.scale_ = { 1.0f,1.0f,1.0f };
 }
 
@@ -779,7 +781,7 @@ void Player::ParticleCreate(const Vector2& vector) {
 
 		Emitter* emitter = new Emitter();
 		ParticleMotion* particleMotion = new ParticleMotion();
-		
+
 		emitter->aliveTime = 1;
 		emitter->spawn.position = worldTransform_.worldPos_;
 		emitter_->spawn.rangeX = 1.5f;
@@ -818,7 +820,7 @@ void Player::ParticleCreate(const Vector2& vector) {
 			particleMotion->velocity.randomRange = 0.05f;
 		}
 		emitter->isAlive = true;
-		
+
 		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.5f,0.8f),1.0f };
 		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.1f,0.5f),0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
@@ -827,7 +829,7 @@ void Player::ParticleCreate(const Vector2& vector) {
 		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-		
+
 		particleMotion->aliveTime.time = 60;
 		particleMotion->aliveTime.randomRange = 55;
 		particleMotion->isAlive = true;
@@ -843,7 +845,7 @@ void Player::SoundInitialize() {
 
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
-	StageData::SetData(time_,itemCount_,true,IScene::stageNo_);
+	StageData::SetData(time_, itemCount_, true, IScene::stageNo_);
 
 	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
 	clearRot_ = 0.0f;
@@ -853,7 +855,7 @@ void Player::ClearMoveInitialize() {
 
 void Player::ClearMoveUpdate() {
 	countFrame_++;
-	
+
 	Vector2 pos = Ease::UseEase(preClearPos_, goalPos_, countFrame_, iParameters_[IParameterNames::kClearFrame], Ease::EaseType::Constant);
 
 	if (isRight_) {
@@ -878,17 +880,12 @@ void Player::ClearMoveUpdate() {
 	}
 }
 
-void Player::DeadModeInitialize()
-{
-}
+void Player::DeadModeInitialize() {}
 
-void Player::DeadModeUpdate()
-{
-}
+void Player::DeadModeUpdate() {}
 
-void Player::FloarAndWallInit()
-{
-	
+void Player::FloarAndWallInit() {
+
 	noTatchCountFrame_ = 0;
 
 	worldTransform_.rotation_ = {};
@@ -904,8 +901,7 @@ void Player::FloarAndWallInit()
 	jumpCount_ = 0;
 }
 
-void Player::FloarAndWallUpdate()
-{
+void Player::FloarAndWallUpdate() {
 
 	Input* input = Input::GetInstance();
 
@@ -946,36 +942,35 @@ void Player::FloarAndWallUpdate()
 			worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 		}
 	}
-	
+
 
 }
 
 void (Player::* Player::spStateInitFuncTable[])() {
 	&Player::NormalInitialize,
-	&Player::JumpInitialize,
-	&Player::GripWallInitialize,
-	&Player::WallJumpInitialize,
-	&Player::WallSideJumpInitialize,
-	&Player::WallDownJumpInitialize,
-	&Player::ClearMoveInitialize,
-	&Player::DeadModeInitialize,
-	&Player::FloarAndWallInit,
+		& Player::JumpInitialize,
+		& Player::GripWallInitialize,
+		& Player::WallJumpInitialize,
+		& Player::WallSideJumpInitialize,
+		& Player::WallDownJumpInitialize,
+		& Player::ClearMoveInitialize,
+		& Player::DeadModeInitialize,
+		& Player::FloarAndWallInit,
 };
 
 void (Player::* Player::spStateUpdateFuncTable[])() {
 	&Player::NormalUpdate,
-	&Player::JumpUpdate,
-	&Player::GripWallUpdate,
-	&Player::WallJumpUpdate,
-	&Player::WallSideJumpUpdate,
-	&Player::WallDownJumpUpdate,
-	&Player::ClearMoveUpdate,
-	&Player::DeadModeUpdate,
-	&Player::FloarAndWallUpdate,
+		& Player::JumpUpdate,
+		& Player::GripWallUpdate,
+		& Player::WallJumpUpdate,
+		& Player::WallSideJumpUpdate,
+		& Player::WallDownJumpUpdate,
+		& Player::ClearMoveUpdate,
+		& Player::DeadModeUpdate,
+		& Player::FloarAndWallUpdate,
 };
 
-void Player::Update()
-{
+void Player::Update() {
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
