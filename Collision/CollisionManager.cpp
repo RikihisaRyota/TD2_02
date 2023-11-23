@@ -42,6 +42,9 @@ void CollisionManager::CheckCollision()
 
 				if (IsCollision(colliderA,colliderB)) {
 
+					colliderA->editInfo_.colliderTypeMask_ = colliderB->shapeType_->colliderType_;
+					colliderB->editInfo_.colliderTypeMask_ = colliderA->shapeType_->colliderType_;
+
 					colliderA->OnCollision();
 
 					colliderB->OnCollision();

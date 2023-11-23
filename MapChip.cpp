@@ -18,6 +18,7 @@
 #include "TextureManager.h"
 #include "Game/Nedle/Nedle.h"
 #include "ImGuiManager.h"
+#include "Game/Item/Item.h"
 
 using namespace Microsoft::WRL;
 
@@ -72,14 +73,21 @@ void MapChip::SetCollider() {
 
 void MapChip::Update(const ViewProjection& viewProjection) {
 
-	NedleManager* nedleManager = NedleManager::GetInstance();
+#ifdef _DEBUG
+	CheckChangeMap();
+
+	preMap_ = map_;
+#endif // _DEBUG
+
+
+	NeedleManager* nedleManager = NeedleManager::GetInstance();
 
 	if (nedleManager->IsCreatNedle()) {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 
 				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
-					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
+					nedleManager->CreateNeadle(blockWorldTransform_[y][x].worldPos_);
 				}
 			}
 		}
@@ -112,7 +120,7 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 	yMax = kMaxHeightBlockNum - yMax;
 	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
 
-	
+
 	for (int32_t y = yMin; y < yMax; y++) {
 		for (int32_t x = xMin; x < xMax; x++) {
 			auto block = map_[y][x];
@@ -165,6 +173,20 @@ MapChip::MapChip() {
 		 "stage_9",
 		 "stage_10",
 	};
+	//normalBlockModels_.emplace_back(Model::Create("block"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDown"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTop"));
+	////normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
 
 	auto modelManager = ModelManager::GetInstance();
 	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount) - 1; i++) {
@@ -174,11 +196,11 @@ MapChip::MapChip() {
 	for (uint32_t stage = 0; stage < Stage::kCount; stage++) {
 		maps_.push_back(std::vector<std::vector<uint32_t>>());
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
-			blockWorldTransform_.push_back(std::vector<WorldTransform>());
+			blockWorldTransform_.push_back(std::vector<BlockWorldTransform>());
 			maps_[stage].push_back(std::vector<uint32_t>());
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 				if (stage == 0) {
-					blockWorldTransform_[y].push_back(WorldTransform());
+					blockWorldTransform_[y].push_back(BlockWorldTransform());
 					blockWorldTransform_[y][x].Initialize();
 					blockWorldTransform_[y][x].translate_ = Vector3(
 						float(x * kBlockSize) + float(kBlockSize) * 0.5f,
@@ -208,7 +230,7 @@ MapChip::MapChip() {
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
-	shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
+	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
 	InstancingInitialize();
@@ -216,8 +238,10 @@ MapChip::MapChip() {
 
 void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
-	normalColor_ = {0.5f,0.5f,0.5f,1.0f};
-	touchingColor_= { 1.0f,1.0f,1.0f,1.0f };
+	preMap_ = map_;
+	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
+	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	CreateItems();
 }
 
 void MapChip::LoadCSV() {
@@ -388,7 +412,7 @@ void MapChip::InstancingInitialize() {
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 		desc.Buffer.NumElements = instancing->maxInstance;
-		desc.Buffer.StructureByteStride = sizeof(Matrix4x4);
+		desc.Buffer.StructureByteStride = sizeof(GPUParam);
 		DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
 		device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
 		instancing_.emplace_back(instancing);
@@ -441,6 +465,16 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
+void MapChip::CheckChangeMap()
+{
+#ifdef _DEBUG
+	
+	if (preMap_ != map_) {
+		CreateItems();
+	}
+#endif // _DEBUG
+}
+
 void MapChip::SetCurrentStage(uint32_t stageNum) {
 	if (stageNum >= Stage::kCount) {
 		stageNum = Stage::kCount - 1;
@@ -473,6 +507,10 @@ void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 	}
 }
 
+int MapChip::CheckBlock(int y, int x) {
+	return 0;
+}
+
 ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
 	auto device = DirectXCommon::GetInstance()->GetDevice();
 	HRESULT result = S_FALSE;
@@ -488,4 +526,19 @@ ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
 		IID_PPV_ARGS(&buffer));
 	assert(SUCCEEDED(result));
 	return buffer;
+}
+
+void MapChip::CreateItems()
+{
+	ItemManager::GetInstance()->Init();
+
+	for (int row = 0; row < int(map_.size()); row++) {
+		for (int column = 0; column < int(map_[row].size()); column++) {
+
+			if (map_[row][column] == uint32_t(Blocks::kItemBlock)) {
+				ItemManager::GetInstance()->CreateItem(blockWorldTransform_[row][column].worldPos_);
+			}
+		}
+	}
+		
 }

@@ -104,6 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Ease\Ease.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BasicGraphicsPipline.cpp" />
+    <ClCompile Include="Engine\BlockWorldTransform.cpp" />
     <ClCompile Include="Engine\Bloom.cpp" />
     <ClCompile Include="Engine\BloomPipeline.cpp" />
     <ClCompile Include="Engine\GaussianBlur.cpp" />
@@ -156,6 +157,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Game\ClearSprites\ClearSprites.cpp" />
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Game\Goal\Goal.cpp" />
+    <ClCompile Include="Game\Item\Item.cpp" />
     <ClCompile Include="Game\Nedle\Nedle.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
     <ClCompile Include="Game\SelectSprites\SelectSprites.cpp" />
@@ -189,6 +191,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\AABB.h" />
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BasicGraphicsPipline.h" />
+    <ClInclude Include="Engine\BlockWorldTransform.h" />
     <ClInclude Include="Engine\Bloom.h" />
     <ClInclude Include="Engine\BloomPipeline.h" />
     <ClInclude Include="Engine\cBuffer.h" />
@@ -258,6 +261,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Game\ClearSprites\ClearSprites.h" />
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Game\Goal\Goal.h" />
+    <ClInclude Include="Game\Item\Item.h" />
     <ClInclude Include="Game\Nedle\Nedle.h" />
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Game\SelectSprites\SelectSprites.h" />

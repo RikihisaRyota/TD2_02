@@ -5,6 +5,7 @@
 #include "SceneSystem/IScene/IScene.h"
 #include "Input.h"
 #include "Ease/Ease.h"
+#include "MapChip.h"
 #include <numbers>
 
 SelectSprites::SelectSprites() {
@@ -30,6 +31,11 @@ SelectSprites::SelectSprites() {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
 		}
+	}
+
+	for (size_t i = 0; i < MapChip::Stage::kCount; i++) {
+		std::array<bool, StageData::kMaxCondition> date{ false,false,false };
+		condition_.emplace_back(date);
 	}
 
 	stageTeces_[0] = TextureManager::Load("Resources/Textures/stage1.png");
@@ -63,21 +69,27 @@ void SelectSprites::Init() {
 
 	nowStage_ = IScene::stageNo_;
 
+	/*for (size_t stage = 0; stage < MapChip::Stage::kCount; stage++) {
+		condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
+		condition_.at(stage).at(0) = StageData::GetClearTime(stage);
+		condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
+	}*/
+
 	SetStageNo();
 }
 
 void (SelectSprites::* SelectSprites::spStateInitFuncTable[])() {
 	&SelectSprites::SelectInitialize,
-	&SelectSprites::MoveInitialize,
+		& SelectSprites::MoveInitialize,
 };
 
 void (SelectSprites::* SelectSprites::spStateUpdateFuncTable[])() {
 	&SelectSprites::SelectUpdate,
-	&SelectSprites::MoveUpdate,
+		& SelectSprites::MoveUpdate,
 };
 
 void SelectSprites::Update() {
-	
+
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -96,13 +108,11 @@ void SelectSprites::Update() {
 
 }
 
-void SelectSprites::FarDraw()
-{
+void SelectSprites::FarDraw() {
 	blackBackground_->Draw();
 }
 
-void SelectSprites::NearDraw()
-{
+void SelectSprites::NearDraw() {
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		sprites_[i]->Draw();
 	}
@@ -110,20 +120,20 @@ void SelectSprites::NearDraw()
 	for (int i = 0; i < 5; i++) {
 		stages_[i]->Draw();
 	}
-	for (int i = 0; i < 3; i++) {
-		stars_[i]->Draw();
+	/*if ()*/ {
+		for (int i = 0; i < 3; i++) {
+			stars_[i]->Draw();
+		}
 	}
 }
 
-void SelectSprites::StateRequest(State state)
-{
+void SelectSprites::StateRequest(State state) {
 	if (state_ != state) {
 		stateRequest_ = state;
 	}
 }
 
-void SelectSprites::SetGlobalVariable()
-{
+void SelectSprites::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
@@ -145,8 +155,7 @@ void SelectSprites::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void SelectSprites::ApplyGlobalVariable()
-{
+void SelectSprites::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
@@ -176,8 +185,7 @@ void SelectSprites::ApplyGlobalVariable()
 	}
 }
 
-void SelectSprites::SetStageNo()
-{
+void SelectSprites::SetStageNo() {
 	for (int i = 0; i < 5; i++) {
 		if (nowStage_ - 2 + i < 0) {
 			stages_[i]->SetTextureHandle(stageTeces_[kMaxStage_ + nowStage_ - 1 + i]);
@@ -205,14 +213,12 @@ void SelectSprites::SetStageNo()
 	}
 }
 
-void SelectSprites::TransformationInit()
-{
+void SelectSprites::TransformationInit() {
 	countFrame_ = 0;
 	scaleTheta_ = 0.0f;
 }
 
-void SelectSprites::TransformationUpdate()
-{
+void SelectSprites::TransformationUpdate() {
 	const float pi = std::numbers::pi_v<float>;
 
 	const float step = 2.0f * pi / iInfo_[IItemNames::kTransformationFrame];
@@ -229,14 +235,12 @@ void SelectSprites::TransformationUpdate()
 	stages_[2]->SetSize({ kStageTexSize_ + scale,kStageTexSize_ + scale });
 }
 
-void SelectSprites::SelectInitialize()
-{
+void SelectSprites::SelectInitialize() {
 	SetStageNo();
 	TransformationInit();
 }
 
-void SelectSprites::SelectUpdate()
-{
+void SelectSprites::SelectUpdate() {
 	Input* input = Input::GetInstance();
 
 	TransformationUpdate();
@@ -256,13 +260,11 @@ void SelectSprites::SelectUpdate()
 	}
 }
 
-void SelectSprites::MoveInitialize()
-{
+void SelectSprites::MoveInitialize() {
 	countFrame_ = 0;
 }
 
-void SelectSprites::MoveUpdate()
-{
+void SelectSprites::MoveUpdate() {
 
 	if (isRight_) {
 		for (int i = 0; i < 5; i++) {

@@ -22,7 +22,7 @@ TitleSprites::TitleSprites() {
 	}
 
 	testTextureHandle_[kOn] = TextureManager::Load("Resources/Textures/title.png");
-	testTextureHandle_[kOff] = TextureManager::Load("Resources/Textures/title_test.png");
+	testTextureHandle_[kOff] = TextureManager::Load("Resources/Textures/titleOff.png");
 }
 
 void TitleSprites::Init() {

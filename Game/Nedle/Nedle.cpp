@@ -6,7 +6,7 @@
 #include "ModelManager.h"
 #include "Ease/Ease.h"
 
-Nedle::Nedle(const WorldTransform& worldTransform)
+Needle::Needle(const Vector3& position)
 {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
 	collisionAttribute_ = 0x00000000;
@@ -22,7 +22,7 @@ Nedle::Nedle(const WorldTransform& worldTransform)
 	model_.reset(ModelManager::GetInstance()->GetModel("player"));
 
 	worldTransform_.Initialize();
-	worldTransform_.translate_ = worldTransform.translate_;
+	worldTransform_.translate_ = position;
 	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
 
@@ -32,12 +32,12 @@ Nedle::Nedle(const WorldTransform& worldTransform)
 	SetGlobalVariable();
 }
 
-Nedle::~Nedle()
+Needle::~Needle()
 {
 	model_.release();
 }
 
-void Nedle::Update()
+void Needle::Update()
 {
 	countFrame_++;
 
@@ -56,19 +56,19 @@ void Nedle::Update()
 	SetCollider();
 }
 
-void Nedle::Draw(const ViewProjection& viewProjection)
+void Needle::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection);
 }
 
-void Nedle::OnCollision()
+void Needle::OnCollision()
 {
 
 	isLife_ = false;
 
 }
 
-void Nedle::SetCollider()
+void Needle::SetCollider()
 {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
 		Vector2{ 0.8f,0.8f }, Vector2{ velocity_.x,velocity_.y });
@@ -76,7 +76,7 @@ void Nedle::SetCollider()
 	CollisionManager::GetInstance()->SetCollider(this);
 }
 
-void Nedle::SetGlobalVariable()
+void Needle::SetGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
@@ -93,7 +93,7 @@ void Nedle::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void Nedle::ApplyGlobalVariable()
+void Needle::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
@@ -106,12 +106,12 @@ void Nedle::ApplyGlobalVariable()
 	}
 }
 
-void Nedle::CreateInit()
+void Needle::CreateInit()
 {
 	countFrame_ = 0;
 }
 
-void Nedle::CreateUpdate()
+void Needle::CreateUpdate()
 {
 
 	worldTransform_.translate_ = Ease::UseEase(pos_, { pos_.x,pos_.y - 1.9f,pos_.z },
@@ -123,13 +123,13 @@ void Nedle::CreateUpdate()
 
 }
 
-void Nedle::FallingInit()
+void Needle::FallingInit()
 {
 	SetCollisionMask(kCollisionAttributeBlock);
 	velocity_ = {};
 }
 
-void Nedle::FallingUpdate()
+void Needle::FallingUpdate()
 {
 	velocity_.y += fInfo_[FInfoNames::kGravity];
 
@@ -140,30 +140,30 @@ void Nedle::FallingUpdate()
 	worldTransform_.translate_ += velocity_;
 }
 
-void (Nedle::* Nedle::spStateInitFuncTable[])() {
-	&Nedle::CreateInit,
-	&Nedle::FallingInit,
+void (Needle::* Needle::spStateInitFuncTable[])() {
+	&Needle::CreateInit,
+	&Needle::FallingInit,
 };
 
-void (Nedle::* Nedle::spStateUpdateFuncTable[])() {
-	&Nedle::CreateUpdate,
-	&Nedle::FallingUpdate,
+void (Needle::* Needle::spStateUpdateFuncTable[])() {
+	&Needle::CreateUpdate,
+	&Needle::FallingUpdate,
 };
 
-NedleManager* NedleManager::GetInstance()
+NeedleManager* NeedleManager::GetInstance()
 {
-	static NedleManager instance;
+	static NeedleManager instance;
 	return &instance;
 }
 
-void NedleManager::Init()
+void NeedleManager::Init()
 {
 	Clear();
 	SetGlobalVariable();
 	countFrame_ = 0;
 }
 
-bool NedleManager::IsCreatNedle()
+bool NeedleManager::IsCreatNedle()
 {
 	if (countFrame_ >= iInfo_[IInfoNames::kCreatIntervalFrame]) {
 		countFrame_ = 0;
@@ -173,21 +173,21 @@ bool NedleManager::IsCreatNedle()
 	return false;
 }
 
-void NedleManager::CreateNeadle(const WorldTransform& worldTransform)
+void NeedleManager::CreateNeadle(const Vector3& position)
 {
-	nedles_.push_back(std::make_unique<Nedle>(worldTransform));
+	needles_.push_back(std::make_unique<Needle>(position));
 }
 
-void NedleManager::Clear()
+void NeedleManager::Clear()
 {
-	nedles_.clear();
+	needles_.clear();
 }
 
-void NedleManager::Update()
+void NeedleManager::Update()
 {
 	countFrame_++;
 
-	nedles_.remove_if([](std::unique_ptr<Nedle>& nedle) {
+	needles_.remove_if([](std::unique_ptr<Needle>& nedle) {
 		if (!nedle->IsLife()) {
 			nedle.reset();
 			nedle = nullptr;
@@ -196,19 +196,19 @@ void NedleManager::Update()
 		return false;
 	});
 
-	for (const std::unique_ptr<Nedle>& nedle : nedles_) {
+	for (const std::unique_ptr<Needle>& nedle : needles_) {
 		nedle->Update();
 	}
 }
 
-void NedleManager::Draw(const ViewProjection& viewProjection)
+void NeedleManager::Draw(const ViewProjection& viewProjection)
 {
-	for (const std::unique_ptr<Nedle>& nedle : nedles_) {
+	for (const std::unique_ptr<Needle>& nedle : needles_) {
 		nedle->Draw(viewProjection);
 	}
 }
 
-void NedleManager::SetGlobalVariable()
+void NeedleManager::SetGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
@@ -221,7 +221,7 @@ void NedleManager::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void NedleManager::ApplyGlobalVariable()
+void NeedleManager::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 

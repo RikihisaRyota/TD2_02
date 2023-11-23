@@ -11,6 +11,8 @@
 #include "cMaterial.h"
 #include "Model.h"
 #include "ViewProjection.h"
+#include "BlockWorldTransform.h"
+
 
 #include "Collision/Collider.h"
 #include "MapChipGraphicsPipeline.h"
@@ -59,6 +61,7 @@ public:
 		kStage_10,
 		kCount,
 	};
+	
 	enum class Blocks {
 		kNone,
 		kBlock,
@@ -67,6 +70,23 @@ public:
 		kNeedleBlock,
 
 		kCount,
+
+		//kBlockNone,
+		//kBlockDown,
+		//kBlockDownLeft,
+		//kBlockDownRight,
+		//kBlockDownRightLeft,
+		//kBlockLeft,
+		//kBlockRight,
+		//kBlockTop,
+		////kBlockTopDown,
+		//kBlockTopDownLeft,
+		//kBlockTopDownRight,
+		//kBlockTopLeft,
+		//kBlockTopRight,
+		//kBlockTopRightLeft,
+
+		//kBlockNormalCount,
 	};
 public:
 
@@ -98,7 +118,7 @@ public:
 	void InstancingInitialize();
 	void InstancingDraw(const ViewProjection& viewProjection);
 	Vector3 GetBlocksCenterWorldPosition(uint32_t x, uint32_t y);
-	std::vector<std::vector<WorldTransform>> GetWorldTransforms() {
+	std::vector<std::vector<BlockWorldTransform>> GetWorldTransforms() {
 		return blockWorldTransform_;
 	}
 
@@ -108,7 +128,13 @@ public:
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
 	bool InRange(const Vector3& pos);
+
+	void CheckChangeMap();
+private:
+	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
+
+	void CreateItems();
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);
@@ -119,8 +145,9 @@ private:
 	//uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;
+	std::vector<Model*> normalBlockModels_;
 	// ブロックのワールドトランスフォーム
-	std::vector<std::vector<WorldTransform>> blockWorldTransform_;
+	std::vector<std::vector<BlockWorldTransform>> blockWorldTransform_;
 	//WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// CSVの名前保存
 	std::vector<std::string> stageName_;
@@ -130,7 +157,7 @@ private:
 	Vector4 normalColor_;
 	Vector4 touchingColor_;
 
-
+	std::vector<std::vector<uint32_t>> preMap_;
 
 
 #pragma region DirectX関連
