@@ -58,36 +58,40 @@ private:
 	WorldTransform worldTransform_;
 
 	bool isLife_;
+	bool isDraw_;
 
 	int countFrame_;
 
 	Vector3 velocity_;
 
+	Vector3 pos_;
+
+	float rotateTheta_;
+	float translateTheta_;
+
 	const std::string groupName_ = "Item";
 
-	/*enum FInfoNames {
-		kGravity,
-		kMaxSpeed,
+	enum FInfoNames {
+		kRotateSpeed,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
-		"重力加速度",
-		"最高速度"
+		"通常時の回転速度"
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;
 
 	enum IInfoNames {
-		kCreatFrame,
+		kTranslateFrame,
 		kIInfoCount,
 	};
 
 	std::string iInfoNames_[IInfoNames::kIInfoCount] = {
-		"生成し始めて落ちる始めるまでのフレーム",
+		"通常時の上下移動一往復のフレーム数",
 	};
 
-	std::array<int, IInfoNames::kIInfoCount> iInfo_;*/
+	std::array<int, IInfoNames::kIInfoCount> iInfo_;
 
 };
 
@@ -110,6 +114,10 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 
 	void AddGetCount() { getItemCount_++; }
+
+	const int GetMaxItemNum() const { return MaxItemCount_; }
+
+	const int GetClearItemCountNum() const { return getItemCount_; }
 
 private:
 	ItemManager() = default;

@@ -6,6 +6,7 @@
 #include "ModelManager.h"
 #include "Ease/Ease.h"
 #include "MapChip.h"
+#include <numbers>
 
 Item::Item()
 {
@@ -39,13 +40,20 @@ void Item::Init(const Vector3& pos)
 {
 	worldTransform_.Reset();
 	worldTransform_.translate_ = pos;
+	pos_ = pos;
 	worldTransform_.UpdateMatrix();
 	isLife_ = true;
+	isDraw_ = true;
 	stateRequest_ = State::kIsLife;
 }
 
 void Item::Update()
 {
+#ifdef _DEBUG
+	ApplyGlobalVariable();
+#endif // _DEBUG
+
+
 	countFrame_++;
 
 	if (stateRequest_) {
@@ -67,7 +75,9 @@ void Item::Update()
 
 void Item::Draw(const ViewProjection& viewProjection)
 {
-	model_->Draw(worldTransform_, viewProjection);
+	if (isDraw_) {
+		model_->Draw(worldTransform_, viewProjection);
+	}
 }
 
 void Item::OnCollision()
@@ -95,13 +105,13 @@ void Item::SetGlobalVariable()
 
 	globalVariables->CreateGroup(groupName_);
 
-	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		globalVariables->AddItem(groupName_, iInfoNames_[i], iInfo_[i]);
 	}
 
 	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
 		globalVariables->AddItem(groupName_, fInfoNames_[i], fInfo_[i]);
-	}*/
+	}
 
 	ApplyGlobalVariable();
 }
@@ -110,21 +120,40 @@ void Item::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		iInfo_[i] = globalVariables->GetIntValue(groupName_, iInfoNames_[i]);
 	}
 
 	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
 		fInfo_[i] = globalVariables->GetFloatValue(groupName_, fInfoNames_[i]);
-	}*/
+	}
 }
 
 void Item::IsLifeInit()
 {
+	rotateTheta_ = 0.0f;
+	translateTheta_ = 0.0f;
 }
 
 void Item::IsLifeUpdate()
 {
+	const float pi = std::numbers::pi_v<float>;
+
+	float step = 2.0f * pi / iInfo_[IInfoNames::kTranslateFrame];
+
+	translateTheta_ += step;
+
+	translateTheta_ = std::fmod(translateTheta_, 2.0f * pi);
+
+	const float amplitude = 0.2f;
+
+	float translate = std::sinf(translateTheta_) * amplitude;
+
+	worldTransform_.translate_.y = pos_.y + translate;
+
+	worldTransform_.rotation_.y += fInfo_[FInfoNames::kRotateSpeed];
+
+	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
 }
 
 void Item::GetInit()
@@ -133,6 +162,7 @@ void Item::GetInit()
 
 void Item::GetUpdate()
 {
+	isDraw_ = false;
 }
 
 

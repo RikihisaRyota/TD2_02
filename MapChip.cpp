@@ -230,7 +230,7 @@ MapChip::MapChip() {
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
-	shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
+	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
 	InstancingInitialize();

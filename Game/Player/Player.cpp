@@ -112,68 +112,71 @@ void Player::UpdateMatrix() {
 
 void Player::OnCollision() {
 
-	if ((velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0 &&
-		editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) ||
-		(velocity_.x == 0 && state_ == State::kFloarAndWall)) {
-		StateRequest(State::kFloarAndWall);
-		ParticleCreate({ 0.0f,-1.0f });
-	}
-	else if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
-		StateRequest(State::kNormal);
-		ParticleCreate({ 0.0f,-1.0f });
-	}
-	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
-		StateRequest(State::kGripWall);
-		if (velocity_.x > 0) {
-			isRight_ = true;
-			ParticleCreate({ 1.0f,0.0f });
+	if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::RIGID_BODY) {
+		if ((velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0 &&
+			editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) ||
+			(velocity_.x == 0 && state_ == State::kFloarAndWall)) {
+			StateRequest(State::kFloarAndWall);
+			ParticleCreate({ 0.0f,-1.0f });
 		}
-		else if (velocity_.x < 0) {
-			isRight_ = false;
-			ParticleCreate({ -1.0f,0.0f });
+		else if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
+			StateRequest(State::kNormal);
+			ParticleCreate({ 0.0f,-1.0f });
+		}
+		else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
+			StateRequest(State::kGripWall);
+			if (velocity_.x > 0) {
+				isRight_ = true;
+				ParticleCreate({ 1.0f,0.0f });
+			}
+			else if (velocity_.x < 0) {
+				isRight_ = false;
+				ParticleCreate({ -1.0f,0.0f });
+			}
+		}
+		else {
+			StateRequest(State::kNormal);
+			ParticleCreate({ 0.0f,1.0f });
+		}
+
+		worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
+		worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
+
+		velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
+		velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
+
+		UpdateMatrix();
+
+		if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
+
+			for (uint32_t no : editInfo_.i32Info_) {
+
+				if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
+
+				}
+				else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
+
+				}
+			}
+		}
+
+		if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
+			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+			StateRequest(State::kDeadMove);
+			return;
+		}
+
+		if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
+			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+			goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
+			StateRequest(State::kClearMove);
+			return;
 		}
 	}
-	else {
-		StateRequest(State::kNormal);
-		ParticleCreate({ 0.0f,1.0f });
-	}
-	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
-	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
+	else if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::COLLIDER) {
 
-	velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
-	velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
-
-	UpdateMatrix();
-
-	if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
-
-		for (uint32_t no : editInfo_.i32Info_) {
-
-			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
-
-			}
-			else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
-
-			}
-			else if (no == uint32_t(MapChip::Blocks::kItemBlock)) {
-				itemCount_++;
-			}
-
-		}
-	}
-
-	if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
-		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
-		StateRequest(State::kDeadMove);
-		return;
 	}
 	
-	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
-		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
-		goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
-		StateRequest(State::kClearMove);
-		return;
-	}
 }
 
 void Player::SetCollider() {
