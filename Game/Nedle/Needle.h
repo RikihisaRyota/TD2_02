@@ -10,13 +10,16 @@
 class Needle : public Collider
 {
 public:
-	Needle(const Vector3& position);
+	Needle();
 	~Needle();
 
+	void Init(const Vector3& pos);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
 	const bool IsLife() const { return isLife_; }
+
+	void SetIsLife(const bool& is) { isLife_ = is; }
 
 private:
 
@@ -94,6 +97,8 @@ class NeedleManager
 public:
 	static NeedleManager* GetInstance();
 
+	void FirstInit();
+
 	void Init();
 
 	bool IsCreatNedle();
@@ -117,8 +122,10 @@ private:
 	void ApplyGlobalVariable();
 
 private:
+	static const int kMaxNeedleNum = 100;
 
-	std::list<std::unique_ptr<Needle>> needles_;
+	//std::list<std::unique_ptr<Needle>> needles_;
+	std::array<std::unique_ptr<Needle>,kMaxNeedleNum> needles_;
 
 	const std::string groupName_ = "Nedle";
 

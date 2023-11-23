@@ -15,7 +15,7 @@
 #include "ImGuiManager.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "Game/StageData/StageData.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
 #include "Game/Item/Item.h"
 
 StageScene::StageScene()
@@ -32,6 +32,7 @@ StageScene::StageScene()
 	isDebug_ = false;
 
 #pragma region 生成
+	NeedleManager::GetInstance()->FirstInit();
 	ItemManager::GetInstance()->FirstInit();
 	background_ = std::make_unique<Background>();
 	followCamera_ = std::make_unique<FollowCamera>();
@@ -48,14 +49,13 @@ StageScene::StageScene()
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
-
-	NeedleManager::GetInstance()->Init();
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 }
 
 void StageScene::Init()
 {
+	
 	NeedleManager::GetInstance()->Init();
 	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();

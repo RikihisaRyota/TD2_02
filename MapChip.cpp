@@ -16,7 +16,7 @@
 #include "WinApp.h"
 #include "Collision/CollisionManager.h"
 #include "TextureManager.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
 #include "ImGuiManager.h"
 #include "Game/Item/Item.h"
 
