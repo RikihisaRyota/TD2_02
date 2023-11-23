@@ -165,20 +165,20 @@ MapChip::MapChip() {
 		 "stage_9",
 		 "stage_10",
 	};
-	normalBlockModels_.emplace_back(Model::Create("block"));
-	normalBlockModels_.emplace_back(Model::Create("blockDown"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTop"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("block"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDown"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTop"));
+	////normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
 
 	auto modelManager = ModelManager::GetInstance();
 	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount) - 1; i++) {
