@@ -23,6 +23,8 @@ public:
 		kWallDownJump,
 		kClearMove,
 		kDeadMove,
+		kFloarAndWall,
+
 	};
 
 	Player();
@@ -69,6 +71,8 @@ public:
 	WorldTransform* GetWorldTransform() { return &worldTransform_; }
 
 	void UpdateMatrix();
+
+	const bool GetIsChangeCamera() const { return isChangeCamera_; }
 
 	bool GetIsClear() { return isClear_; }
 private:
@@ -128,6 +132,10 @@ private:
 
 	void DeadModeUpdate();
 
+	void FloarAndWallInit();
+
+	void FloarAndWallUpdate();
+
 	static void (Player::* spStateInitFuncTable[])();
 	
 	static void (Player::* spStateUpdateFuncTable[])();
@@ -175,6 +183,8 @@ private:
 	bool kIs2WallJump_ = true;
 
 	bool kIsWallDown_ = false;
+
+	bool isChangeCamera_;
 
 	Vector2 goalPos_;
 	Vector2 preClearPos_;

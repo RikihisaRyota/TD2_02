@@ -59,6 +59,7 @@ void StageScene::Init()
 	background_->Initialize();
 	goal_->Initialize();
 	player_->Initialize();
+	followCamera_->SetTarget(player_->GetWorldTransform());
 	followCamera_->Initialize();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
 	mapChip_->Initialize();
@@ -95,6 +96,10 @@ void StageScene::Update()
 	collisionManager->CheckCollision();
 
 	ParticleManager::GetInstance()->Update();
+
+	if (player_->GetIsChangeCamera()) {
+		followCamera_->SetTarget(goal_->GetWorldTransform());
+	}
 
 	if (!isDebug_) {
 		followCamera_->Update();
