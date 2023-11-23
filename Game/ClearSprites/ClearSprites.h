@@ -52,16 +52,25 @@ private:
 	enum SpriteNames {
 		kBackground,
 		kResult,
+		kGoal,
+		kItem,
 		kTime,
+		kClear,
 		kTimeOnesPlace,
 		kTimeTensPlace,
 		kTimeHundredsPlace,
+		kTimeConditionOnesPlace,
+		kTimeConditionTensPlace,
+		kTimeConditionHundredsPlace,
+		kItemOnesPlace,
+		kItemTensPlace,
+		kItemConditionOnesPlace,
+		kItemConditionTensPlace,
+		kSlash0,
+		kSlash1,
 		kStarFirst,
 		kStarSecond,
 		kStarThird,
-		kConditionFirst,
-		kConditionSecond,
-		kConditionThird,
 		kSelectStage,
 		kNextStage,
 		kDecisionA,
@@ -74,20 +83,30 @@ private:
 	std::string spriteNames_[kSpriteCount] = {
 		"黒背景の",
 		"リザルト",
+		"ゴール",
+		"クリアフラグ",
+		"アイテム",
 		"タイム",
-		"一の位",
-		"十の位",
-		"百の位",
+		"クリアタイム一の位",
+		"クリアタイム十の位",
+		"クリアタイム百の位",
+		"クリア条件タイム一の位",
+		"クリア条件タイム十の位",
+		"クリア条件タイム百の位",
+		"クリアアイテム一の位",
+		"クリアアイテム十の位",
+		"クリア条件アイテム一の位",
+		"クリア条件アイテム十の位",
+		"スラッシュ0",
+		"スラッシュ1",
 		"星1",
 		"星2",
 		"星3",
-		"条件1",
-		"条件2",
-		"条件3",
 		"セレクトステージ",
 		"次のステージ",
 		"Aボタン",
-		"Lスティック"
+		"Lスティック",
+		"ランク"
 	};
 
 	enum V2ItemNames {
@@ -105,6 +124,7 @@ private:
 
 	std::unique_ptr<Sprite> sprites_[kSpriteCount];
 	uint32_t number_[kNumberCount];
+	uint32_t conditionNumber_[kNumberCount];
 	uint32_t star_[kFlagCount];
 	uint32_t nextStage_[kFlagCount];
 	uint32_t selectStage_[kFlagCount];
@@ -116,6 +136,9 @@ private:
 	Random::RandomNumberGenerator rnd_;
 
 	int timePlace_[3];
+	int conditionTimePlace_[3];
+	int itemPlace_[2];
+	int conditionItemPlace_[2];
 	bool starFlag_[3];
 	bool nextStageFlag_;
 };
