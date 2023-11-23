@@ -79,7 +79,7 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 
 				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
-					nedleManager->CreateNeadle(blockWorldTransform_[y][x]);
+					nedleManager->CreateNeadle(blockWorldTransform_[y][x].worldPos_);
 				}
 			}
 		}
@@ -188,11 +188,11 @@ MapChip::MapChip() {
 	for (uint32_t stage = 0; stage < Stage::kCount; stage++) {
 		maps_.push_back(std::vector<std::vector<uint32_t>>());
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
-			blockWorldTransform_.push_back(std::vector<WorldTransform>());
+			blockWorldTransform_.push_back(std::vector<BlockWorldTransform>());
 			maps_[stage].push_back(std::vector<uint32_t>());
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 				if (stage == 0) {
-					blockWorldTransform_[y].push_back(WorldTransform());
+					blockWorldTransform_[y].push_back(BlockWorldTransform());
 					blockWorldTransform_[y][x].Initialize();
 					blockWorldTransform_[y][x].translate_ = Vector3(
 						float(x * kBlockSize) + float(kBlockSize) * 0.5f,

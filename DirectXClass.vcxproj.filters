@@ -323,6 +323,9 @@
     <ClCompile Include="SceneSystem\SceneChange\SceneChange.cpp">
       <Filter>SceneSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\BlockWorldTransform.cpp">
+      <Filter>engine\3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -613,6 +616,9 @@
     </ClInclude>
     <ClInclude Include="SceneSystem\SceneChange\SceneChange.h">
       <Filter>SceneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\BlockWorldTransform.h">
+      <Filter>engine\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

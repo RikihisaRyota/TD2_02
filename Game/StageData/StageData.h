@@ -6,6 +6,7 @@
 
 class StageData {
 public:
+	static const int kMaxCondition = 3;
 	enum V2ItemNames {
 		kConditionTime,
 		kV2ItemCount,

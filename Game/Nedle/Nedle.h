@@ -10,7 +10,7 @@
 class Nedle : public Collider
 {
 public:
-	Nedle(const WorldTransform& worldTransform);
+	Nedle(const Vector3& position);
 	~Nedle();
 
 	void Update();
@@ -98,7 +98,7 @@ public:
 
 	bool IsCreatNedle();
 
-	void CreateNeadle(const WorldTransform& worldTransform);
+	void CreateNeadle(const Vector3& position);
 
 	void Clear();
 

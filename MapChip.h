@@ -11,6 +11,8 @@
 #include "cMaterial.h"
 #include "Model.h"
 #include "ViewProjection.h"
+#include "BlockWorldTransform.h"
+
 
 #include "Collision/Collider.h"
 #include "MapChipGraphicsPipeline.h"
@@ -116,7 +118,7 @@ public:
 	void InstancingInitialize();
 	void InstancingDraw(const ViewProjection& viewProjection);
 	Vector3 GetBlocksCenterWorldPosition(uint32_t x, uint32_t y);
-	std::vector<std::vector<WorldTransform>> GetWorldTransforms() {
+	std::vector<std::vector<BlockWorldTransform>> GetWorldTransforms() {
 		return blockWorldTransform_;
 	}
 
@@ -141,7 +143,7 @@ private:
 	std::vector<Model*> blockModels_;
 	std::vector<Model*> normalBlockModels_;
 	// ブロックのワールドトランスフォーム
-	std::vector<std::vector<WorldTransform>> blockWorldTransform_;
+	std::vector<std::vector<BlockWorldTransform>> blockWorldTransform_;
 	//WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// CSVの名前保存
 	std::vector<std::string> stageName_;
