@@ -5,6 +5,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "ModelManager.h"
 #include "Ease/Ease.h"
+#include <numbers>
 
 Needle::Needle()
 {
@@ -19,7 +20,7 @@ Needle::Needle()
 	SetCollisionAttribute(kCollisionAttributeOut);
 	SetCollisionMask(kCollisionAttributePlayer);
 
-	model_.reset(ModelManager::GetInstance()->GetModel("player"));
+	model_.reset(ModelManager::GetInstance()->GetModel("needle"));
 
 	worldTransform_.Initialize();
 	worldTransform_.UpdateMatrix();
@@ -38,6 +39,7 @@ Needle::~Needle()
 void Needle::Init(const Vector3& pos)
 {
 	worldTransform_.Reset();
+	worldTransform_.rotation_.z = std::numbers::pi_v<float>;
 	worldTransform_.translate_ = pos;
 	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
