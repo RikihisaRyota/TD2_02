@@ -59,6 +59,7 @@ public:
 		kStage_10,
 		kCount,
 	};
+	
 	enum class Blocks {
 		kNone,
 		kBlock,
@@ -66,7 +67,24 @@ public:
 		kItemBlock,
 		kNeedleBlock,
 
-		kCount,
+		kSelectBlockCount,
+
+		kBlockNone,
+		kBlockDown,
+		kBlockDownLeft,
+		kBlockDownRight,
+		kBlockDownRightLeft,
+		kBlockLeft,
+		kBlockRight,
+		kBlockTop,
+		//kBlockTopDown,
+		kBlockTopDownLeft,
+		kBlockTopDownRight,
+		kBlockTopLeft,
+		kBlockTopRight,
+		kBlockTopRightLeft,
+
+		kBlockNomalCount,
 	};
 public:
 
@@ -108,6 +126,8 @@ public:
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
 	bool InRange(const Vector3& pos);
+private:
+	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 private:
 	// ブロックの種類の最大数
@@ -119,6 +139,7 @@ private:
 	//uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;
+	std::vector<Model*> normalBlockModels_;
 	// ブロックのワールドトランスフォーム
 	std::vector<std::vector<WorldTransform>> blockWorldTransform_;
 	//WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];

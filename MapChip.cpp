@@ -112,7 +112,7 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 	yMax = kMaxHeightBlockNum - yMax;
 	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
 
-	
+
 	for (int32_t y = yMin; y < yMax; y++) {
 		for (int32_t x = xMin; x < xMax; x++) {
 			auto block = map_[y][x];
@@ -165,6 +165,20 @@ MapChip::MapChip() {
 		 "stage_9",
 		 "stage_10",
 	};
+	normalBlockModels_.emplace_back(Model::Create("block"));
+	normalBlockModels_.emplace_back(Model::Create("blockDown"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTop"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
 
 	auto modelManager = ModelManager::GetInstance();
 	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount) - 1; i++) {
@@ -216,8 +230,8 @@ MapChip::MapChip() {
 
 void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
-	normalColor_ = {0.5f,0.5f,0.5f,1.0f};
-	touchingColor_= { 1.0f,1.0f,1.0f,1.0f };
+	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
+	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
 }
 
 void MapChip::LoadCSV() {
@@ -388,7 +402,7 @@ void MapChip::InstancingInitialize() {
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 		desc.Buffer.NumElements = instancing->maxInstance;
-		desc.Buffer.StructureByteStride = sizeof(Matrix4x4);
+		desc.Buffer.StructureByteStride = sizeof(GPUParam);
 		DirectXCommon::GetInstance()->GetSRVCPUGPUHandle(instancing->instancingSRVCPUHandle, instancing->instancingSRVGPUHandle);
 		device->CreateShaderResourceView(instancing->instancingBuff.Get(), &desc, instancing->instancingSRVCPUHandle);
 		instancing_.emplace_back(instancing);
@@ -471,6 +485,10 @@ void MapChip::SetBlocks(const Vector2& pos, uint32_t blockType) {
 		x + differenceX < kMaxWidthBlockNum) {
 		map_[y + differenceY][x + differenceX] = blockType;
 	}
+}
+
+int MapChip::CheckBlock(int y, int x) {
+	return 0;
 }
 
 ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
