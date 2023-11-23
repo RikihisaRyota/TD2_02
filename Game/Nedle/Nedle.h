@@ -7,11 +7,11 @@
 #include <array>
 #include <optional>
 
-class Nedle : public Collider
+class Needle : public Collider
 {
 public:
-	Nedle(const Vector3& position);
-	~Nedle();
+	Needle(const Vector3& position);
+	~Needle();
 
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
@@ -40,9 +40,9 @@ private:
 	void FallingInit();
 	void FallingUpdate();
 
-	static void (Nedle::* spStateInitFuncTable[])();
+	static void (Needle::* spStateInitFuncTable[])();
 
-	static void (Nedle::* spStateUpdateFuncTable[])();
+	static void (Needle::* spStateUpdateFuncTable[])();
 
 private:
 
@@ -89,10 +89,10 @@ private:
 };
 
 
-class NedleManager
+class NeedleManager
 {
 public:
-	static NedleManager* GetInstance();
+	static NeedleManager* GetInstance();
 
 	void Init();
 
@@ -107,10 +107,10 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 
 private:
-	NedleManager() = default;
-	~NedleManager() = default;
-	NedleManager(const NedleManager&) = delete;
-	const NedleManager& operator=(const NedleManager&) = delete;
+	NeedleManager() = default;
+	~NeedleManager() = default;
+	NeedleManager(const NeedleManager&) = delete;
+	const NeedleManager& operator=(const NeedleManager&) = delete;
 
 	void SetGlobalVariable();
 
@@ -118,7 +118,7 @@ private:
 
 private:
 
-	std::list<std::unique_ptr<Nedle>> nedles_;
+	std::list<std::unique_ptr<Needle>> needles_;
 
 	const std::string groupName_ = "Nedle";
 

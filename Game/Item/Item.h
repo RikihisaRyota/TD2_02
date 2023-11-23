@@ -11,7 +11,7 @@
 class Item : public Collider
 {
 public:
-	Item(const Vector3& pos);
+	Item();
 	~Item();
 
 	void Init(const Vector3& pos);
@@ -27,8 +27,8 @@ private:
 
 	enum class State
 	{
-		kCreate,
-		kFalling,
+		kIsLife,
+		kGet,
 	};
 
 	void OnCollision() override;
@@ -39,11 +39,11 @@ private:
 
 	void ApplyGlobalVariable();
 
-	void CreateInit();
-	void CreateUpdate();
+	void IsLifeInit();
+	void IsLifeUpdate();
 
-	void FallingInit();
-	void FallingUpdate();
+	void GetInit();
+	void GetUpdate();
 
 	static void (Item::* spStateInitFuncTable[])();
 
@@ -51,7 +51,7 @@ private:
 
 private:
 
-	State state_ = State::kCreate;
+	State state_ = State::kIsLife;
 	std::optional<State> stateRequest_ = std::nullopt;
 
 	std::unique_ptr<Model> model_;
@@ -61,13 +61,11 @@ private:
 
 	int countFrame_;
 
-	Vector3 pos_;
-
 	Vector3 velocity_;
 
-	const std::string groupName_ = "Nedle";
+	const std::string groupName_ = "Item";
 
-	enum FInfoNames {
+	/*enum FInfoNames {
 		kGravity,
 		kMaxSpeed,
 		kFInfoCount,
@@ -89,7 +87,7 @@ private:
 		"生成し始めて落ちる始めるまでのフレーム",
 	};
 
-	std::array<int, IInfoNames::kIInfoCount> iInfo_;
+	std::array<int, IInfoNames::kIInfoCount> iInfo_;*/
 
 };
 
@@ -97,17 +95,21 @@ private:
 class ItemManager
 {
 public:
+	static const uint32_t kMaxItemNum_ = 50;
+
 	static ItemManager* GetInstance();
 
-	void Init();
+	void FirstInit();
 
-	bool IsCreatNedle();
+	void Init();
 
 	void CreateItem(const Vector3& pos);
 
 	void Update();
 
 	void Draw(const ViewProjection& viewProjection);
+
+	void AddGetCount() { getItemCount_++; }
 
 private:
 	ItemManager() = default;
@@ -125,13 +127,17 @@ private:
 
 private:
 
-	std::list<std::unique_ptr<Item>> items_;
+	int MaxItemCount_;
+
+	int getItemCount_;
+
+	std::array<std::unique_ptr<Item>, kMaxItemNum_> items_;
 
 	const std::string groupName_ = "Item";
 
 	int countFrame_;
 
-	enum IInfoNames {
+	/*enum IInfoNames {
 		kCreatIntervalFrame,
 		kIInfoCount,
 	};
@@ -140,5 +146,5 @@ private:
 		"生成するまでのインターバルフレーム",
 	};
 
-	std::array<int, IInfoNames::kIInfoCount> iInfo_;
+	std::array<int, IInfoNames::kIInfoCount> iInfo_;*/
 };

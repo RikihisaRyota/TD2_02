@@ -7,7 +7,7 @@
 #include "Ease/Ease.h"
 #include "MapChip.h"
 
-Item::Item(const Vector3& pos)
+Item::Item()
 {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
 	collisionAttribute_ = 0x00000000;
@@ -17,17 +17,14 @@ Item::Item(const Vector3& pos)
 		editInfo_.v2Paras_.push_back(Vector2());
 	}
 
-	SetCollisionAttribute(kCollisionAttributeOut);
+	SetCollisionAttribute(kCollisionAttributeItem);
 	SetCollisionMask(kCollisionAttributePlayer);
 
-	model_.reset(ModelManager::GetInstance()->GetModel("player"));
+	model_.reset(ModelManager::GetInstance()->GetBlockModel(2));
 
 	worldTransform_.Initialize();
-	worldTransform_.translate_ = pos;
-	pos_ = worldTransform_.translate_;
-	worldTransform_.UpdateMatrix();
 
-	isLife_ = true;
+	isLife_ = false;
 	velocity_ = {};
 
 	SetGlobalVariable();
@@ -42,8 +39,9 @@ void Item::Init(const Vector3& pos)
 {
 	worldTransform_.Reset();
 	worldTransform_.translate_ = pos;
-	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
+	isLife_ = true;
+	stateRequest_ = State::kIsLife;
 }
 
 void Item::Update()
@@ -62,7 +60,9 @@ void Item::Update()
 
 	worldTransform_.UpdateMatrix();
 
-	SetCollider();
+	if (isLife_) {
+		SetCollider();
+	}
 }
 
 void Item::Draw(const ViewProjection& viewProjection)
@@ -73,14 +73,18 @@ void Item::Draw(const ViewProjection& viewProjection)
 void Item::OnCollision()
 {
 
-	isLife_ = false;
+	if (isLife_) {
+		isLife_ = false;
+		stateRequest_ = State::kGet;
+		ItemManager::GetInstance()->AddGetCount();
+	}
 
 }
 
 void Item::SetCollider()
 {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
-		Vector2{ 0.8f,0.8f }, Vector2{ velocity_.x,velocity_.y });
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ 0.0f,0.0f });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
@@ -91,13 +95,13 @@ void Item::SetGlobalVariable()
 
 	globalVariables->CreateGroup(groupName_);
 
-	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		globalVariables->AddItem(groupName_, iInfoNames_[i], iInfo_[i]);
 	}
 
 	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
 		globalVariables->AddItem(groupName_, fInfoNames_[i], fInfo_[i]);
-	}
+	}*/
 
 	ApplyGlobalVariable();
 }
@@ -106,57 +110,41 @@ void Item::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		iInfo_[i] = globalVariables->GetIntValue(groupName_, iInfoNames_[i]);
 	}
 
 	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
 		fInfo_[i] = globalVariables->GetFloatValue(groupName_, fInfoNames_[i]);
-	}
+	}*/
 }
 
-void Item::CreateInit()
+void Item::IsLifeInit()
 {
-	countFrame_ = 0;
 }
 
-void Item::CreateUpdate()
+void Item::IsLifeUpdate()
 {
-
-	worldTransform_.translate_ = Ease::UseEase(pos_, { pos_.x,pos_.y - 1.9f,pos_.z },
-		countFrame_, iInfo_[IInfoNames::kCreatFrame], Ease::EaseType::EaseOutSine);
-
-	if (countFrame_ >= iInfo_[IInfoNames::kCreatFrame]) {
-		stateRequest_ = State::kFalling;
-	}
-
 }
 
-void Item::FallingInit()
+void Item::GetInit()
 {
-	SetCollisionMask(kCollisionAttributeBlock);
-	velocity_ = {};
 }
 
-void Item::FallingUpdate()
+void Item::GetUpdate()
 {
-	velocity_.y += fInfo_[FInfoNames::kGravity];
-
-	if (velocity_.y <= -fInfo_[FInfoNames::kMaxSpeed]) {
-		velocity_.y = -fInfo_[FInfoNames::kMaxSpeed];
-	}
-
-	worldTransform_.translate_ += velocity_;
 }
+
+
 
 void (Item::* Item::spStateInitFuncTable[])() {
-	&Item::CreateInit,
-	&Item::FallingInit,
+	&Item::IsLifeInit,
+	&Item::GetInit,
 };
 
 void (Item::* Item::spStateUpdateFuncTable[])() {
-	&Item::CreateUpdate,
-	&Item::FallingUpdate,
+	&Item::IsLifeUpdate,
+	&Item::GetUpdate,
 };
 
 ItemManager* ItemManager::GetInstance()
@@ -165,30 +153,37 @@ ItemManager* ItemManager::GetInstance()
 	return &instance;
 }
 
+void ItemManager::FirstInit()
+{
+	for (std::unique_ptr<Item>& item : items_) {
+		item.reset();
+		item = std::make_unique<Item>();
+	}
+	Init();
+	SetGlobalVariable();
+}
+
 void ItemManager::Init()
 {
 	Clear();
-	SetGlobalVariable();
 	countFrame_ = 0;
-}
-
-bool ItemManager::IsCreatNedle()
-{
-	if (countFrame_ >= iInfo_[IInfoNames::kCreatIntervalFrame]) {
-		countFrame_ = 0;
-		return true;
-	}
-
-	return false;
 }
 
 void ItemManager::CreateItem(const Vector3& pos)
 {
-	items_.push_back(std::make_unique<Item>(pos));
+	for (std::unique_ptr<Item>& item : items_) {
+		if (!item->IsLife()) {
+			item->Init(pos);
+			MaxItemCount_++;
+			return;
+		}
+	}
 }
 
 void ItemManager::Clear()
 {
+	MaxItemCount_ = 0;
+	getItemCount_ = 0;
 	for (const std::unique_ptr<Item>& item : items_) {
 		item->SetIsLife(false);
 	}
@@ -208,24 +203,22 @@ void ItemManager::Update()
 {
 	countFrame_++;
 
-	items_.remove_if([](std::unique_ptr<Item>& nedle) {
-		if (!nedle->IsLife()) {
-			nedle.reset();
-			nedle = nullptr;
-			return true;
-		}
-		return false;
-	});
-
-	for (const std::unique_ptr<Item>& nedle : items_) {
-		nedle->Update();
+	for (int i = 0; i < MaxItemCount_; i++) {
+		items_[i]->Update();
 	}
+
+	/*for (const std::unique_ptr<Item>& item : items_) {
+		item->Update();
+	}*/
 }
 
 void ItemManager::Draw(const ViewProjection& viewProjection)
 {
-	for (const std::unique_ptr<Item>& nedle : items_) {
-		nedle->Draw(viewProjection);
+	/*for (const std::unique_ptr<Item>& item : items_) {
+		item->Draw(viewProjection);
+	}*/
+	for (int i = 0; i < MaxItemCount_; i++) {
+		items_[i]->Draw(viewProjection);
 	}
 }
 
@@ -235,9 +228,9 @@ void ItemManager::SetGlobalVariable()
 
 	globalVariables->CreateGroup(groupName_);
 
-	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		globalVariables->AddItem(groupName_, iInfoNames_[i], iInfo_[i]);
-	}
+	}*/
 
 	ApplyGlobalVariable();
 }
@@ -246,7 +239,7 @@ void ItemManager::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
+	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		iInfo_[i] = globalVariables->GetIntValue(groupName_, iInfoNames_[i]);
-	}
+	}*/
 }

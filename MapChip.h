@@ -128,9 +128,13 @@ public:
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
 	bool InRange(const Vector3& pos);
+
+	void CheckChangeMap();
 private:
 	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
+
+	void CreateItems();
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);
@@ -153,7 +157,7 @@ private:
 	Vector4 normalColor_;
 	Vector4 touchingColor_;
 
-
+	std::vector<std::vector<uint32_t>> preMap_;
 
 
 #pragma region DirectX関連

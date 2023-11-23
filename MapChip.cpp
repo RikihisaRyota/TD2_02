@@ -18,6 +18,7 @@
 #include "TextureManager.h"
 #include "Game/Nedle/Nedle.h"
 #include "ImGuiManager.h"
+#include "Game/Item/Item.h"
 
 using namespace Microsoft::WRL;
 
@@ -72,7 +73,14 @@ void MapChip::SetCollider() {
 
 void MapChip::Update(const ViewProjection& viewProjection) {
 
-	NedleManager* nedleManager = NedleManager::GetInstance();
+#ifdef _DEBUG
+	CheckChangeMap();
+
+	preMap_ = map_;
+#endif // _DEBUG
+
+
+	NeedleManager* nedleManager = NeedleManager::GetInstance();
 
 	if (nedleManager->IsCreatNedle()) {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
@@ -230,8 +238,10 @@ MapChip::MapChip() {
 
 void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
+	preMap_ = map_;
 	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
 	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	CreateItems();
 }
 
 void MapChip::LoadCSV() {
@@ -455,6 +465,16 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
+void MapChip::CheckChangeMap()
+{
+#ifdef _DEBUG
+	
+	if (preMap_ != map_) {
+		CreateItems();
+	}
+#endif // _DEBUG
+}
+
 void MapChip::SetCurrentStage(uint32_t stageNum) {
 	if (stageNum >= Stage::kCount) {
 		stageNum = Stage::kCount - 1;
@@ -506,4 +526,19 @@ ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
 		IID_PPV_ARGS(&buffer));
 	assert(SUCCEEDED(result));
 	return buffer;
+}
+
+void MapChip::CreateItems()
+{
+	ItemManager::GetInstance()->Init();
+
+	for (int row = 0; row < int(map_.size()); row++) {
+		for (int column = 0; column < int(map_[row].size()); column++) {
+
+			if (map_[row][column] == uint32_t(Blocks::kItemBlock)) {
+				ItemManager::GetInstance()->CreateItem(blockWorldTransform_[row][column].worldPos_);
+			}
+		}
+	}
+		
 }
