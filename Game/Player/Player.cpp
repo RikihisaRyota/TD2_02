@@ -249,6 +249,41 @@ void Player::ApplyGlobalVariable() {
 	}
 }
 
+void Player::MoveInit()
+{
+	if (isRight_) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}
+	rotateTheta_ = 0.0f;
+}
+
+void Player::MoveUpdate()
+{
+	const uint16_t cycle = 20;
+
+	const float pi = std::numbers::pi_v<float>;
+
+	const float step = 2.0f * pi / cycle;
+
+	rotateTheta_ += step;
+
+	rotateTheta_ = std::fmod(rotateTheta_, 2.0f * pi);
+
+	const float amplitude = 0.2f;
+
+	float rotate = std::sinf(rotateTheta_) * amplitude;
+
+	if (isRight_) {
+		worldTransform_.rotation_.y = rotate;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float> + rotate;
+	}
+}
+
 void Player::NormalInitialize() {
 	worldTransform_.rotation_ = {};
 	countFrame_ = 0;
@@ -256,6 +291,8 @@ void Player::NormalInitialize() {
 		jumpCount_ = 0;
 	}
 	noTatchCountFrame_ = 0;
+
+	MoveInit();
 }
 
 void Player::NormalUpdate() {
@@ -274,9 +311,11 @@ void Player::NormalUpdate() {
 
 	if (move.x > 0) {
 		isPlayerFaceRight_ = false;
+		isRight_ = true;
 	}
 	else if (move.x < 0) {
 		isPlayerFaceRight_ = true;
+		isRight_ = false;
 	}
 
 	/*if (move.x == 0.0f) {
@@ -309,18 +348,18 @@ void Player::NormalUpdate() {
 		move.y += parameters_[FloatParameterNames::kGravity];
 	}
 
-	if (move.x > 0) {
-		isRight_ = true;
-	}
-	else if (move.x < 0) {
-		isRight_ = false;
-	}
-
-	if (isRight_) {
+	/*if (isRight_) {
 		worldTransform_.rotation_.y = 0.0f;
 	}
 	else {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}*/
+
+	if (move.x != 0) {
+		MoveUpdate();
+	}
+	else {
+		MoveInit();
 	}
 
 	velocity_.x = 0.0f;

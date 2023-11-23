@@ -95,6 +95,9 @@ private:
 	/// </summary>
 	void ApplyGlobalVariable();
 
+	void MoveInit();
+	void MoveUpdate();
+
 	/// <summary>
 	/// 通常の初期化
 	/// </summary>
@@ -192,6 +195,8 @@ private:
 	Vector3 preScale_;
 
 	float scaleTheta_;
+
+	float rotateTheta_;
 
 	int noTatchCountFrame_;
 
