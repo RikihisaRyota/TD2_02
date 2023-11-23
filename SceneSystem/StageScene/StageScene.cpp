@@ -114,6 +114,11 @@ void StageScene::Update()
 		mapChipEditor_->Update();
 	}
 
+	// 死んだフラグ
+	if (player_->GetIsDead()) {
+		sceneNo_ = SELECT;
+	}
+
 	// クリアフラグ
 	if (player_->GetIsClear() ||
 		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {

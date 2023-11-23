@@ -69,7 +69,7 @@ void FollowCamera::Reset()
 		interTarget_ = pos;
 	}
 
-	viewProjection_.translate_ = interTarget_;
+	viewProjection_.translate_ = interTarget_ + v3Parameters_[kOffset];
 
 }
 

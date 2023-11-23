@@ -95,6 +95,7 @@ void Player::Initialize() {
 	isJump_ = true;
 	velocity_ = {};
 
+	isDead_ = false;
 	isChangeCamera_ = false;
 	isClear_ = false;
 	time_ = 0;
@@ -152,7 +153,9 @@ void Player::OnCollision() {
 			for (uint32_t no : editInfo_.i32Info_) {
 
 				if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
-
+					shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+					StateRequest(State::kDeadMove);
+					return;
 				}
 				else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
 
@@ -160,21 +163,20 @@ void Player::OnCollision() {
 			}
 		}
 
+		
+	}
+	else if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::COLLIDER) {
 		if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
 			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
 			StateRequest(State::kDeadMove);
 			return;
 		}
-
-		if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
+		else if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
 			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
 			goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
 			StateRequest(State::kClearMove);
 			return;
 		}
-	}
-	else if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::COLLIDER) {
-
 	}
 	
 }
@@ -915,7 +917,7 @@ void Player::ClearMoveUpdate() {
 	worldTransform_.translate_.y = pos.x * std::sinf(clearRot_) + pos.y * std::cosf(clearRot_) + goalPos_.y;
 
 	if (countFrame_ >= iParameters_[IParameterNames::kClearFrame]) {
-		Initialize();
+		//Initialize();
 		isClear_ = true;
 	}
 }
@@ -926,6 +928,14 @@ void Player::DeadModeInitialize()
 
 void Player::DeadModeUpdate()
 {
+	// プレイヤーが死んだときの処理
+	// 更新がすべて終わったら isDead_ = true; Initializeは消す
+	isDead_ = true;
+
+#ifdef _DEBUG
+	Initialize();
+#endif // _DEBUG
+
 }
 
 void Player::FloarAndWallInit()

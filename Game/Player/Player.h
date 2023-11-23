@@ -75,6 +75,9 @@ public:
 	const bool GetIsChangeCamera() const { return isChangeCamera_; }
 
 	bool GetIsClear() { return isClear_; }
+
+	const bool GetIsDead() const { return isDead_; }
+
 private:
 
 	void OnCollision() override;
@@ -180,6 +183,8 @@ private:
 	// ２段ジャンプか
 	int jumpCount_;
 	bool isPlayerFaceRight_;
+
+	bool isDead_;
 
 	bool kIs2Jump_ = true;
 
