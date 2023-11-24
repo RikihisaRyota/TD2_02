@@ -103,6 +103,7 @@ void StageScene::Update()
 
 	if (player_->GetIsChangeCamera()) {
 		followCamera_->SetTarget(goal_->GetWorldTransform());
+		followCamera_->ChangeCamera();
 	}
 
 	if (!isDebug_) {
