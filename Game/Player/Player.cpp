@@ -156,12 +156,12 @@ void Player::OnCollision() {
 
 			for (uint32_t no : editInfo_.i32Info_) {
 
-				if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
+				if (no == uint32_t(MapChip::UseBlocks::kRedBlock)) {
 					shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
 					StateRequest(State::kDeadMove);
 					return;
 				}
-				else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
+				else if (no == uint32_t(MapChip::UseBlocks::kNeedleBlock)) {
 
 				}
 			}

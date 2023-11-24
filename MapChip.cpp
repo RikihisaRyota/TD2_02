@@ -26,37 +26,37 @@ void MapChip::OnCollision() {
 	for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
 		auto blockType = map_[yx.first][yx.second];
 		switch (blockType) {
-		case uint32_t(MapChip::Blocks::kBlock):
-			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount) {
+		case uint32_t(MapChip::UseBlocks::kBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->instanceCount) {
 				if (pair == yx) {
-					instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[i].color = touchingColor_;
+					instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->gpuPram[i].color = touchingColor_;
 					break;
 				}
 				i++;
 			}
 			break;
-		case uint32_t(MapChip::Blocks::kRedBlock):
-			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount) {
+		case uint32_t(MapChip::UseBlocks::kRedBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->instanceCount) {
 				if (pair == yx) {
-					instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[i].color = touchingColor_;
+					instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->gpuPram[i].color = touchingColor_;
 					break;
 				}
 				i++;
 			}
 			break;
-		case uint32_t(MapChip::Blocks::kItemBlock):
-			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount) {
+		case uint32_t(MapChip::UseBlocks::kItemBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->instanceCount) {
 				if (pair == yx) {
-					instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[i].color = touchingColor_;
+					instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->gpuPram[i].color = touchingColor_;
 					break;
 				}
 				i++;
 			}
 			break;
-		case uint32_t(MapChip::Blocks::kNeedleBlock):
-			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount) {
+		case uint32_t(MapChip::UseBlocks::kNeedleBlock):
+			for (uint32_t i = 0; auto & pair : instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->instanceCount) {
 				if (pair == yx) {
-					instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[i].color = touchingColor_;
+					instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->gpuPram[i].color = touchingColor_;
 					break;
 				}
 				i++;
@@ -86,7 +86,7 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 
-				if (map_[y][x] == uint32_t(Blocks::kNeedleBlock)) {
+				if (map_[y][x] == uint32_t(UseBlocks::kNeedleBlock)) {
 					nedleManager->CreateNeadle(blockWorldTransform_[y][x].worldPos_);
 				}
 			}
@@ -119,23 +119,23 @@ MapChip::MapChip() {
 		 "stage_9",
 		 "stage_10",
 	};
-	//normalBlockModels_.emplace_back(Model::Create("block"));
-	//normalBlockModels_.emplace_back(Model::Create("blockDown"));
-	//normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
-	//normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
-	//normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
-	//normalBlockModels_.emplace_back(Model::Create("blockLeft"));
-	//normalBlockModels_.emplace_back(Model::Create("blockRight"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTop"));
-	////normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
+	normalBlockModels_.emplace_back(Model::Create("block"));
+	normalBlockModels_.emplace_back(Model::Create("blockDown"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTop"));
+	//normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
+	normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
 
 	auto modelManager = ModelManager::GetInstance();
-	for (uint32_t i = 0; i < static_cast<uint32_t>(Blocks::kCount) - 1; i++) {
+	for (uint32_t i = 0; i < static_cast<uint32_t>(UseBlocks::kUseBlockCount) - 1; i++) {
 		blockModels_.emplace_back(modelManager->GetBlockModel(i));
 	}
 	// コンストラクタとInitializeのどっちも呼び出しる
@@ -173,9 +173,9 @@ MapChip::MapChip() {
 	SetCollisionMask(kCollisionAttributePlayer);
 
 	//shapeType_->mapChip2D_.SetNoCollider(0);
-	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
-	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
-	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kRedBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kNeedleBlock));
 	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
@@ -347,7 +347,7 @@ void MapChip::InstancingInitialize() {
 	directionalLight_->sharpness_ = 1.0f;
 #pragma endregion
 #pragma region インスタンシング生成
-	for (size_t i = 0; i < size_t(MapChip::Blocks::kCount) - 1; i++) {
+	for (size_t i = 0; i < size_t(MapChip::UseBlocks::kUseBlockCount); i++) {
 		auto device = DirectXCommon::GetInstance()->GetDevice();
 		MapChipInstancing* instancing = new MapChipInstancing();
 		instancing->instancingBuff = CreateBuffer(sizeof(GPUParam) * instancing->maxInstance);
@@ -381,7 +381,7 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
 	for (uint32_t i = 0; auto & instancing : instancing_) {
 		if (instancing->currentInstance != 0 &&
-			i != uint32_t(Blocks::kItemBlock) - 1) {
+			i != uint32_t(UseBlocks::kItemBlock) - 1) {
 			// 頂点バッファの設定
 			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
 
@@ -503,29 +503,29 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 		for (int32_t x = xMin; x < xMax; x++) {
 			auto block = map_[y][x];
 			switch (block) {
-			case uint32_t(Blocks::kBlock):
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kBlock) - 1)->currentInstance++;
+			case uint32_t(UseBlocks::kBlock):
+				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance++;
 				break;
-			case uint32_t(Blocks::kRedBlock):
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
+			case uint32_t(UseBlocks::kRedBlock):
+				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance++;
 				break;
-			case uint32_t(Blocks::kItemBlock):
-				/*instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;*/
+			case uint32_t(UseBlocks::kItemBlock):
+				/*instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance++;*/
 				break;
-			case uint32_t(Blocks::kNeedleBlock):
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance++;
+			case uint32_t(UseBlocks::kNeedleBlock):
+				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
+				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance++;
 				break;
 
 			default:
@@ -542,7 +542,7 @@ void MapChip::CreateItems() {
 	for (int row = 0; row < int(map_.size()); row++) {
 		for (int column = 0; column < int(map_[row].size()); column++) {
 
-			if (map_[row][column] == uint32_t(Blocks::kItemBlock)) {
+			if (map_[row][column] == uint32_t(UseBlocks::kItemBlock)) {
 				ItemManager::GetInstance()->CreateItem(blockWorldTransform_[row][column].worldPos_);
 			}
 		}
