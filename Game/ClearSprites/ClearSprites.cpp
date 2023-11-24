@@ -137,6 +137,7 @@ void ClearSprites::Init() {
 		itemPlace_[1 - i] = clearItem / place;
 		conditionItemPlace_[1 - i] = conditionItem / place;
 		clearItem %= place;
+		conditionItem %= place;
 		place /= 10;
 	}
 	// 条件1
@@ -154,7 +155,7 @@ void ClearSprites::Init() {
 		starFlag_[1] = false;
 	}
 	// 条件3
-	if (clearItem >= conditionItem) {
+	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
 		starFlag_[2] = true;
 	}
 	else {

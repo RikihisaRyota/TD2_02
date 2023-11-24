@@ -78,6 +78,7 @@ public:
 
 	const bool GetIsDead() const { return isDead_; }
 
+	const int GetClearTime() { return clearTime_; }
 private:
 
 	void OnCollision() override;
@@ -308,6 +309,5 @@ private:
 
 	// クリアフラグ
 	bool isClear_;
-	int time_;
-	int itemCount_;
+	int clearTime_;
 };

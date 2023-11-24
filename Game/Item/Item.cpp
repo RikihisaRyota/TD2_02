@@ -21,8 +21,8 @@ Item::Item()
 	SetCollisionAttribute(kCollisionAttributeItem);
 	SetCollisionMask(kCollisionAttributePlayer);
 
-	// ItemBlockの番号
-	model_.reset(ModelManager::GetInstance()->GetBlockModel(16));
+	// main.cppのモデルマネージャーの番号
+	model_.reset(ModelManager::GetInstance()->GetBlockModel(17));
 
 	worldTransform_.Initialize();
 

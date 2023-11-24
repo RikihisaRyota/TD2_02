@@ -122,6 +122,7 @@ void StageScene::Update()
 	// クリアフラグ
 	if (player_->GetIsClear() ||
 		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 }

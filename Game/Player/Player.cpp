@@ -63,8 +63,6 @@ Player::Player() {
 	SetGlobalVariable();
 
 	// パーティクル初期化
-	emitter_ = new Emitter();
-	particleMotion_ = new ParticleMotion();
 	particleTextureHandle_ = TextureManager::Load("Resources/Textures/particle.png");
 	ParticleInitialize();
 
@@ -99,8 +97,7 @@ void Player::Initialize() {
 	isDead_ = false;
 	isChangeCamera_ = false;
 	isClear_ = false;
-	time_ = 0;
-	itemCount_ = 0;
+	clearTime_ = 0;
 
 	ParticleInitialize();
 }
@@ -983,7 +980,6 @@ void Player::SoundInitialize() {
 
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
-	StageData::SetData(time_, itemCount_, true, IScene::stageNo_);
 
 	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
 	clearRot_ = 0.0f;
@@ -1151,7 +1147,7 @@ void Player::Update() {
 	ParticleUpdate();
 
 	// クリアタイム
-	time_++;
+	clearTime_++;
 }
 
 void Player::Draw(const ViewProjection& viewProjection) {

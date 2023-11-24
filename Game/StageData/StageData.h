@@ -29,7 +29,7 @@ public:
 	static void Initialize();
 	static void Update();
 
-	static void SetData(int time,int itemCount,bool flag,int currentStage);
+	static void SetData(int time, int itemCount, int maxItemCount, bool flag, int currentStage);
 	static Data GetData(int currentStage) { return data_[currentStage]; }
 
 	static int GetClearTime(int currentStage) {return data_[currentStage].clearTime;}
@@ -56,7 +56,7 @@ private:
 
 	static std::string v2ItemNames_[V2ItemNames::kV2ItemCount];
 
-	static Vector2 v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
+	static int v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
 
 	static std::string groupName_;
 };
