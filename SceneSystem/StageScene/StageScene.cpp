@@ -115,9 +115,9 @@ void StageScene::Update()
 	}
 
 	// 死んだフラグ
-	if (player_->GetIsDead()) {
+	/*if (player_->GetIsDead()) {
 		sceneNo_ = SELECT;
-	}
+	}*/
 
 	// クリアフラグ
 	if (player_->GetIsClear() ||
