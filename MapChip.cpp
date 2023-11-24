@@ -101,7 +101,7 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 	ImGui::End();
 
 	SetInstancing(viewProjection);
-	
+
 	SetCollider();
 }
 
@@ -380,8 +380,8 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
 	for (uint32_t i = 0; auto & instancing : instancing_) {
-		if (instancing->gpuPram != nullptr &&
-			i != uint32_t(Blocks::kItemBlock)) {
+		if (instancing->currentInstance != 0 &&
+			i != uint32_t(Blocks::kItemBlock) - 1) {
 			// 頂点バッファの設定
 			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
 
@@ -415,10 +415,9 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
-void MapChip::CheckChangeMap()
-{
+void MapChip::CheckChangeMap() {
 #ifdef _DEBUG
-	
+
 	if (preMap_ != map_) {
 		CreateItems();
 	}
@@ -537,4 +536,16 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 
 }
 
-void MapChip::CreateItems() {}
+void MapChip::CreateItems() {
+	ItemManager::GetInstance()->Init();
+
+	for (int row = 0; row < int(map_.size()); row++) {
+		for (int column = 0; column < int(map_[row].size()); column++) {
+
+			if (map_[row][column] == uint32_t(Blocks::kItemBlock)) {
+				ItemManager::GetInstance()->CreateItem(blockWorldTransform_[row][column].worldPos_);
+			}
+		}
+	}
+
+}
