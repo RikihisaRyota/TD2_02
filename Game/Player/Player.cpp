@@ -785,8 +785,8 @@ void Player::ParticleInitialize() {
 	emitter_ = new Emitter();
 	emitter_->aliveTime = 1;
 	emitter_->spawn.position = worldTransform_.worldPos_;
-	emitter_->spawn.rangeX = 1.5f;
-	emitter_->spawn.rangeY = 1.5f;
+	emitter_->spawn.rangeX = 0.0f;
+	emitter_->spawn.rangeY = 0.0f;
 	emitter_->inOnce = 2;
 	//emitter_->angle.start = DegToRad(0.0f);
 	//emitter_->angle.end = DegToRad(180.0f);
@@ -828,8 +828,8 @@ void Player::ParticleCreate(const Vector2& vector) {
 
 		emitter->aliveTime = 1;
 		emitter->spawn.position = worldTransform_.worldPos_;
-		emitter_->spawn.rangeX = 1.5f;
-		emitter_->spawn.rangeY = 1.5f;
+		emitter->spawn.rangeX = 1.5f;
+		emitter->spawn.rangeY = 1.5f;
 		emitter->inOnce = 20;
 		// 右の壁
 		if (vector.x < 0) {
