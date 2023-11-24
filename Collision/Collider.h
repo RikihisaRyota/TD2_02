@@ -16,6 +16,8 @@ public:
 			V2COUNT,
 		};
 
+		BaseColliderShapeType::ColliderType colliderTypeMask_;
+
 		void SetI32Info(uint32_t info);
 		void SetPairIInfo(std::pair<int, int> info);
 

@@ -75,6 +75,9 @@ public:
 	const bool GetIsChangeCamera() const { return isChangeCamera_; }
 
 	bool GetIsClear() { return isClear_; }
+
+	const bool GetIsDead() const { return isDead_; }
+
 private:
 
 	void OnCollision() override;
@@ -94,6 +97,9 @@ private:
 	/// jsonファイルからの呼び出し
 	/// </summary>
 	void ApplyGlobalVariable();
+
+	void MoveInit();
+	void MoveUpdate();
 
 	/// <summary>
 	/// 通常の初期化
@@ -178,6 +184,8 @@ private:
 	int jumpCount_;
 	bool isPlayerFaceRight_;
 
+	bool isDead_;
+
 	bool kIs2Jump_ = true;
 
 	bool kIs2WallJump_ = true;
@@ -192,6 +200,8 @@ private:
 	Vector3 preScale_;
 
 	float scaleTheta_;
+
+	float rotateTheta_;
 
 	int noTatchCountFrame_;
 

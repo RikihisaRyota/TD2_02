@@ -15,7 +15,7 @@
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
 
 SceneManager::SceneManager() {
 	IScene::sceneNo_ = TITLE;

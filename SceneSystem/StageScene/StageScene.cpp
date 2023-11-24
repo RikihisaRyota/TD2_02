@@ -15,7 +15,8 @@
 #include "ImGuiManager.h"
 #include "SceneSystem/IScene/IScene.h"
 #include "Game/StageData/StageData.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
+#include "Game/Item/Item.h"
 
 StageScene::StageScene()
 {
@@ -31,6 +32,8 @@ StageScene::StageScene()
 	isDebug_ = false;
 
 #pragma region 生成
+	NeedleManager::GetInstance()->FirstInit();
+	ItemManager::GetInstance()->FirstInit();
 	background_ = std::make_unique<Background>();
 	followCamera_ = std::make_unique<FollowCamera>();
 	goal_ = std::make_unique<Goal>();
@@ -46,15 +49,13 @@ StageScene::StageScene()
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
-
-	NedleManager::GetInstance()->Init();
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 }
 
 void StageScene::Init()
 {
-	NedleManager::GetInstance()->Init();
+	NeedleManager::GetInstance()->Init();
 	background_->Initialize();
 	goal_->Initialize();
 	player_->Initialize();
@@ -90,9 +91,11 @@ void StageScene::Update()
 
 	mapChip_->Update(viewProjection_);
 
-	NedleManager::GetInstance()->Update();
+	NeedleManager::GetInstance()->Update();
 
 	player_->Update();
+
+	ItemManager::GetInstance()->Update();
 
 	collisionManager->CheckCollision();
 
@@ -109,6 +112,11 @@ void StageScene::Update()
 	else {
 		// マップチップエディター
 		mapChipEditor_->Update();
+	}
+
+	// 死んだフラグ
+	if (player_->GetIsDead()) {
+		sceneNo_ = SELECT;
 	}
 
 	// クリアフラグ
@@ -150,7 +158,8 @@ void StageScene::Draw()
 	goal_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
-	NedleManager::GetInstance()->Draw(viewProjection_);
+	NeedleManager::GetInstance()->Draw(viewProjection_);
+	ItemManager::GetInstance()->Draw(viewProjection_);
 
 	mapChipEditor_->Draw();
 

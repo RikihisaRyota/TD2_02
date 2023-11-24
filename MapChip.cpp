@@ -16,8 +16,9 @@
 #include "WinApp.h"
 #include "Collision/CollisionManager.h"
 #include "TextureManager.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
 #include "ImGuiManager.h"
+#include "Game/Item/Item.h"
 
 using namespace Microsoft::WRL;
 
@@ -72,7 +73,14 @@ void MapChip::SetCollider() {
 
 void MapChip::Update(const ViewProjection& viewProjection) {
 
-	NedleManager* nedleManager = NedleManager::GetInstance();
+#ifdef _DEBUG
+	CheckChangeMap();
+
+	preMap_ = map_;
+#endif // _DEBUG
+
+
+	NeedleManager* nedleManager = NeedleManager::GetInstance();
 
 	if (nedleManager->IsCreatNedle()) {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
@@ -168,7 +176,7 @@ MapChip::MapChip() {
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kRedBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(Blocks::kNeedleBlock));
-	shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
+	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
 	InstancingInitialize();
@@ -176,10 +184,12 @@ MapChip::MapChip() {
 
 void MapChip::Initialize(const ViewProjection& viewProjection) {
 	map_ = maps_[currentStage_];
+	preMap_ = map_;
 	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
 	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	SetInstancing(viewProjection);
+	CreateItems();
 }
 
 void MapChip::LoadCSV() {
@@ -405,6 +415,16 @@ bool MapChip::InRange(const Vector3& pos) {
 	return true;
 }
 
+void MapChip::CheckChangeMap()
+{
+#ifdef _DEBUG
+	
+	if (preMap_ != map_) {
+		CreateItems();
+	}
+#endif // _DEBUG
+}
+
 void MapChip::SetCurrentStage(uint32_t stageNum) {
 	if (stageNum >= Stage::kCount) {
 		stageNum = Stage::kCount - 1;
@@ -516,3 +536,5 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 	}
 
 }
+
+void MapChip::CreateItems() {}

@@ -97,6 +97,7 @@ void Player::Initialize() {
 	isJump_ = true;
 	velocity_ = {};
 
+	isDead_ = false;
 	isChangeCamera_ = false;
 	isClear_ = false;
 	time_ = 0;
@@ -116,68 +117,72 @@ void Player::UpdateMatrix() {
 
 void Player::OnCollision() {
 
-	if ((velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0 &&
-		editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) ||
-		(velocity_.x == 0 && state_ == State::kFloarAndWall)) {
-		StateRequest(State::kFloarAndWall);
-		ParticleCreate({ 0.0f,-1.0f });
-	}
-	else if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
-		StateRequest(State::kNormal);
-		ParticleCreate({ 0.0f,-1.0f });
-	}
-	else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
-		StateRequest(State::kGripWall);
-		if (velocity_.x > 0) {
-			isRight_ = true;
-			ParticleCreate({ 1.0f,0.0f });
+	if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::RIGID_BODY) {
+		if ((velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0 &&
+			editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) ||
+			(velocity_.x == 0 && state_ == State::kFloarAndWall)) {
+			StateRequest(State::kFloarAndWall);
+			ParticleCreate({ 0.0f,-1.0f });
 		}
-		else if (velocity_.x < 0) {
-			isRight_ = false;
-			ParticleCreate({ -1.0f,0.0f });
+		else if (editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y == 0) {
+			StateRequest(State::kNormal);
+			ParticleCreate({ 0.0f,-1.0f });
+		}
+		else if (velocity_.x != 0 && editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x == 0) {
+			StateRequest(State::kGripWall);
+			if (velocity_.x > 0) {
+				isRight_ = true;
+				ParticleCreate({ 1.0f,0.0f });
+			}
+			else if (velocity_.x < 0) {
+				isRight_ = false;
+				ParticleCreate({ -1.0f,0.0f });
+			}
+		}
+		else {
+			StateRequest(State::kNormal);
+			ParticleCreate({ 0.0f,1.0f });
+		}
+
+		worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
+		worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
+
+		velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
+		velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
+
+		UpdateMatrix();
+
+		if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
+
+			for (uint32_t no : editInfo_.i32Info_) {
+
+				if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
+					shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+					StateRequest(State::kDeadMove);
+					return;
+				}
+				else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
+
+				}
+			}
+		}
+
+		
+	}
+	else if (editInfo_.colliderTypeMask_ == BaseColliderShapeType::ColliderType::COLLIDER) {
+		if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
+			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+			StateRequest(State::kDeadMove);
+			return;
+		}
+		else if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
+			shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
+			goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
+			StateRequest(State::kClearMove);
+			return;
 		}
 	}
-	else {
-		StateRequest(State::kNormal);
-		ParticleCreate({ 0.0f,1.0f });
-	}
-	worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
-	worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
-
-	velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
-	velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
-
-	UpdateMatrix();
-
-	if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
-
-		for (uint32_t no : editInfo_.i32Info_) {
-
-			if (no == uint32_t(MapChip::Blocks::kRedBlock)) {
-
-			}
-			else if (no == uint32_t(MapChip::Blocks::kNeedleBlock)) {
-
-			}
-			else if (no == uint32_t(MapChip::Blocks::kItemBlock)) {
-				itemCount_++;
-			}
-
-		}
-	}
-
-	if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
-		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
-		StateRequest(State::kDeadMove);
-		return;
-	}
-
-	if ((editInfo_.collisionMask_ & kCollisionAttributeGoal) >= 0b1) {
-		shapeType_->SetColliderType(BaseColliderShapeType::ColliderType::UNKNOWN);
-		goalPos_ = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2MASKPOS];
-		StateRequest(State::kClearMove);
-		return;
-	}
+	
 }
 
 void Player::SetCollider() {
@@ -251,6 +256,41 @@ void Player::ApplyGlobalVariable() {
 	}
 }
 
+void Player::MoveInit()
+{
+	if (isRight_) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}
+	rotateTheta_ = 0.0f;
+}
+
+void Player::MoveUpdate()
+{
+	const uint16_t cycle = 20;
+
+	const float pi = std::numbers::pi_v<float>;
+
+	const float step = 2.0f * pi / cycle;
+
+	rotateTheta_ += step;
+
+	rotateTheta_ = std::fmod(rotateTheta_, 2.0f * pi);
+
+	const float amplitude = 0.2f;
+
+	float rotate = std::sinf(rotateTheta_) * amplitude;
+
+	if (isRight_) {
+		worldTransform_.rotation_.y = rotate;
+	}
+	else {
+		worldTransform_.rotation_.y = std::numbers::pi_v<float> + rotate;
+	}
+}
+
 void Player::NormalInitialize() {
 	worldTransform_.rotation_ = {};
 	countFrame_ = 0;
@@ -258,6 +298,8 @@ void Player::NormalInitialize() {
 		jumpCount_ = 0;
 	}
 	noTatchCountFrame_ = 0;
+
+	MoveInit();
 }
 
 void Player::NormalUpdate() {
@@ -276,9 +318,11 @@ void Player::NormalUpdate() {
 
 	if (move.x > 0) {
 		isPlayerFaceRight_ = false;
+		isRight_ = true;
 	}
 	else if (move.x < 0) {
 		isPlayerFaceRight_ = true;
+		isRight_ = false;
 	}
 
 	/*if (move.x == 0.0f) {
@@ -311,18 +355,18 @@ void Player::NormalUpdate() {
 		move.y += parameters_[FloatParameterNames::kGravity];
 	}
 
-	if (move.x > 0) {
-		isRight_ = true;
-	}
-	else if (move.x < 0) {
-		isRight_ = false;
-	}
-
-	if (isRight_) {
+	/*if (isRight_) {
 		worldTransform_.rotation_.y = 0.0f;
 	}
 	else {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+	}*/
+
+	if (move.x != 0) {
+		MoveUpdate();
+	}
+	else {
+		MoveInit();
 	}
 
 	velocity_.x = 0.0f;
@@ -875,14 +919,24 @@ void Player::ClearMoveUpdate() {
 	worldTransform_.translate_.y = pos.x * std::sinf(clearRot_) + pos.y * std::cosf(clearRot_) + goalPos_.y;
 
 	if (countFrame_ >= iParameters_[IParameterNames::kClearFrame]) {
-		Initialize();
+		//Initialize();
 		isClear_ = true;
 	}
 }
 
 void Player::DeadModeInitialize() {}
 
-void Player::DeadModeUpdate() {}
+void Player::DeadModeUpdate()
+{
+	// プレイヤーが死んだときの処理
+	// 更新がすべて終わったら isDead_ = true; Initializeは消す
+	isDead_ = true;
+
+#ifdef _DEBUG
+	Initialize();
+#endif // _DEBUG
+
+}
 
 void Player::FloarAndWallInit() {
 

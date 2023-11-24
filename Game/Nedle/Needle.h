@@ -7,16 +7,19 @@
 #include <array>
 #include <optional>
 
-class Nedle : public Collider
+class Needle : public Collider
 {
 public:
-	Nedle(const Vector3& position);
-	~Nedle();
+	Needle();
+	~Needle();
 
+	void Init(const Vector3& pos);
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
 	const bool IsLife() const { return isLife_; }
+
+	void SetIsLife(const bool& is) { isLife_ = is; }
 
 private:
 
@@ -40,9 +43,9 @@ private:
 	void FallingInit();
 	void FallingUpdate();
 
-	static void (Nedle::* spStateInitFuncTable[])();
+	static void (Needle::* spStateInitFuncTable[])();
 
-	static void (Nedle::* spStateUpdateFuncTable[])();
+	static void (Needle::* spStateUpdateFuncTable[])();
 
 private:
 
@@ -89,10 +92,12 @@ private:
 };
 
 
-class NedleManager
+class NeedleManager
 {
 public:
-	static NedleManager* GetInstance();
+	static NeedleManager* GetInstance();
+
+	void FirstInit();
 
 	void Init();
 
@@ -107,18 +112,20 @@ public:
 	void Draw(const ViewProjection& viewProjection);
 
 private:
-	NedleManager() = default;
-	~NedleManager() = default;
-	NedleManager(const NedleManager&) = delete;
-	const NedleManager& operator=(const NedleManager&) = delete;
+	NeedleManager() = default;
+	~NeedleManager() = default;
+	NeedleManager(const NeedleManager&) = delete;
+	const NeedleManager& operator=(const NeedleManager&) = delete;
 
 	void SetGlobalVariable();
 
 	void ApplyGlobalVariable();
 
 private:
+	static const int kMaxNeedleNum = 100;
 
-	std::list<std::unique_ptr<Nedle>> nedles_;
+	//std::list<std::unique_ptr<Needle>> needles_;
+	std::array<std::unique_ptr<Needle>,kMaxNeedleNum> needles_;
 
 	const std::string groupName_ = "Nedle";
 
