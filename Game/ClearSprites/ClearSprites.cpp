@@ -17,6 +17,15 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/result.png");
 	sprites_[SpriteNames::kResult].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/goal.png");
+	sprites_[SpriteNames::kGoal].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/clear.png");
+	sprites_[SpriteNames::kClear].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/item.png");
+	sprites_[SpriteNames::kItem].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
 	tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTime].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
@@ -25,19 +34,28 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kTimeTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/resultTime0.png");
+	sprites_[SpriteNames::kTimeConditionOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	sprites_[SpriteNames::kTimeConditionTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	sprites_[SpriteNames::kTimeConditionHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/time0.png");
+	sprites_[SpriteNames::kItemOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	sprites_[SpriteNames::kItemTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/resultTime0.png");
+	sprites_[SpriteNames::kItemConditionOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	sprites_[SpriteNames::kItemConditionTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+	tex = TextureManager::Load("Resources/Textures/slash.png");
+	sprites_[SpriteNames::kSlash0].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	sprites_[SpriteNames::kSlash1].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
 	tex = TextureManager::Load("Resources/Textures/starGet.png");
 	sprites_[SpriteNames::kStarFirst].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarSecond].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
-	tex = TextureManager::Load("Resources/Textures/result180s.png");
-	sprites_[SpriteNames::kConditionFirst].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-
-	tex = TextureManager::Load("Resources/Textures/result150s.png");
-	sprites_[SpriteNames::kConditionSecond].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-
-	tex = TextureManager::Load("Resources/Textures/result90s.png");
-	sprites_[SpriteNames::kConditionThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/goStageSelect.png");
 	sprites_[SpriteNames::kSelectStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -56,6 +74,7 @@ ClearSprites::ClearSprites() {
 
 	for (uint32_t i = 0; i < kNumberCount; i++) {
 		number_[i] = TextureManager::Load("Resources/Textures/time" + std::to_string(i) + ".png");
+		conditionNumber_[i] = TextureManager::Load("Resources/Textures/resultTime" + std::to_string(i) + ".png");
 	}
 
 	star_[kTrue] = TextureManager::Load("Resources/Textures/starGet.png");
@@ -89,19 +108,37 @@ void ClearSprites::Init() {
 		nextStageFlag_ = false;
 	}
 	// 秒に直す
-	int time = StageData::GetClearTime(IScene::stageNo_) / 60;
+	int clearTime = StageData::GetClearTime(IScene::stageNo_) / 60;
+	int conditionTime = StageData::GetConditionTime(IScene::stageNo_) / 60;
 	int place = 100;
-	if (time >= 999) {
+	if (clearTime >= 999) {
 		for (int i = 0; i < 3; i++) {
 			timePlace_[i] = 9;
+			conditionTimePlace_[2 - i] = conditionTime / place;
+			clearTime %= place;
+			conditionTime %= place;
+			place /= 10;
 		}
 	}
 	else {
 		for (int i = 0; i < 3; i++) {
-			timePlace_[2 - i] = time / place;
-			time %= place;
+			timePlace_[2 - i] = clearTime / place;
+			conditionTimePlace_[2 - i] = conditionTime / place;
+			clearTime %= place;
+			conditionTime %= place;
 			place /= 10;
 		}
+	}
+	// アイテム数
+	int clearItem = StageData::GetClearItemCount(IScene::stageNo_);
+	int conditionItem = StageData::GetConditionItemCount(IScene::stageNo_);
+	place = 10;
+	for (int i = 0; i < 2; i++) {
+		itemPlace_[1 - i] = clearItem / place;
+		conditionItemPlace_[1 - i] = conditionItem / place;
+		clearItem %= place;
+		conditionItem %= place;
+		place /= 10;
 	}
 	// 条件1
 	if (StageData::GetClearFlag(IScene::stageNo_)) {
@@ -117,7 +154,6 @@ void ClearSprites::Init() {
 	else {
 		starFlag_[1] = false;
 	}
-	const int clearItem = 3;
 	// 条件3
 	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
 		starFlag_[2] = true;
@@ -158,6 +194,34 @@ void ClearSprites::Draw() {
 			break;
 		case ClearSprites::kTimeHundredsPlace:
 			sprite->SetTextureHandle(number_[timePlace_[2]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kTimeConditionOnesPlace:
+			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[0]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kTimeConditionTensPlace:
+			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[1]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kTimeConditionHundredsPlace:
+			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[2]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kItemOnesPlace:
+			sprite->SetTextureHandle(number_[itemPlace_[0]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kItemTensPlace:
+			sprite->SetTextureHandle(number_[itemPlace_[1]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kItemConditionOnesPlace:
+			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[0]]);
+			sprite->Draw();
+			break;
+		case ClearSprites::kItemConditionTensPlace:
+			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[1]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:
@@ -217,11 +281,15 @@ void ClearSprites::Draw() {
 			break;
 		case ClearSprites::kBackground:
 		case ClearSprites::kResult:
+		case ClearSprites::kGoal:
+		case ClearSprites::kClear:
+		case ClearSprites::kItem:
 		case ClearSprites::kTime:
-		case ClearSprites::kConditionFirst:
-		case ClearSprites::kConditionSecond:
-		case ClearSprites::kConditionThird:
-		default:
+		case ClearSprites::kSlash0:
+		case ClearSprites::kSlash1:
+		case ClearSprites::kDecisionA:
+		case ClearSprites::kSelectLS:
+		case ClearSprites::kRank:
 			sprite->Draw();
 			break;
 		}

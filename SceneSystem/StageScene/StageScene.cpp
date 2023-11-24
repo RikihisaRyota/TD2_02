@@ -43,7 +43,7 @@ StageScene::StageScene()
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
-	mapChip_->Initialize();
+	mapChip_->Initialize(viewProjection_);
 	mapChip_->SetViewProjection(&viewProjection_);
 
 	mapChipEditor_->SetMapChip(mapChip_.get());
@@ -55,16 +55,16 @@ StageScene::StageScene()
 
 void StageScene::Init()
 {
-	
 	NeedleManager::GetInstance()->Init();
-	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
 	goal_->Initialize();
 	player_->Initialize();
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	followCamera_->Initialize();
+	followCamera_->Update();
+	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
-	mapChip_->Initialize();
+	mapChip_->Initialize(viewProjection_);
 }
 
 void StageScene::Update()
@@ -116,13 +116,14 @@ void StageScene::Update()
 	}
 
 	// 死んだフラグ
-	if (player_->GetIsDead()) {
+	/*if (player_->GetIsDead()) {
 		sceneNo_ = SELECT;
-	}
+	}*/
 
 	// クリアフラグ
 	if (player_->GetIsClear() ||
 		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 }

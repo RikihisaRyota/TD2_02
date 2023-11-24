@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <sstream>
 #include <vector>
+#include <memory>
 
 #include "cVertexPos.h"
 #include "cDirectionalLight.h"
@@ -61,32 +62,39 @@ public:
 		kStage_10,
 		kCount,
 	};
-	
-	enum class Blocks {
+	// 前までのBlocksと一緒
+	// 名前を変更しただけ
+	enum UseBlocks {
 		kNone,
 		kBlock,
 		kRedBlock,
 		kItemBlock,
 		kNeedleBlock,
 
-		kCount,
+		kUseBlockCount,
+	};
 
-		//kBlockNone,
-		//kBlockDown,
-		//kBlockDownLeft,
-		//kBlockDownRight,
-		//kBlockDownRightLeft,
-		//kBlockLeft,
-		//kBlockRight,
-		//kBlockTop,
-		////kBlockTopDown,
-		//kBlockTopDownLeft,
-		//kBlockTopDownRight,
-		//kBlockTopLeft,
-		//kBlockTopRight,
-		//kBlockTopRightLeft,
+	enum InstancingBlocks {
+		kBlockNone,
+		kBlockDown,
+		kBlockDownLeft,
+		kBlockDownRight,
+		kBlockDownRightLeft,
+		kBlockLeftRight,
+		kBlockLeft,
+		kBlockRight,
+		kBlockTop,
+		kBlockTopDown,
+		kBlockTopDownLeft,
+		kBlockTopDownRight,
+		kBlockTopLeft,
+		kBlockTopRight,
+		kBlockTopRightLeft,
 
-		//kBlockNormalCount,
+		kBlockRedBlock,
+		kBlockNeedleBlock,
+
+		kInstancingBlocksCount,
 	};
 public:
 
@@ -94,7 +102,7 @@ public:
 	void SetCollider();
 
 	MapChip();
-	void Initialize();
+	void Initialize(const ViewProjection& viewProjection);
 	void Update(const ViewProjection& viewProjection);
 	void Draw(const ViewProjection& viewProjection);
 
@@ -133,22 +141,21 @@ public:
 private:
 	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
-
+	void SetInstancing(const ViewProjection& viewProjection);
+	void SetInstancingBlock(int block, int y, int x);
 	void CreateItems();
+	void CheckBlockGrit(int y,int x);
 private:
 	// ブロックの種類の最大数
-	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::Blocks::kCount);
+	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::UseBlocks::kUseBlockCount);
 	ViewProjection* viewProjection_;
 	// マップチップの種類
 	std::vector<std::vector<uint32_t>> map_;
 	std::vector<std::vector<std::vector<uint32_t>>> maps_;
-	//uint32_t map_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;
-	std::vector<Model*> normalBlockModels_;
 	// ブロックのワールドトランスフォーム
 	std::vector<std::vector<BlockWorldTransform>> blockWorldTransform_;
-	//WorldTransform blockWorldTransform_[kMaxHeightBlockNum][kMaxWidthBlockNum];
 	// CSVの名前保存
 	std::vector<std::string> stageName_;
 	// 現在のステージ
@@ -158,7 +165,8 @@ private:
 	Vector4 touchingColor_;
 
 	std::vector<std::vector<uint32_t>> preMap_;
-
+	// インスタンシング描画用
+	std::vector<std::unique_ptr<MapChipInstancing>> instancing_;
 
 #pragma region DirectX関連
 	// グラフィックパイプライン
@@ -191,7 +199,6 @@ private:
 	// ライティング
 	cDirectionalLight* directionalLight_ = nullptr;
 #pragma endregion
-	// インスタンシング描画用
-	std::vector<std::unique_ptr<MapChipInstancing>> instancing_;
+#pragma endregion
 };
 

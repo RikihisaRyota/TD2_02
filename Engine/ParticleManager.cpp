@@ -171,9 +171,8 @@ void ParticleManager::StaticInitialize() {
 
 void ParticleManager::Initialize() {
 	for (auto& instancing : instancing_) {
-		if (instancing->isAlive_) {
-			instancing->particle->Reset();
-		}
+		instancing->particle->Reset();
+		instancing->isAlive_ = false;
 	}
 }
 
@@ -210,7 +209,7 @@ ComPtr<ID3D12Resource> ParticleManager::CreateBuffer(UINT size) {
 	return buffer;
 }
 
-void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion,uint32_t textureHandle) {
+void ParticleManager::AddParticle(Emitter* emitter, ParticleMotion* particleMotion, uint32_t textureHandle) {
 	for (auto& instancing : instancing_) {
 		if (!instancing->isAlive_) {
 			instancing->particle->Reset();

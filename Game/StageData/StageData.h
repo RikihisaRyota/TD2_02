@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Vector2.h"
+#include "MapChip.h"
 
 class StageData {
 public:
@@ -12,18 +13,6 @@ public:
 		kV2ItemCount,
 	};
 
-	enum Stage {
-		kStage_1,
-		kStage_2,
-		kStage_3,
-		kStage_4,
-		kStage_5,
-		kStage_6,
-		kStage_7,
-		kStage_8,
-
-		kStageCount,
-	};
 	struct Data {
 		// クリア条件のタイム
 		int conditionTime;
@@ -40,7 +29,7 @@ public:
 	static void Initialize();
 	static void Update();
 
-	static void SetData(int time,int itemCount,bool flag,int currentStage);
+	static void SetData(int time, int itemCount, int maxItemCount, bool flag, int currentStage);
 	static Data GetData(int currentStage) { return data_[currentStage]; }
 
 	static int GetClearTime(int currentStage) {return data_[currentStage].clearTime;}
@@ -61,13 +50,13 @@ public:
 private:
 	static void SetGlobalVariable();
 	static void ApplyGlobalVariable();
-	static Data data_[kStageCount];
+	static Data data_[MapChip::kCount];
 
-	static std::string stageNames_[Stage::kStageCount];
+	static std::string stageNames_[MapChip::kCount];
 
 	static std::string v2ItemNames_[V2ItemNames::kV2ItemCount];
 
-	static Vector2 v2Info_[Stage::kStageCount][V2ItemNames::kV2ItemCount];
+	static int v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
 
 	static std::string groupName_;
 };

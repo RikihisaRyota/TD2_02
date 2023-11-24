@@ -323,9 +323,6 @@
     <ClCompile Include="Game\Goal\Goal.cpp">
       <Filter>Game\Goal</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Nedle\Needle.cpp">
-      <Filter>Game\Nedle</Filter>
-    </ClCompile>
     <ClCompile Include="SceneSystem\SceneChange\SceneChange.cpp">
       <Filter>SceneSystem</Filter>
     </ClCompile>
@@ -337,6 +334,9 @@
     </ClCompile>
     <ClCompile Include="Game\Pause\Pause.cpp">
       <Filter>Game\Pause</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Nedle\Needle.cpp">
+      <Filter>Game\Nedle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -623,9 +623,6 @@
     <ClInclude Include="Game\Goal\Goal.h">
       <Filter>Game\Goal</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Nedle\Needle.h">
-      <Filter>Game\Nedle</Filter>
-    </ClInclude>
     <ClInclude Include="SceneSystem\SceneChange\SceneChange.h">
       <Filter>SceneSystem</Filter>
     </ClInclude>
@@ -637,6 +634,9 @@
     </ClInclude>
     <ClInclude Include="Game\Pause\Pause.h">
       <Filter>Game\Pause</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Nedle\Needle.h">
+      <Filter>Game\Nedle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
