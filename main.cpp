@@ -118,9 +118,23 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ModelManager::GetInstance()->LoadBlockModel(
 		{
 		"block",
+		"blockDown",
+		"blockDownLeft",
+		"blockDownRight",
+		"blockDownRightLeft",
+		"blockLeftRight",
+		"blockLeft",
+		"blockRight",
+		"blockTop",
+		"blockTopDown",
+		"blockTopDownLeft",
+		"blockTopDownRight",
+		"blockTopLeft",
+		"blockTopRight",
+		"blockTopRightLeft",
 		"redBlock",
-		"itemBlock",
 		"needleBlock",
+		"itemBlock",
 		}
 	);
 

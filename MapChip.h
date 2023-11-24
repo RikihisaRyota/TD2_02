@@ -64,7 +64,7 @@ public:
 	};
 	// 前までのBlocksと一緒
 	// 名前を変更しただけ
-	enum class UseBlocks {
+	enum UseBlocks {
 		kNone,
 		kBlock,
 		kRedBlock,
@@ -74,12 +74,13 @@ public:
 		kUseBlockCount,
 	};
 
-	enum class InstancingBlocks {
+	enum InstancingBlocks {
 		kBlockNone,
 		kBlockDown,
 		kBlockDownLeft,
 		kBlockDownRight,
 		kBlockDownRightLeft,
+		kBlockLeftRight,
 		kBlockLeft,
 		kBlockRight,
 		kBlockTop,
@@ -90,8 +91,8 @@ public:
 		kBlockTopRight,
 		kBlockTopRightLeft,
 
-		kRedBlock,
-		kNeedleBlock,
+		kBlockRedBlock,
+		kBlockNeedleBlock,
 
 		kInstancingBlocksCount,
 	};
@@ -141,8 +142,9 @@ private:
 	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
 	void SetInstancing(const ViewProjection& viewProjection);
-
+	void SetInstancingBlock(int block, int y, int x);
 	void CreateItems();
+	void CheckBlockGrit(int y,int x);
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::UseBlocks::kUseBlockCount);
@@ -152,7 +154,6 @@ private:
 	std::vector<std::vector<std::vector<uint32_t>>> maps_;
 	// ブロックのモデル
 	std::vector<Model*> blockModels_;
-	std::vector<std::unique_ptr<Model>> normalBlockModels_;
 	// ブロックのワールドトランスフォーム
 	std::vector<std::vector<BlockWorldTransform>> blockWorldTransform_;
 	// CSVの名前保存

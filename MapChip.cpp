@@ -119,23 +119,9 @@ MapChip::MapChip() {
 		 "stage_9",
 		 "stage_10",
 	};
-	normalBlockModels_.emplace_back(Model::Create("block"));
-	normalBlockModels_.emplace_back(Model::Create("blockDown"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockDownRightLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTop"));
-	//normalBlockModels_.emplace_back(Model::Create("blockTopDown"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopDownLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopDownRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopLeft"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopRight"));
-	normalBlockModels_.emplace_back(Model::Create("blockTopRightLeft"));
 
 	auto modelManager = ModelManager::GetInstance();
-	for (uint32_t i = 0; i < static_cast<uint32_t>(UseBlocks::kUseBlockCount) - 1; i++) {
+	for (uint32_t i = 0; i < static_cast<uint32_t>(InstancingBlocks::kInstancingBlocksCount); i++) {
 		blockModels_.emplace_back(modelManager->GetBlockModel(i));
 	}
 	// コンストラクタとInitializeのどっちも呼び出しる
@@ -347,7 +333,7 @@ void MapChip::InstancingInitialize() {
 	directionalLight_->sharpness_ = 1.0f;
 #pragma endregion
 #pragma region インスタンシング生成
-	for (size_t i = 0; i < size_t(MapChip::UseBlocks::kUseBlockCount); i++) {
+	for (size_t i = 0; i < size_t(MapChip::InstancingBlocks::kInstancingBlocksCount); i++) {
 		auto device = DirectXCommon::GetInstance()->GetDevice();
 		MapChipInstancing* instancing = new MapChipInstancing();
 		instancing->instancingBuff = CreateBuffer(sizeof(GPUParam) * instancing->maxInstance);
@@ -380,8 +366,7 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
 	for (uint32_t i = 0; auto & instancing : instancing_) {
-		if (instancing->currentInstance != 0 &&
-			i != uint32_t(UseBlocks::kItemBlock) - 1) {
+		if (instancing->currentInstance != 0) {
 			// 頂点バッファの設定
 			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
 
@@ -504,28 +489,15 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 			auto block = map_[y][x];
 			switch (block) {
 			case uint32_t(UseBlocks::kBlock):
-				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(UseBlocks::kBlock) - 1)->currentInstance++;
+				CheckBlockGrit(y, x);
 				break;
 			case uint32_t(UseBlocks::kRedBlock):
-				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(UseBlocks::kRedBlock) - 1)->currentInstance++;
+				SetInstancingBlock(InstancingBlocks::kBlockRedBlock, y, x);
 				break;
 			case uint32_t(UseBlocks::kItemBlock):
-				/*instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(UseBlocks::kItemBlock) - 1)->currentInstance++;*/
 				break;
 			case uint32_t(UseBlocks::kNeedleBlock):
-				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance].color = normalColor_;
-				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(UseBlocks::kNeedleBlock) - 1)->currentInstance++;
+				SetInstancingBlock(InstancingBlocks::kBlockNeedleBlock, y, x);
 				break;
 
 			default:
@@ -534,6 +506,13 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 		}
 	}
 
+}
+
+void MapChip::SetInstancingBlock(int block, int y, int x) {
+	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = normalColor_;
+	instancing_.at(block)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
+	instancing_.at(block)->currentInstance++;
 }
 
 void MapChip::CreateItems() {
@@ -548,4 +527,372 @@ void MapChip::CreateItems() {
 		}
 	}
 
+}
+
+void MapChip::CheckBlockGrit(int y, int x) {
+	if (x - 1 < 0 &&
+		y - 1 < 0) {
+		SetInstancingBlock(InstancingBlocks::kBlockTopLeft, y, x);
+		return;
+	}
+
+	if (x - 1 < 0 &&
+		y + 1 > kMaxHeightBlockNum - 1) {
+		SetInstancingBlock(InstancingBlocks::kBlockDownLeft, y, x);
+		return;
+	}
+
+	if (x + 1 > kMaxWidthBlockNum - 1 &&
+		y - 1 < 0) {
+		SetInstancingBlock(InstancingBlocks::kBlockTopRight, y, x);
+		return;
+	}
+
+	if (x + 1 > kMaxWidthBlockNum - 1 &&
+		y + 1 > kMaxHeightBlockNum - 1) {
+		SetInstancingBlock(InstancingBlocks::kBlockDownRight, y, x);
+		return;
+	}
+
+
+	if (x - 1 < 0) {
+		// 右にブロック
+		if (map_[y][x + 1] == MapChip::UseBlocks::kBlock) {
+			// 上下にブロック
+			if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockLeft, y, x);
+				return;
+			}
+			// 上にのみブロック
+			else if (map_[y + 1][x] != MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownLeft, y, x);
+				return;
+			}
+			// 下にのみブロック
+			else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopLeft, y, x);
+				return;
+			}
+			SetInstancingBlock(InstancingBlocks::kBlockTopDown, y, x);
+			return;
+		}
+		else {
+			// 上下にブロック
+			if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockLeftRight, y, x);
+				return;
+			}
+			// 上にのみブロック
+			else if (map_[y + 1][x] != MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownRightLeft, y, x);
+				return;
+			}
+			// 下にのみブロック
+			else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopRightLeft, y, x);
+				return;
+			}
+			SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
+			return;
+		}
+		
+	}
+	if (x + 1 > kMaxWidthBlockNum - 1) {
+		// 左にブロック
+		if (map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+			// 上下にブロック
+			if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockRight, y, x);
+				return;
+			}
+			// 上にのみブロック
+			else if (map_[y + 1][x] != MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownRight, y, x);
+				return;
+			}
+			// 下にのみブロック
+			else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopRight, y, x);
+				return;
+			}
+			SetInstancingBlock(InstancingBlocks::kBlockTopDown, y, x);
+			return;
+		}
+		else {
+			// 上下にブロック
+			if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockLeftRight, y, x);
+				return;
+			}
+			// 上にのみブロック
+			else if (map_[y + 1][x] != MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownRightLeft, y, x);
+				return;
+			}
+			// 下にのみブロック
+			else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+				map_[y - 1][x] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopRightLeft, y, x);
+				return;
+			}
+			SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
+			return;
+		}
+		return;
+	}
+	if (y - 1 < 0) {
+		// 下がブロックだったら
+		if (map_[y + 1][x] == MapChip::UseBlocks::kBlock) {
+			// 左右がブロックだったら
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTop, y, x);
+				return;
+			}
+			// 左だけブロック
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopRight, y, x);
+				return;
+			}
+			// 右だけブロック
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopLeft, y, x);
+				return;
+			}
+		}
+		else {
+			// 左右がブロックだったら
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDown, y, x);
+				return;
+			}
+			// 左だけブロック
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDownRight, y, x);
+				return;
+			}
+			// 右だけブロック
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDownLeft, y, x);
+				return;
+			}
+		}
+		return;
+	}
+	if (y + 1 > kMaxHeightBlockNum - 1) {
+		// 上がブロックだったら
+		if (map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			// 左右がブロックだったら
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDown, y, x);
+				return;
+			}
+			// 左だけブロック
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownRight, y, x);
+				return;
+			}
+			// 右だけブロック
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockDownLeft, y, x);
+				return;
+			}
+		}
+		else {
+			// 左右がブロックだったら
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDown, y, x);
+				return;
+			}
+			// 左だけブロック
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDownRight, y, x);
+				return;
+			}
+			// 右だけブロック
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTopDownLeft, y, x);
+				return;
+			}
+		}
+		return;
+	}
+	// 全部埋埋まっているか
+	if (map_[y - 1][x] == MapChip::UseBlocks::kBlock &&
+		map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+		map_[y][x - 1] == MapChip::UseBlocks::kBlock &&
+		map_[y][x + 1] == MapChip::UseBlocks::kBlock) {
+		SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
+		return;
+	}
+	// 上下のみ
+	if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+		map_[y - 1][x] == MapChip::UseBlocks::kBlock &&
+		map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+		map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+		SetInstancingBlock(InstancingBlocks::kBlockLeftRight, y, x);
+		return;
+	}
+	// 下が接している
+	else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock) {
+		// 上も触れている
+		if (map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			// 左右触れている
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTop, y, x);
+				return;
+			}
+			// 右だけ触れている
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockLeft, y, x);
+				return;
+			}
+			// 左だけ触れている
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockRight, y, x);
+				return;
+			}
+		}
+		// 左右触れている
+		else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+			map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockTop, y, x);
+			return;
+		}
+		// 右だけ触れている
+		else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+			map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockTopLeft, y, x);
+			return;
+		}
+		// 左だけ触れている
+		else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+			map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockTopRight, y, x);
+			return;
+		}
+		// 残っているのは
+		SetInstancingBlock(InstancingBlocks::kBlockTopRightLeft, y, x);
+		return;
+
+	}
+	// 上が接している
+	else if (map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+		// 下も触れている
+		if (map_[y + 1][x] == MapChip::UseBlocks::kBlock) {
+			// 左右触れている
+			if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockTop, y, x);
+				return;
+			}
+			// 右だけ触れている
+			else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] != MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockLeft, y, x);
+				return;
+			}
+			// 左だけ触れている
+			else if (map_[y][x + 1] != MapChip::UseBlocks::kBlock &&
+				map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+				SetInstancingBlock(InstancingBlocks::kBlockRight, y, x);
+				return;
+			}
+		}
+		// 左右触れている
+		else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+			map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockDown, y, x);
+			return;
+		}
+		// 右だけ触れている
+		else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockDownLeft, y, x);
+			return;
+		}
+		// 左だけ触れている
+		else if (map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockDownRight, y, x);
+			return;
+		}
+		// 残っているのは
+		SetInstancingBlock(InstancingBlocks::kBlockDownRightLeft, y, x);
+		return;
+	}
+	// 左右のみ
+	else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock &&
+		map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+		SetInstancingBlock(InstancingBlocks::kBlockTopDown, y, x);
+		return;
+	}
+	// 右が触れていたら
+	else if (map_[y][x + 1] == MapChip::UseBlocks::kBlock) {
+		// 上下触れている
+		if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+			map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockLeft, y, x);
+			return;
+		}
+		// 上だけ触れている
+		else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockDownLeft, y, x);
+			return;
+		}
+		// 下だけ触れている
+		else if (map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockTopLeft, y, x);
+			return;
+		}
+		// 残っているのは
+		SetInstancingBlock(InstancingBlocks::kBlockTopDownLeft, y, x);
+		return;
+	}
+	// 左が触れていたら
+	else if (map_[y][x - 1] == MapChip::UseBlocks::kBlock) {
+		// 上下触れている
+		if (map_[y + 1][x] == MapChip::UseBlocks::kBlock &&
+			map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockRight, y, x);
+			return;
+		}
+		// 上だけ触れている
+		else if (map_[y + 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockDownRight, y, x);
+			return;
+		}
+		// 下だけ触れている
+		else if (map_[y - 1][x] == MapChip::UseBlocks::kBlock) {
+			SetInstancingBlock(InstancingBlocks::kBlockTopRight, y, x);
+			return;
+		}
+		// 残っているのは
+		SetInstancingBlock(InstancingBlocks::kBlockTopDownRight, y, x);
+		return;
+	}
+	SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
 }
