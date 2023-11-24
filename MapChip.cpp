@@ -370,7 +370,8 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 	// CBVをセット（ビュープロジェクション行列）
 	commandList->SetGraphicsRootConstantBufferView(static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::VIEWPROJECTION), viewProjection.constBuff_->GetGPUVirtualAddress());
 	for (uint32_t i = 0; auto & instancing : instancing_) {
-		if (instancing->gpuPram != nullptr) {
+		if (instancing->gpuPram != nullptr &&
+			i != uint32_t(Blocks::kItemBlock)) {
 			// 頂点バッファの設定
 			commandList->IASetVertexBuffers(0, 1, blockModels_.at(i)->GetMesh(0)->GetVBView());
 
@@ -387,8 +388,9 @@ void MapChip::InstancingDraw(const ViewProjection& viewProjection) {
 			TextureManager::GetInstance()->SetGraphicsRootDescriptorTable(commandList, static_cast<int>(MapChipGraphicsPipeline::ROOT_PARAMETER_TYP::TEXTURE), blockModels_.at(i)->GetMaterial(0)->GetTextureHandle());
 
 			// 描画コマンド
-			commandList->DrawInstanced(static_cast<UINT> (blockModels_.at(i++)->GetMesh(0)->GetVertices().size()), instancing->currentInstance, 0, 0);
+			commandList->DrawInstanced(static_cast<UINT> (blockModels_.at(i)->GetMesh(0)->GetVertices().size()), instancing->currentInstance, 0, 0);
 		}
+		i++;
 	}
 
 }
@@ -495,10 +497,10 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 				instancing_.at(uint32_t(Blocks::kRedBlock) - 1)->currentInstance++;
 				break;
 			case uint32_t(Blocks::kItemBlock):
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
+				/*instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
 				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance].color = normalColor_;
 				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
-				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;
+				instancing_.at(uint32_t(Blocks::kItemBlock) - 1)->currentInstance++;*/
 				break;
 			case uint32_t(Blocks::kNeedleBlock):
 				instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->gpuPram[instancing_.at(uint32_t(Blocks::kNeedleBlock) - 1)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
