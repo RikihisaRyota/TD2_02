@@ -11,6 +11,9 @@
 #include "ParticleShaderStruct.h"
 #include "MyMath.h"
 #include "TextureManager.h"
+#include "ParticleManager.h"
+#include "ParticleShaderStruct.h"
+#include "MyMath.h"
 
 Item::Item() {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);

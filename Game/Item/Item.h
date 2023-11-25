@@ -7,6 +7,7 @@
 #include "Model.h"
 #include <array>
 #include <optional>
+#include "Random.h"
 #include "Sprite.h"
 #include "Random.h"
 
