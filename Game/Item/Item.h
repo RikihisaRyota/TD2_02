@@ -66,6 +66,8 @@ private:
 
 	float getCount_;
 	float kMaxGetCount_;
+	Vector3 endPos_;
+	Vector3 startPos_;
 	Random::RandomNumberGenerator rnd_;
 
 	int countFrame_;
