@@ -7,6 +7,7 @@
 #include "Ease/Ease.h"
 #include "MapChip.h"
 #include <numbers>
+#include "TextureManager.h"
 
 Item::Item()
 {
@@ -190,6 +191,10 @@ void ItemManager::FirstInit()
 		item.reset();
 		item = std::make_unique<Item>();
 	}
+	uint32_t tex = TextureManager::Load("Resources/Textures/retryUi.png");
+	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
+
 	Init();
 	SetGlobalVariable();
 }
@@ -255,7 +260,9 @@ void ItemManager::Draw(const ViewProjection& viewProjection)
 
 void ItemManager::DrawUI()
 {
-
+	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
+		sprite->Draw();
+	}
 }
 
 void ItemManager::SetGlobalVariable()
@@ -263,6 +270,12 @@ void ItemManager::SetGlobalVariable()
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
+
+	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
+			globalVariables->AddItem(groupName_, spriteNames_[i] + v2ItemNames_[j], v2Info_[i][j]);
+		}
+	}
 
 	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		globalVariables->AddItem(groupName_, iInfoNames_[i], iInfo_[i]);
@@ -274,6 +287,14 @@ void ItemManager::SetGlobalVariable()
 void ItemManager::ApplyGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
+			v2Info_[i][j] = globalVariables->GetVector2Value(groupName_, spriteNames_[i] + v2ItemNames_[j]);
+		}
+
+		sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
+	}
 
 	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		iInfo_[i] = globalVariables->GetIntValue(groupName_, iInfoNames_[i]);

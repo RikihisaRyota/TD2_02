@@ -7,6 +7,7 @@
 #include "Model.h"
 #include <array>
 #include <optional>
+#include "Sprite.h"
 
 class Item : public Collider
 {
@@ -141,6 +142,32 @@ private:
 	int MaxItemCount_;
 
 	int getItemCount_;
+
+	static const int MaxDigits = 2;
+
+	enum SpriteNames {
+		kItemSprite,
+		kSpriteCount,
+	};
+
+	std::string spriteNames_[kSpriteCount] = {
+		"アイテムの",
+	};
+
+	enum V2ItemNames {
+		kPos,
+		kV2ItemCount,
+	};
+
+	std::array<std::string, V2ItemNames::kV2ItemCount> v2ItemNames_ = {
+		"ポジション",
+	};
+
+	std::array<std::unique_ptr<Sprite>, SpriteNames::kSpriteCount> sprites_;
+
+	std::array<std::array<Vector2, V2ItemNames::kV2ItemCount>, SpriteNames::kSpriteCount> v2Info_;
+
+
 
 	std::array<std::unique_ptr<Item>, kMaxItemNum_> items_;
 
