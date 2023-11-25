@@ -381,7 +381,6 @@ void ItemManager::Update()
 	ApplyGlobalVariable();
 #endif // _DEBUG
 
-void ItemManager::Update() {
 	countFrame_++;
 
 	for (int i = 0; i < MaxItemCount_; i++) {
@@ -421,7 +420,6 @@ void ItemManager::AddGetCount()
 	SetNumTeces();
 }
 
-void ItemManager::SetGlobalVariable() {
 void ItemManager::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 

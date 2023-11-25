@@ -174,7 +174,7 @@ void ClearSprites::Init() {
 
 void ClearSprites::Update() {
 
-	if (IScene::stageNo_ != MapChip::kCount - 1 &&
+	if (currentStageNo_ != MapChip::kCount - 1 &&
 		input_->GetGamePadLStick().x < 0.0f &&
 		input_->GetPreGamePadLStick().x == 0.0f) {
 		switch (state_) {
@@ -189,7 +189,7 @@ void ClearSprites::Update() {
 			break;
 		}
 	}
-	if (IScene::stageNo_ != MapChip::kCount - 1 &&
+	if (currentStageNo_ != MapChip::kCount - 1 &&
 		input_->GetGamePadLStick().x > 0.0f &&
 		input_->GetPreGamePadLStick().x == 0.0f) {
 		switch (state_) {
