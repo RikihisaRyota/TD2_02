@@ -160,6 +160,7 @@ void Item::GetInit() {
 }
 
 void Item::GetUpdate() {
+	getCount_++;
 	if (getCount_ >= kMaxGetCount_) {
 		isDraw_ = false;
 	}
