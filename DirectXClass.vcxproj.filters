@@ -94,6 +94,9 @@
     <Filter Include="Game\Pause">
       <UniqueIdentifier>{e7602f8d-66b8-42b4-9985-118caab20398}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Timer">
+      <UniqueIdentifier>{ad181e1f-c5ca-47c5-ae44-705c17d9532f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -337,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="Game\Nedle\Needle.cpp">
       <Filter>Game\Nedle</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Timer\Timer.cpp">
+      <Filter>Game\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -637,6 +643,9 @@
     </ClInclude>
     <ClInclude Include="Game\Nedle\Needle.h">
       <Filter>Game\Nedle</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Timer\Timer.h">
+      <Filter>Game\Timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
