@@ -8,6 +8,9 @@ Pause::Pause() {
 	uint32_t tex = TextureManager::Load("Resources/Textures/retryUi.png");
 	sprites_[SpriteNames::kRetry].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/playStageSelect.png");
+	sprites_[SpriteNames::kStageSelect].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
 	/*for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
@@ -18,12 +21,11 @@ Pause::Pause() {
 void Pause::Init() {
 	SetGlobalVariable();
 	isRetry_ = false;
+	isSelect_ = false;
 }
 
 void Pause::Update() {
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
 	if (isClear_) {
 		if (!*isClear_) {
@@ -31,13 +33,19 @@ void Pause::Update() {
 			if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::START)) {
 				isRetry_ = true;
 			}
+			else if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::BACK)) {
+				isSelect_ = true;
+			}
 		}
 	}
 }
 
 void Pause::Draw()
 {
-	sprites_[SpriteNames::kRetry]->Draw();
+	//sprites_[SpriteNames::kRetry]->Draw();
+	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
+		sprite->Draw();
+	}
 }
 
 void Pause::SetGlobalVariable()

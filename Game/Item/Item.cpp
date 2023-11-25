@@ -53,9 +53,8 @@ void Item::Init(const Vector3& pos) {
 }
 
 void Item::Update() {
-#ifdef _DEBUG
+
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
 
 	countFrame_++;
@@ -383,9 +382,7 @@ void ItemManager::SetSpriteSize()
 
 void ItemManager::Update()
 {
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
 	countFrame_++;
 
