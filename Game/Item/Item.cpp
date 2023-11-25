@@ -7,9 +7,11 @@
 #include "Ease/Ease.h"
 #include "MapChip.h"
 #include <numbers>
+#include "ParticleManager.h"
+#include "ParticleShaderStruct.h"
+#include "MyMath.h"
 
-Item::Item()
-{
+Item::Item() {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
 	collisionAttribute_ = 0x00000000;
 	collisionMask_ = 0x00000000;
@@ -32,13 +34,11 @@ Item::Item()
 	SetGlobalVariable();
 }
 
-Item::~Item()
-{
+Item::~Item() {
 	model_.release();
 }
 
-void Item::Init(const Vector3& pos)
-{
+void Item::Init(const Vector3& pos) {
 	worldTransform_.Reset();
 	worldTransform_.translate_ = pos;
 	pos_ = pos;
@@ -48,8 +48,7 @@ void Item::Init(const Vector3& pos)
 	stateRequest_ = State::kIsLife;
 }
 
-void Item::Update()
-{
+void Item::Update() {
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -74,15 +73,13 @@ void Item::Update()
 	}
 }
 
-void Item::Draw(const ViewProjection& viewProjection)
-{
+void Item::Draw(const ViewProjection& viewProjection) {
 	if (isDraw_) {
 		model_->Draw(worldTransform_, viewProjection);
 	}
 }
 
-void Item::OnCollision()
-{
+void Item::OnCollision() {
 
 	if (isLife_) {
 		isLife_ = false;
@@ -92,16 +89,14 @@ void Item::OnCollision()
 
 }
 
-void Item::SetCollider()
-{
+void Item::SetCollider() {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
 		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ 0.0f,0.0f });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
 
-void Item::SetGlobalVariable()
-{
+void Item::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
@@ -117,8 +112,7 @@ void Item::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void Item::ApplyGlobalVariable()
-{
+void Item::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
@@ -130,14 +124,12 @@ void Item::ApplyGlobalVariable()
 	}
 }
 
-void Item::IsLifeInit()
-{
+void Item::IsLifeInit() {
 	rotateTheta_ = 0.0f;
 	translateTheta_ = 0.0f;
 }
 
-void Item::IsLifeUpdate()
-{
+void Item::IsLifeUpdate() {
 	const float pi = std::numbers::pi_v<float>;
 
 	float step = 2.0f * pi / iInfo_[IInfoNames::kTranslateFrame];
@@ -157,35 +149,95 @@ void Item::IsLifeUpdate()
 	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
 }
 
-void Item::GetInit()
-{
+void Item::GetInit() {
+	getCount_ = 0.0f;
+	kMaxGetCount_ = 60.0f;
+	CreateGetParticle();
 }
 
-void Item::GetUpdate()
-{
-	isDraw_ = false;
+void Item::GetUpdate() {
+	if (getCount_ >= kMaxGetCount_) {
+		isDraw_ = false;
+	}
+	worldTransform_.translate_.y += 1.0f;
+	worldTransform_.rotation_.y += 0.5f;
+}
+
+void Item::CreateGetParticle() {
+	{
+		Emitter* emitter = new Emitter();
+		emitter->aliveTime = 1;
+		emitter->spawn.position = worldTransform_.worldPos_;
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->inOnce = 70;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+		ParticleMotion* particleMotion = new ParticleMotion();
+		particleMotion->color.startColor = { 1.0f,1.0f,1.0f,1.0f };
+		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,0.0f };
+		particleMotion->color.currentColor = particleMotion->color.startColor;
+		particleMotion->scale.startScale = { 0.01f,0.01f,0.01f };
+		particleMotion->scale.endScale = { 0.1f,0.1f,0.1f };
+		particleMotion->scale.currentScale = particleMotion->scale.startScale;
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,DegToRad(45.0f) };
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 0.1f;
+		particleMotion->velocity.randomRange = 0.0f;
+		particleMotion->aliveTime.time = 20;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+	}
+	{
+		Emitter* emitter = new Emitter();
+		emitter->aliveTime = 1;
+		emitter->spawn.position = worldTransform_.worldPos_;
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->inOnce = 30;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+		ParticleMotion* particleMotion = new ParticleMotion();
+		particleMotion->color.startColor = { 0.5f,0.5f,0.0f,0.5f };
+		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,0.0f };
+		particleMotion->color.currentColor = particleMotion->color.startColor;
+		particleMotion->scale.startScale = { 0.2f,0.2f,0.2f };
+		particleMotion->scale.endScale = { 0.1f,0.1f,0.1f };
+		particleMotion->scale.currentScale = particleMotion->scale.startScale;
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,DegToRad(45.0f) };
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 0.1f;
+		particleMotion->velocity.randomRange = 0.1f;
+		particleMotion->aliveTime.time = 15;
+		particleMotion->aliveTime.randomRange = 10;
+		particleMotion->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+	}
 }
 
 
 
 void (Item::* Item::spStateInitFuncTable[])() {
 	&Item::IsLifeInit,
-	&Item::GetInit,
+		& Item::GetInit,
 };
 
 void (Item::* Item::spStateUpdateFuncTable[])() {
 	&Item::IsLifeUpdate,
-	&Item::GetUpdate,
+		& Item::GetUpdate,
 };
 
-ItemManager* ItemManager::GetInstance()
-{
+ItemManager* ItemManager::GetInstance() {
 	static ItemManager instance;
 	return &instance;
 }
 
-void ItemManager::FirstInit()
-{
+void ItemManager::FirstInit() {
 	for (std::unique_ptr<Item>& item : items_) {
 		item.reset();
 		item = std::make_unique<Item>();
@@ -194,14 +246,12 @@ void ItemManager::FirstInit()
 	SetGlobalVariable();
 }
 
-void ItemManager::Init()
-{
+void ItemManager::Init() {
 	Clear();
 	countFrame_ = 0;
 }
 
-void ItemManager::CreateItem(const Vector3& pos)
-{
+void ItemManager::CreateItem(const Vector3& pos) {
 	for (std::unique_ptr<Item>& item : items_) {
 		if (!item->IsLife()) {
 			item->Init(pos);
@@ -211,8 +261,7 @@ void ItemManager::CreateItem(const Vector3& pos)
 	}
 }
 
-void ItemManager::Clear()
-{
+void ItemManager::Clear() {
 	MaxItemCount_ = 0;
 	getItemCount_ = 0;
 	for (const std::unique_ptr<Item>& item : items_) {
@@ -220,8 +269,7 @@ void ItemManager::Clear()
 	}
 }
 
-void ItemManager::SetItem(const Vector3& pos)
-{
+void ItemManager::SetItem(const Vector3& pos) {
 	for (const std::unique_ptr<Item>& item : items_) {
 		if (!item->IsLife()) {
 			item->Init(pos);
@@ -230,8 +278,7 @@ void ItemManager::SetItem(const Vector3& pos)
 	}
 }
 
-void ItemManager::Update()
-{
+void ItemManager::Update() {
 	countFrame_++;
 
 	for (int i = 0; i < MaxItemCount_; i++) {
@@ -243,8 +290,7 @@ void ItemManager::Update()
 	}*/
 }
 
-void ItemManager::Draw(const ViewProjection& viewProjection)
-{
+void ItemManager::Draw(const ViewProjection& viewProjection) {
 	/*for (const std::unique_ptr<Item>& item : items_) {
 		item->Draw(viewProjection);
 	}*/
@@ -253,8 +299,7 @@ void ItemManager::Draw(const ViewProjection& viewProjection)
 	}
 }
 
-void ItemManager::SetGlobalVariable()
-{
+void ItemManager::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
@@ -266,8 +311,7 @@ void ItemManager::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void ItemManager::ApplyGlobalVariable()
-{
+void ItemManager::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
