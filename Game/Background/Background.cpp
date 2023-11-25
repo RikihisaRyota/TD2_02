@@ -18,6 +18,7 @@ Background::Background() {
 void Background::Initialize() {
 	worldTransform_.translate_ = {98.0f,74.0f,160.0f};
 	worldTransform_.UpdateMatrix();
+	time_ = 0;
 }
 
 void Background::Update() {
