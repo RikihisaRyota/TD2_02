@@ -17,6 +17,8 @@ public:
 
 	void SetTarget(const WorldTransform* target);
 
+	void ChangeCamera();
+
 	void Reset();
 
 private:
@@ -25,14 +27,38 @@ private:
 
 	void ApplyGlobalVariable();
 
+	void FollowUpdate();
+
+	void ZoomUpdate();
+
 private:
 	const WorldTransform* target_ = nullptr;
 
 	ViewProjection viewProjection_;
 
+	bool isGoal_;
+
+	int countFrame_;
+
+	Vector3 beforePos_;
+
+	enum IInfoNames {
+		kGoalEaseFrame,
+		kGoalZoomEaseFrame,
+		kCountIntInfo,
+	};
+
+	int iInfo_[IInfoNames::kCountIntInfo];
+
+	std::string iInfoItemNames[IInfoNames::kCountIntInfo] = {
+		"ゴール時のxy座標の合わせるフレーム数",
+		"ズームのフレーム数",
+	};
+
 	enum FParameterNames {
 		kInterpolationRate, // カメラの遅延数値
-		kMinPosY, 
+		kMinPosY,
+		kZoomZ,
 		kCountFloatParameter, // 末尾
 	};
 
@@ -41,7 +67,8 @@ private:
 
 	std::string fParameterItemNames[FParameterNames::kCountFloatParameter] = {
 		"カメラの遅延数値",
-		"カメラのこれ以上下に行かないy座標"
+		"カメラのこれ以上下に行かないy座標",
+		"ズームし切った時のz座標",
 	};
 
 	enum V3ParameterNames {

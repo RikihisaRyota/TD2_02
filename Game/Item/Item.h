@@ -8,6 +8,8 @@
 #include <array>
 #include <optional>
 #include "Random.h"
+#include "Sprite.h"
+#include "Random.h"
 
 class Item : public Collider
 {
@@ -119,7 +121,9 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	void AddGetCount() { getItemCount_++; }
+	void DrawUI();
+
+	void AddGetCount();
 
 	const int GetMaxItemNum() const { return MaxItemCount_; }
 
@@ -139,17 +143,91 @@ private:
 
 	void SetItem(const Vector3& pos);
 
+	void SetNumTeces();
+
+	void SetSpriteSize();
+
 private:
 
 	int MaxItemCount_;
 
 	int getItemCount_;
 
+	Vector2 itemSize_;
+	Vector2 slashSize_;
+	Vector2 numSize_;
+
+	static const int MaxDigits = 2;
+
+	enum SpriteNames {
+		kItemSprite,
+		kSlash,
+		kSpriteCount,
+	};
+
+	std::string spriteNames_[kSpriteCount] = {
+		"アイテムの",
+		"スラッシュの"
+	};
+
+	enum V2ItemNames {
+		kPos,
+		kV2ItemCount,
+	};
+
+	std::array<std::string, V2ItemNames::kV2ItemCount> v2ItemNames_ = {
+		"ポジション",
+	};
+
+	std::array<std::unique_ptr<Sprite>, SpriteNames::kSpriteCount> sprites_;
+
+	std::array<std::array<Vector2, V2ItemNames::kV2ItemCount>, SpriteNames::kSpriteCount> v2Info_;
+
+	enum TexColor {
+		kBright,
+		kDark,
+		kColorCount,
+	};
+
+	enum DrawNumType {
+		kGetItem,
+		kMaxItem,
+		kNumTypeCount,
+	};
+
+	std::array<std::array<std::unique_ptr<Sprite>, MaxDigits>, DrawNumType::kNumTypeCount> numSprites_;
+
+	std::string numItemNames[DrawNumType::kNumTypeCount] = {
+		"取得したアイテム数の",
+		"全体のアイテム数の",
+	};
+
+	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
+
+	std::array<std::array<uint32_t, 10>, TexColor::kColorCount> numTeces_;
+
 	std::array<std::unique_ptr<Item>, kMaxItemNum_> items_;
 
 	const std::string groupName_ = "Item";
 
 	int countFrame_;
+
+	enum FInfoNames {
+		kNumericInterval,
+		kItemScale,
+		kSlashScale_,
+		kNumScale,
+		kFInfoCount,
+	};
+
+	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
+		"数字の間隔",
+		"アイテムのスケール",
+		"スラッシュのスケール",
+		"数字のスケール",
+	};
+
+	std::array<float, FInfoNames::kFInfoCount> fInfo_;
 
 	/*enum IInfoNames {
 		kCreatIntervalFrame,

@@ -104,6 +104,7 @@ ClearSprites::ClearSprites() {
 		}
 	}
 
+	currentStageNo_ = 0;
 }
 
 void ClearSprites::Init() {
@@ -116,8 +117,8 @@ void ClearSprites::Init() {
 		state_ = State::kSelectStageState;
 	}
 	// 秒に直す
-	int clearTime = StageData::GetClearTime(IScene::stageNo_) / 60;
-	int conditionTime = StageData::GetConditionTime(IScene::stageNo_) / 60;
+	int clearTime = StageData::GetClearTime(currentStageNo_) / 60;
+	int conditionTime = StageData::GetConditionTime(currentStageNo_) / 60;
 	int place = 100;
 	if (clearTime >= 999) {
 		for (int i = 0; i < 3; i++) {
@@ -138,8 +139,8 @@ void ClearSprites::Init() {
 		}
 	}
 	// アイテム数
-	int clearItem = StageData::GetClearItemCount(IScene::stageNo_);
-	int conditionItem = StageData::GetConditionItemCount(IScene::stageNo_);
+	int clearItem = StageData::GetClearItemCount(currentStageNo_);
+	int conditionItem = StageData::GetConditionItemCount(currentStageNo_);
 	place = 10;
 	for (int i = 0; i < 2; i++) {
 		itemPlace_[1 - i] = clearItem / place;
@@ -149,21 +150,21 @@ void ClearSprites::Init() {
 		place /= 10;
 	}
 	// 条件1
-	if (StageData::GetClearFlag(IScene::stageNo_)) {
+	if (StageData::GetClearFlag(currentStageNo_)) {
 		starFlag_[0] = true;
 	}
 	else {
 		starFlag_[0] = false;
 	}
 	// 条件2
-	if (StageData::GetClearTime(IScene::stageNo_) <= StageData::GetConditionTime(IScene::stageNo_)) {
+	if (StageData::GetClearTime(currentStageNo_) <= StageData::GetConditionTime(currentStageNo_)) {
 		starFlag_[1] = true;
 	}
 	else {
 		starFlag_[1] = false;
 	}
 	// 条件3
-	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
+	if (StageData::GetClearItemCount(currentStageNo_) >= StageData::GetConditionItemCount(currentStageNo_)) {
 		starFlag_[2] = true;
 	}
 	else {
