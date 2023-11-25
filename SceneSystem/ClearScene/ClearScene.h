@@ -16,5 +16,4 @@ public:
 	void UIDraw() override;
 private:
 	std::unique_ptr<ClearSprites> clearSprites_;
-
 };

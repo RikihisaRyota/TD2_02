@@ -84,6 +84,7 @@ int SceneManager::Run() {
 				sceneChange_->SetInitialize(false);
 			}
 		}
+
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始

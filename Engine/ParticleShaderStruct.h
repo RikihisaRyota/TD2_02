@@ -32,6 +32,7 @@ struct Color {
 struct Angel {
     float start;
     float end;
+    float current;
 };
 
 struct AliveTime {

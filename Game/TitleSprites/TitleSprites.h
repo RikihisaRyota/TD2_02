@@ -1,9 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Sprite.h"
-#include <memory>
+#include "Random.h"
 
 class TitleSprites {
 public:
@@ -62,5 +63,13 @@ private:
 	std::string groupName_ = "titleSprites";
 
 	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
+
+	Random::RandomNumberGenerator rnd_;
+	int flashingCount_;
+	bool on_;
+	int onMin_;
+	int onMax_;
+	int offMin_;
+	int offMax_;
 };
 

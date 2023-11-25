@@ -8,6 +8,7 @@
 #include <array>
 #include <optional>
 #include "Sprite.h"
+#include "Random.h"
 
 class Item : public Collider
 {
@@ -45,6 +46,7 @@ private:
 
 	void GetInit();
 	void GetUpdate();
+	void CreateGetParticle();
 
 	static void (Item::* spStateInitFuncTable[])();
 
@@ -60,6 +62,10 @@ private:
 
 	bool isLife_;
 	bool isDraw_;
+
+	float getCount_;
+	float kMaxGetCount_;
+	Random::RandomNumberGenerator rnd_;
 
 	int countFrame_;
 

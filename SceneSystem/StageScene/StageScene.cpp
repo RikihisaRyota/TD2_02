@@ -111,8 +111,6 @@ void StageScene::Update()
 
 	collisionManager->CheckCollision();
 
-	ParticleManager::GetInstance()->Update();
-
 	if (player_->GetIsChangeCamera()) {
 		followCamera_->SetTarget(goal_->GetWorldTransform());
 		followCamera_->ChangeCamera();
@@ -133,6 +131,8 @@ void StageScene::Update()
 		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
+
+	ParticleManager::GetInstance()->Update();
 }
 
 void StageScene::Draw()

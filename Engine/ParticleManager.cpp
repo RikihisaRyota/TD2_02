@@ -172,6 +172,9 @@ void ParticleManager::StaticInitialize() {
 void ParticleManager::Initialize() {
 	for (auto& instancing : instancing_) {
 		instancing->particle->Reset();
+		instancing->currentInstance = 0;
+		instancing->instancingDate->matWorld = MakeIdentity4x4();
+		instancing->instancingDate->color = { 0.0f,0.0f,0.0f,0.0f };
 		instancing->isAlive_ = false;
 	}
 }

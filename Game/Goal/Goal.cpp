@@ -13,9 +13,11 @@
 Goal::Goal() {
 	model_ = std::make_unique<PlaneRenderer>();
 	model_.reset(PlaneRenderer::Create());
+	auto material = model_->GetMaterial();
+	material->color_ = { 0.2f,0.2f ,0.2f ,0.2f };
+	model_->SetMaterial(*material);
 	goalTexture_ = TextureManager::Load("Resources/Textures/goal.png");
 	particleTexture_ = TextureManager::Load("Resources/Textures/circle.png");
-
 	worldTransform_.Initialize();
 
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
@@ -24,30 +26,43 @@ Goal::Goal() {
 
 	SetCollisionAttribute(kCollisionAttributeGoal);
 	SetCollisionMask(kCollisionAttributePlayer);
-	aliveTime_ = 1.0f;
+	aliveTime_ = 10.0f;
 	angle_ = 0.0f;
+	addAngle_ = 5.0f;
+	speed_ = 0.1f;
 	ParticleInitialize();
 }
 
 void Goal::Initialize() {
-	aliveTime_ = 1.0f;
+	aliveTime_ = 10.0f;
 	angle_ = 0.0f;
+	addAngle_ = 5.0f;
+	speed_ = 0.1f;
 	ParticleInitialize();
 	SetGlobalVariable();
 }
 
 void Goal::Update() {
-	angle_ += 1.0f;
+	static const float kColorMax = 120.0f;
+	colorTime_ += 1.0f;
+	if (colorTime_ >= kColorMax) {
+		colorTime_  = 0.0f;
+	}
+	float t = colorTime_ / kColorMax;
+	auto material = model_->GetMaterial();
+	if (colorTime_ <= kColorMax / 2.0f) {
+		material->color_ = Lerp(Vector4(0.2f, 0.2f, 0.2f, 0.2f), Vector4(0.7f, 0.7f, 0.7f, 0.7f), std::clamp(t, 0.0f,1.0f));
+	}
+	else {
+		material->color_ = Lerp(Vector4(0.7f, 0.7f, 0.7f, 0.7f), Vector4(0.2f, 0.2f, 0.2f, 0.2f), std::clamp(t, 0.0f, 1.0f));
+	}
+	model_->SetMaterial(*material);
+
+	angle_ += addAngle_;
 	if (angle_ >= 360.0f) {
 		angle_ = 0.0f;
 	}
 	CreateParticle();
-	ImGui::Begin("Debug");
-	if (ImGui::TreeNode("Goal")) {
-		ImGui::DragFloat("aliveTime", &aliveTime_, 0.1f, 0.0f);
-		ImGui::TreePop();
-	}
-	ImGui::End();
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -56,7 +71,6 @@ void Goal::Update() {
 }
 
 void Goal::Draw(const ViewProjection& viewProjection) {
-
 	model_->Draw(worldTransform_, viewProjection, goalTexture_);
 }
 
@@ -99,38 +113,44 @@ void Goal::SetCollider() {
 }
 
 void Goal::ParticleInitialize() {
-	emitter_ = new Emitter();
-	emitter_->aliveTime = 2;
-	emitter_->spawn.position = worldTransform_.worldPos_;
-	emitter_->spawn.rangeX = 0.0f;
-	emitter_->spawn.rangeY = 0.0f;
-	emitter_->inOnce = 1;
-	emitter_->angle.start = DegToRad(angle_);
-	emitter_->angle.end = DegToRad(angle_);
-	emitter_->isAlive = true;
-	particleMotion_ = new ParticleMotion();
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.8f),rnd_.NextFloatRange(0.8f,1.0f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
-	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
-	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
-	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
-	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.0f };
-	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-	particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
-	particleMotion_->velocity.speed = 0.1f;
-	particleMotion_->velocity.randomRange = 0.0f;
-	particleMotion_->aliveTime.time = int32_t(worldTransform_.scale_.x * aliveTime_);
-	particleMotion_->aliveTime.randomRange = 0;
-	particleMotion_->isAlive = true;
-	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, particleTexture_);
+	for (int i = 0; i < kNumParticle; i++) {
+		emitter_[i] = new Emitter();
+		emitter_[i]->aliveTime = 2;
+		emitter_[i]->spawn.position = worldTransform_.worldPos_;
+		emitter_[i]->spawn.rangeX = 0.0f;
+		emitter_[i]->spawn.rangeY = 0.0f;
+		emitter_[i]->inOnce = 1;
+		emitter_[i]->angle.start = 0.0f;
+		emitter_[i]->angle.end = 0.0f;
+		emitter_[i]->isAlive = true;
+		particleMotion_[i] = new ParticleMotion();
+		particleMotion_[i]->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.75f,0.8f),rnd_.NextFloatRange(0.8f,1.0f) };
+		particleMotion_[i]->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.5f,0.6f),rnd_.NextFloatRange(0.0f,0.0f) };
+		particleMotion_[i]->color.currentColor = particleMotion_[i]->color.startColor;
+		particleMotion_[i]->scale.startScale = { 1.0f,1.0f,1.0f };
+		particleMotion_[i]->scale.endScale = { 0.01f,0.01f,0.01f };
+		particleMotion_[i]->scale.currentScale = particleMotion_[i]->scale.startScale;
+		particleMotion_[i]->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion_[i]->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		particleMotion_[i]->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion_[i]->velocity.speed = speed_;
+		particleMotion_[i]->velocity.randomRange = 0.0f;
+		particleMotion_[i]->aliveTime.time = int32_t(worldTransform_.scale_.x * aliveTime_);
+		particleMotion_[i]->aliveTime.randomRange = 0;
+		particleMotion_[i]->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter_[i], particleMotion_[i], particleTexture_);
+	}
 }
 
 void Goal::CreateParticle() {
-	emitter_->aliveTime = 1;
-	emitter_->spawn.position = worldTransform_.worldPos_;
-	emitter_->angle.start = DegToRad(angle_);
-	emitter_->angle.end = DegToRad(angle_);
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.8f),rnd_.NextFloatRange(0.0f,0.5f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
+	for (int i = 0; i < kNumParticle; i++) {
+		emitter_[i]->aliveTime = 1;
+		float angle = (float(i) / float(kNumParticle) * 360.0f);
+		emitter_[i]->spawn.position.x = worldTransform_.translate_.x + std::cos(DegToRad(angle_ + angle)) * worldTransform_.scale_.x;
+		emitter_[i]->spawn.position.y = worldTransform_.translate_.y + std::sin(DegToRad(angle_ + angle)) * worldTransform_.scale_.y;
+		emitter_[i]->angle.current = DegToRad(angle_ + angle);
+		particleMotion_[i]->velocity.speed = -speed_;
+		particleMotion_[i]->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.75f,0.8f),rnd_.NextFloatRange(0.2f,0.5f) };
+		particleMotion_[i]->aliveTime.time = int32_t(worldTransform_.scale_.x * aliveTime_);
+	}
 }
