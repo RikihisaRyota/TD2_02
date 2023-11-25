@@ -100,6 +100,7 @@ ClearSprites::ClearSprites() {
 }
 
 void ClearSprites::Init() {
+	currentStageNo_ = IScene::stageNo_;
 	SetGlobalVariable();
 	if (IScene::stageNo_ != MapChip::kCount - 1) {
 		nextStageFlag_ = true;
@@ -252,7 +253,7 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
-			if (IScene::stageNo_ == MapChip::kCount - 1) {
+			if (currentStageNo_ == MapChip::Stage::kCount -1) {
 				sprite->SetTextureHandle(selectStage_[kTrue]);
 				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
@@ -268,7 +269,7 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kNextStage:
-			if (IScene::stageNo_ != MapChip::kCount - 1) {
+			if (currentStageNo_ != MapChip::kCount - 1) {
 				if (nextStageFlag_) {
 					sprite->SetTextureHandle(nextStage_[kTrue]);
 				}

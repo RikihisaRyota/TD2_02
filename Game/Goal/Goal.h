@@ -83,10 +83,14 @@ private:
 	std::unique_ptr<PlaneRenderer> model_;
 	uint32_t goalTexture_;
 
-	Emitter* emitter_;
-	ParticleMotion* particleMotion_;
+	static const int kNumParticle = 6;
+	Emitter* emitter_[kNumParticle];
+	ParticleMotion* particleMotion_[kNumParticle];
 	float angle_;
+	float addAngle_;
 	float aliveTime_;
+	float speed_;
+	float colorTime_;
 	uint32_t particleTexture_;
 	Random::RandomNumberGenerator rnd_;
 };
