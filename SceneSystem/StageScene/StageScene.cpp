@@ -254,6 +254,8 @@ void StageScene::UIDraw() {
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
 
+	ItemManager::GetInstance()->DrawUI();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 }

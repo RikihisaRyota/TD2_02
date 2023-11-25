@@ -116,7 +116,7 @@ public:
 
 	void DrawUI();
 
-	void AddGetCount() { getItemCount_++; }
+	void AddGetCount();
 
 	const int GetMaxItemNum() const { return MaxItemCount_; }
 
@@ -136,6 +136,7 @@ private:
 
 	void SetItem(const Vector3& pos);
 
+	void SetNumTeces();
 
 private:
 
@@ -147,11 +148,13 @@ private:
 
 	enum SpriteNames {
 		kItemSprite,
+		kSlash,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
 		"アイテムの",
+		"スラッシュの"
 	};
 
 	enum V2ItemNames {
@@ -167,13 +170,45 @@ private:
 
 	std::array<std::array<Vector2, V2ItemNames::kV2ItemCount>, SpriteNames::kSpriteCount> v2Info_;
 
+	enum TexColor {
+		kBright,
+		kDark,
+		kColorCount,
+	};
 
+	enum DrawNumType {
+		kGetItem,
+		kMaxItem,
+		kNumTypeCount,
+	};
+
+	std::array<std::array<std::unique_ptr<Sprite>, MaxDigits>, DrawNumType::kNumTypeCount> numSprites_;
+
+	std::string numItemNames[DrawNumType::kNumTypeCount] = {
+		"取得したアイテム数の",
+		"全体のアイテム数の",
+	};
+
+	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
+
+	std::array<std::array<uint32_t, 10>, TexColor::kColorCount> numTeces_;
 
 	std::array<std::unique_ptr<Item>, kMaxItemNum_> items_;
 
 	const std::string groupName_ = "Item";
 
 	int countFrame_;
+
+	enum FInfoNames {
+		kNumericInterval,
+		kFInfoCount,
+	};
+
+	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
+		"数字の間隔",
+	};
+
+	std::array<float, FInfoNames::kFInfoCount> fInfo_;
 
 	/*enum IInfoNames {
 		kCreatIntervalFrame,
