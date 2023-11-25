@@ -8,6 +8,7 @@
 #include "MapChip.h"
 #include "Game/FollowCamera/FollowCamera.h"
 #include "MapChipEditor.h"
+#include "Game/Pause/Pause.h"
 
 class StageScene : public IScene
 {
@@ -35,4 +36,5 @@ private:
 	std::unique_ptr<MapChipEditor> mapChipEditor_;
 	std::unique_ptr<FollowCamera> followCamera_;
 	std::unique_ptr<Player> player_;
+	std::unique_ptr<Pause> pause_;
 };

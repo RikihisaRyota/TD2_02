@@ -5,28 +5,19 @@
 #include "Input.h"
 
 Pause::Pause() {
-	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
-	sprites_[SpriteNames::kBackground].reset(Sprite::Create(tex, Vector2{}, { 0.0f,0.0f,0.0f,1.0f }, { 0.5f,0.5f }));
-	sprites_[SpriteNames::kBackground]->SetSize({ 1280.0f,720.0f });
+	uint32_t tex = TextureManager::Load("Resources/Textures/retryUi.png");
+	sprites_[SpriteNames::kRetry].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
-	tex = TextureManager::Load("Resources/Textures/title.png");
-	sprites_[SpriteNames::kTitle].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
-
-	tex = TextureManager::Load("Resources/Textures/pushA.png");
-	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
-
-	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+	/*for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
 		}
-	}
-
-	testTextureHandle_[kOn] = TextureManager::Load("Resources/Textures/title.png");
-	testTextureHandle_[kOff] = TextureManager::Load("Resources/Textures/titleOff.png");
+	}*/
 }
 
 void Pause::Init() {
 	SetGlobalVariable();
+	isRetry_ = false;
 }
 
 void Pause::Update() {
@@ -37,18 +28,16 @@ void Pause::Update() {
 	if (isClear_) {
 		if (!*isClear_) {
 
-
-
-
+			if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::START)) {
+				isRetry_ = true;
+			}
 		}
 	}
 }
 
 void Pause::Draw()
 {
-	sprites_[SpriteNames::kBackground]->Draw();
-	sprites_[SpriteNames::kTitle]->Draw();
-	sprites_[SpriteNames::kDecisionA]->Draw();
+	sprites_[SpriteNames::kRetry]->Draw();
 }
 
 void Pause::SetGlobalVariable()

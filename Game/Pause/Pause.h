@@ -2,6 +2,7 @@
 
 #include "Sprite.h"
 #include <memory>
+#include <array>
 
 class Pause {
 public:
@@ -10,7 +11,7 @@ public:
 	void Update();
 	void Draw();
 
-	const bool GetIsPause() const { return isPause_; }
+	const bool GetIsRetry() const { return isRetry_; }
 	void SetIsClear(const bool* is) { isClear_ = is; }
 
 private:
@@ -29,25 +30,16 @@ private:
 
 	const bool* isClear_ = nullptr;
 
-	bool isPause_;
+	bool isRetry_;
 
-	enum SpriteOnOFF {
-		kOn,
-		kOff,
-		kCount,
-	};
 
 	enum SpriteNames {
-		kBackground,
-		kTitle,
-		kDecisionA,
+		kRetry,
 		kSpriteCount,
 	};
 
-	std::string spriteNames_[kSpriteCount] = {
-		"黒背景の",
-		"タイトルの",
-		"プッシュAの",
+	std::array<std::string, SpriteNames::kSpriteCount> spriteNames_ = {
+		"リトライの",
 	};
 
 	enum V2ItemNames {
@@ -55,16 +47,14 @@ private:
 		kV2ItemCount,
 	};
 
-	std::string v2ItemNames_[kV2ItemCount] = {
+	std::array<std::string, V2ItemNames::kV2ItemCount> v2ItemNames_ = {
 		"ポジション",
 	};
 
-	std::unique_ptr<Sprite> sprites_[kSpriteCount];
+	std::array<std::unique_ptr<Sprite>, SpriteNames::kSpriteCount> sprites_;
 
-	Vector2 v2Info_[kSpriteCount][kV2ItemCount];
+	std::array<std::array<Vector2, V2ItemNames::kV2ItemCount>, SpriteNames::kSpriteCount> v2Info_;
 
 	std::string groupName_ = "Pause";
-
-	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
 };
 
