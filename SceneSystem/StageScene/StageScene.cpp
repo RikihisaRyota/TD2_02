@@ -124,7 +124,7 @@ void StageScene::Update()
 		sceneNo_ = CLEAR;
 	}
 
-	//ParticleManager::GetInstance()->Update();
+	ParticleManager::GetInstance()->Update();
 }
 
 void StageScene::Draw()
