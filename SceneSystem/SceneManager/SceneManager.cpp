@@ -11,11 +11,11 @@
 #include "SceneSystem/SelectScene/SelectScene.h"
 #include "SceneSystem/StageScene/StageScene.h"
 #include "SceneSystem/ClearScene/ClearScene.h"
-
+#include "ParticleManager.h"
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
-#include "Game/Nedle/Nedle.h"
+#include "Game/Nedle/Needle.h"
 
 SceneManager::SceneManager() {
 	IScene::sceneNo_ = TITLE;
@@ -66,6 +66,7 @@ int SceneManager::Run() {
 		currentSceneChangeSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		if (preSceneChangeSceneNo_ != currentSceneChangeSceneNo_) {
 			soundManager_->SetScene(preSceneChangeSceneNo_, currentSceneChangeSceneNo_);
+			ParticleManager::GetInstance()->Initialize();
 			// シーン遷移開始
 			sceneChange_->SetSceneChange(true);
 		}
@@ -83,6 +84,7 @@ int SceneManager::Run() {
 				sceneChange_->SetInitialize(false);
 			}
 		}
+
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始

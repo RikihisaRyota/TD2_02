@@ -254,8 +254,8 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 							// xが正の方向に移動する場合
 							if (velocity.y < 0) {
 								// yが負の方向に移動する場合
-								if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
-									if (beforePos.y < chipPos.y + mapChipScale.y + scale.y) {
+								if (beforePos.x <= chipPos.x - mapChipScale.x - scale.x) {
+									if (beforePos.y <= chipPos.y + mapChipScale.y + scale.y) {
 										isFirstX = true;
 									}
 									else {
@@ -393,17 +393,18 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 							}
 							else {
 								// yが正の方向に移動する場合
-								if (beforePos.x < chipPos.x - mapChipScale.x - scale.x) {
-									if (beforePos.y > chipPos.y - mapChipScale.y - scale.y) {
+								if (beforePos.x <= chipPos.x - mapChipScale.x - scale.x) {
+									if (beforePos.y >= chipPos.y - mapChipScale.y - scale.y) {
 										isFirstX = true;
 									}
 									else {
 										if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-											{ velocity.x,velocity.y }) > 0) {
-											isFirstX = false;
+											{ velocity.x,velocity.y }) >= -0.1f) {
+											isFirstX = true;
 										}
 										else {
-											isFirstX = true;
+											// ここ計算的にはfalseだと思うんだけどな
+											isFirstX = false;
 										}
 									}
 								}
@@ -708,11 +709,19 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									}
 									else {
 										if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-											{ velocity.x,velocity.y }) < 0) {
-											isFirstX = false;
+											{ velocity.x,velocity.y }) <= 0.1f) {
+											isFirstX = true;
+											/*if (b->shapeType_->mapChip2D_.IsRigitBody(row, column + 1)) {
+												isFirstX = false;
+											}
+											else {
+												isFirstX = true;
+											}*/
+											
 										}
 										else {
-											isFirstX = true;
+											// ここ計算的にはfalseだと思うんだけどな
+											isFirstX = false;
 										}
 									}
 								}

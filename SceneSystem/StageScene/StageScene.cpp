@@ -40,10 +40,11 @@ StageScene::StageScene()
 	mapChip_ = std::make_unique<MapChip>();
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
 	player_ = std::make_unique<Player>();
+	pause_ = std::make_unique<Pause>();
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
-	mapChip_->Initialize();
+	mapChip_->Initialize(viewProjection_);
 	mapChip_->SetViewProjection(&viewProjection_);
 
 	mapChipEditor_->SetMapChip(mapChip_.get());
@@ -51,24 +52,35 @@ StageScene::StageScene()
 	mapChipEditor_->Initialize();
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
+	pause_->SetIsClear(player_->GetIsCollisionGaolPtr());
 }
 
 void StageScene::Init()
 {
-	
 	NeedleManager::GetInstance()->Init();
-	ParticleManager::GetInstance()->Initialize();
 	background_->Initialize();
 	goal_->Initialize();
 	player_->Initialize();
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	followCamera_->Initialize();
+	followCamera_->Update();
+	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
-	mapChip_->Initialize();
+	mapChip_->Initialize(viewProjection_);
+	pause_->Init();
 }
 
 void StageScene::Update()
 {
+	// 入力と処理受付
+	pause_->Update();
+	
+	if (pause_->GetIsRetry() || player_->GetIsDead()) {
+		Init();
+		return;
+	}
+
+
 	CollisionManager* collisionManager = CollisionManager::GetInstance();
 	collisionManager->Clear();
 
@@ -99,10 +111,9 @@ void StageScene::Update()
 
 	collisionManager->CheckCollision();
 
-	ParticleManager::GetInstance()->Update();
-
 	if (player_->GetIsChangeCamera()) {
 		followCamera_->SetTarget(goal_->GetWorldTransform());
+		followCamera_->ChangeCamera();
 	}
 
 	if (!isDebug_) {
@@ -114,16 +125,14 @@ void StageScene::Update()
 		mapChipEditor_->Update();
 	}
 
-	// 死んだフラグ
-	if (player_->GetIsDead()) {
-		sceneNo_ = SELECT;
-	}
-
 	// クリアフラグ
 	if (player_->GetIsClear() ||
 		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
+
+	ParticleManager::GetInstance()->Update();
 }
 
 void StageScene::Draw()
@@ -202,6 +211,8 @@ void StageScene::UIDraw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+	pause_->Draw();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	DirectXCommon::GetInstance()->ClearDepthBuffer();
@@ -242,6 +253,8 @@ void StageScene::UIDraw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
+
+	ItemManager::GetInstance()->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

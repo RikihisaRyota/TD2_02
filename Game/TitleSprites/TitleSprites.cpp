@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Input.h"
+#include "ImGuiManager.h"
 
 TitleSprites::TitleSprites() {
 	uint32_t tex = TextureManager::Load("Resources/Textures/white1x1.png");
@@ -23,6 +24,13 @@ TitleSprites::TitleSprites() {
 
 	testTextureHandle_[kOn] = TextureManager::Load("Resources/Textures/title.png");
 	testTextureHandle_[kOff] = TextureManager::Load("Resources/Textures/titleOff.png");
+
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+	on_ = true;
+	onMin_ = 20;
+	onMax_ = 300;
+	offMin_ = 5;
+	offMax_ = 15;
 }
 
 void TitleSprites::Init() {
@@ -30,31 +38,49 @@ void TitleSprites::Init() {
 }
 
 void TitleSprites::Update() {
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-		sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOff]);
-	}
-	else {
-		sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOn]);
+	flashingCount_--;
+	if (flashingCount_ <= 0) {
+		if (on_) {
+			sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOn]);
+			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+		}
+		else {
+			sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOff]);
+			flashingCount_ = rnd_.NextIntRange(offMin_, offMax_);
+		}
+		on_ ^= true;
 	}
 #ifdef _DEBUG
+	ImGui::Begin("Debug");
+	if (ImGui::TreeNode("Title")) {
+		if (ImGui::TreeNode("On")) {
+			ImGui::DragInt("onMin", &onMin_);
+			ImGui::DragInt("onMax", &onMax_);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Off")) {
+			ImGui::DragInt("offMin", &offMin_);
+			ImGui::DragInt("offMax", &offMax_);
+			ImGui::TreePop();
+		}
+		ImGui::TreePop();
+	}
+	ImGui::End();
 	ApplyGlobalVariable();
 #endif // _DEBUG
 }
 
-void TitleSprites::FarDraw()
-{
+void TitleSprites::FarDraw() {
 	sprites_[SpriteNames::kBackground]->Draw();
 }
 
-void TitleSprites::NearDraw()
-{
-	
+void TitleSprites::NearDraw() {
+
 	sprites_[SpriteNames::kTitle]->Draw();
 	sprites_[SpriteNames::kDecisionA]->Draw();
 }
 
-void TitleSprites::SetGlobalVariable()
-{
+void TitleSprites::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	globalVariables->CreateGroup(groupName_);
@@ -68,8 +94,7 @@ void TitleSprites::SetGlobalVariable()
 	ApplyGlobalVariable();
 }
 
-void TitleSprites::ApplyGlobalVariable()
-{
+void TitleSprites::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {

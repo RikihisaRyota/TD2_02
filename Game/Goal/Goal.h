@@ -7,6 +7,8 @@
 #include "WorldTransform.h"
 
 #include "Collision/Collider.h"
+#include "ParticleShaderStruct.h"
+#include "Random.h"
 
 class Player;
 class Goal : public Collider
@@ -21,6 +23,8 @@ private:
 		kStage_6,
 		kStage_7,
 		kStage_8,
+		kStage_9,
+		kStage_10,
 		kGoalCount,
 	};
 	enum V2ItemNames {
@@ -50,6 +54,9 @@ private:
 
 	void SetCollider();
 
+	void ParticleInitialize();
+	void CreateParticle();
+
 	std::string groupName_ = "Goal";
 
 	std::string spriteNames_[kGoalCount] = {
@@ -61,6 +68,8 @@ private:
 		"ステージ_6",
 		"ステージ_7",
 		"ステージ_8",
+		"ステージ_9",
+		"ステージ_10",
 	};
 
 	std::string v2ItemNames_[kV2ItemCount] = {
@@ -72,5 +81,16 @@ private:
 
 	WorldTransform worldTransform_;
 	std::unique_ptr<PlaneRenderer> model_;
-	uint32_t texture_;
+	uint32_t goalTexture_;
+
+	static const int kNumParticle = 6;
+	Emitter* emitter_[kNumParticle];
+	ParticleMotion* particleMotion_[kNumParticle];
+	float angle_;
+	float addAngle_;
+	float aliveTime_;
+	float speed_;
+	float colorTime_;
+	uint32_t particleTexture_;
+	Random::RandomNumberGenerator rnd_;
 };

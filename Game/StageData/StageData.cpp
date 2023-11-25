@@ -2,9 +2,9 @@
 
 #include "GlobalVariables/GlobalVariables.h"
 
-StageData::Data StageData::data_[kStageCount];
+StageData::Data StageData::data_[MapChip::kCount];
 
-std::string StageData::stageNames_[Stage::kStageCount] = {
+std::string StageData::stageNames_[MapChip::kCount] = {
 		"ステージ1",
 		"ステージ2",
 		"ステージ3",
@@ -13,11 +13,13 @@ std::string StageData::stageNames_[Stage::kStageCount] = {
 		"ステージ6",
 		"ステージ7",
 		"ステージ8",
+		"ステージ9",
+		"ステージ10",
 };
 std::string StageData::v2ItemNames_[V2ItemNames::kV2ItemCount] = {
-		"クリア条件タイム/クリア条件アイテム数",
+		"クリア条件タイム",
 };
-Vector2 StageData::v2Info_[Stage::kStageCount][V2ItemNames::kV2ItemCount];
+int StageData::v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
 std::string StageData::groupName_ = "stageData";
 
 
@@ -40,7 +42,7 @@ void StageData::SetGlobalVariable() {
 
 	globalVariables->CreateGroup(groupName_);
 
-	for (int i = 0; i < Stage::kStageCount; i++) {
+	for (int i = 0; i < MapChip::kCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			globalVariables->AddItem(groupName_, stageNames_[i] + v2ItemNames_[j], v2Info_[i][j]);
 		}
@@ -52,19 +54,17 @@ void StageData::SetGlobalVariable() {
 void StageData::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	for (int i = 0; i < Stage::kStageCount; i++) {
+	for (int i = 0; i < MapChip::kCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
-			v2Info_[i][j] = globalVariables->GetVector2Value(groupName_, stageNames_[i] + v2ItemNames_[j]);
+			v2Info_[i][j] = globalVariables->GetIntValue(groupName_, stageNames_[i] + v2ItemNames_[j]);
 		}
-		v2Info_[i][V2ItemNames::kConditionTime].x = static_cast<float>(static_cast<int>(v2Info_[i][V2ItemNames::kConditionTime].x));
-		v2Info_[i][V2ItemNames::kConditionTime].y = static_cast<float>(static_cast<int>(v2Info_[i][V2ItemNames::kConditionTime].y));
-		data_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime].x) * 60;
-		data_[i].conditionItemCount = int(v2Info_[i][V2ItemNames::kConditionTime].y);
+		data_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime]) * 60;
 	}
 }
 
-void StageData::SetData(int time, int itemCount, bool flag, int currentStage) {
+void StageData::SetData(int time, int itemCount,int maxItemCount ,bool flag, int currentStage) {
 	SetClearTime(time, currentStage);
 	SetClearItemCount(itemCount, currentStage);
+	SetConditionItemCount(maxItemCount, currentStage);
 	SetClearFlag(flag, currentStage);
 }

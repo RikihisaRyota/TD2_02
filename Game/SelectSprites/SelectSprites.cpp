@@ -69,11 +69,32 @@ void SelectSprites::Init() {
 
 	nowStage_ = IScene::stageNo_;
 
-	/*for (size_t stage = 0; stage < MapChip::Stage::kCount; stage++) {
-		condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
-		condition_.at(stage).at(0) = StageData::GetClearTime(stage);
-		condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
-	}*/
+	for (int stage = 0; stage < MapChip::Stage::kCount; stage++) {
+		if (StageData::GetClearFlag(stage)) {
+			// クリアしているか
+			condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
+
+			// 時間
+			if (StageData::GetClearTime(stage) <= StageData::GetConditionTime(stage)) {
+				condition_.at(stage).at(1) = true;
+			}
+			else {
+				condition_.at(stage).at(1) = false;
+			}
+			// アイテム数
+			if (StageData::GetClearItemCount(stage) >= StageData::GetConditionTime(stage)) {
+				condition_.at(stage).at(2) = true;
+			}
+			else {
+				condition_.at(stage).at(2) = false;
+			}
+		}
+		else {
+			condition_.at(stage).at(0) = false;
+			condition_.at(stage).at(1) = false;
+			condition_.at(stage).at(2) = false;
+		}
+	}
 
 	SetStageNo();
 }
@@ -120,11 +141,17 @@ void SelectSprites::NearDraw() {
 	for (int i = 0; i < 5; i++) {
 		stages_[i]->Draw();
 	}
-	/*if ()*/ {
-		for (int i = 0; i < 3; i++) {
-			stars_[i]->Draw();
+
+	for (int i = 0; i < 3; i++) {
+		if (condition_.at(nowStage_).at(i)) {
+			stars_[i]->SetTextureHandle(starTeces_[StarState::kGet]);
 		}
+		else {
+			stars_[i]->SetTextureHandle(starTeces_[StarState::kNotGet]);
+		}
+		stars_[i]->Draw();
 	}
+
 }
 
 void SelectSprites::StateRequest(State state) {

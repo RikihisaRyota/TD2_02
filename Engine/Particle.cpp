@@ -21,6 +21,8 @@ void Particle::Update() {
 				float angle = 0.0f;
 				if (emitter_->angle.start != emitter_->angle.end) {
 					angle = rnd_.NextFloatRange(emitter_->angle.start, emitter_->angle.end);
+				} else if (emitter_->angle.current != 0.0f) {
+					angle = emitter_->angle.current;
 				}
 				Vector3 vector = { std::cos(angle),std::sin(angle),0.0f };
 				particle->motion.velocity.velocity = vector * rnd_.NextFloatRange(particle->motion.velocity.speed - particle->motion.velocity.randomRange, particle->motion.velocity.speed + particle->motion.velocity.randomRange);
@@ -110,6 +112,10 @@ void Particle::Update() {
 
 void Particle::Reset() {
 	particleWorldTransform_.clear();
+	isAlive_ = false;
+	numAliveParticle_ = 0;
+	emitter_.reset();
+	originalParticle_.reset();
 }
 
 

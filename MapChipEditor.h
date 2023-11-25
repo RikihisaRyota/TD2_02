@@ -18,7 +18,7 @@ public:
 	void SetMapChip(MapChip* mapChip) { mapChip_ = mapChip; }
 private:
 	void FrameDraw();
-	const uint32_t kMaxBlock_= uint32_t(MapChip::Blocks::kCount);
+	const uint32_t kMaxBlock_= uint32_t(MapChip::UseBlocks::kUseBlockCount);
 	ViewProjection* viewProjection_;
 	MapChip* mapChip_;
 	Input* input_;

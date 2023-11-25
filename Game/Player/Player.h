@@ -75,9 +75,11 @@ public:
 	const bool GetIsChangeCamera() const { return isChangeCamera_; }
 
 	bool GetIsClear() { return isClear_; }
+	const bool* GetIsCollisionGaolPtr() const { return &isCollisionGoal_; }
 
 	const bool GetIsDead() const { return isDead_; }
 
+	const int GetClearTime() { return clearTime_; }
 private:
 
 	void OnCollision() override;
@@ -151,7 +153,8 @@ private:
 	// プレイヤーの後ろにパーティクルを追加
 	void ParticleInitialize();
 	void ParticleUpdate();
-	void ParticleCreate(const Vector2& vector);
+	void WallParticleCreate(const Vector2& vector);
+	void DeathParticleCreate();
 
 	void SoundInitialize();
 private:
@@ -167,13 +170,8 @@ private:
 	WorldTransform worldTransform_;
 	// モデル配列
 	std::vector<Model*> models_;
-	std::unique_ptr<PlaneRenderer>face_;
-	WorldTransform faceWorldTransform_;
 	// モデルのワールドトランスフォーム配列
 	std::vector<WorldTransform> modelWorldTransforms_;
-
-	// 顔のテクスチャハンドル
-	uint32_t faceTextureHandle_[2];
 	// 速度
 	Vector3 velocity_;
 	// ジャンプ中か
@@ -182,9 +180,10 @@ private:
 	bool isRight_;
 	// ２段ジャンプか
 	int jumpCount_;
-	bool isPlayerFaceRight_;
 
 	bool isDead_;
+
+	bool isCollisionGoal_;
 
 	bool kIs2Jump_ = true;
 
@@ -208,6 +207,10 @@ private:
 	float clearRot_;
 
 	int countFrame_;
+
+	// 死んだときのアニメーション
+	float deathAnimationTime_;
+	float MaxDeathAnimationTime;
 
 	enum FloatParameterNames {
 		kMoveSpeed, // 移動スピード
@@ -301,6 +304,7 @@ private:
 	ParticleMotion* particleMotion_;
 	bool isCreateParticle_;
 	Random::RandomNumberGenerator rnd_;
+	uint32_t particleTextureHandle_;
 
 	// 音関係
 	int32_t jumpSoundHandle_;
@@ -308,6 +312,5 @@ private:
 
 	// クリアフラグ
 	bool isClear_;
-	int time_;
-	int itemCount_;
+	int clearTime_;
 };

@@ -25,12 +25,21 @@ void ClearScene::Update() {
 	clearSprites_->Update();
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
-		if (clearSprites_->GetNextScene()) {
-			sceneNo_ = STAGE;
-			stageNo_++;
-		}
-		else {
-			sceneNo_ = SELECT;
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			switch (clearSprites_->GetState()) {
+			case ClearSprites::State::kSelectStageState:
+				sceneNo_ = SELECT;
+				break;
+			case ClearSprites::State::kRetryState:
+				sceneNo_ = STAGE;
+				break;
+			case ClearSprites::State::kNextStageState:
+				sceneNo_ = STAGE;
+				stageNo_++;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
