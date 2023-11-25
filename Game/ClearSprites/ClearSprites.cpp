@@ -97,19 +97,21 @@ ClearSprites::ClearSprites() {
 		}
 	}
 
+	stageNo_ = 0;
 }
 
 void ClearSprites::Init() {
 	SetGlobalVariable();
-	if (IScene::stageNo_ != MapChip::kCount - 1) {
+	stageNo_ = IScene::stageNo_;
+	if (stageNo_ != MapChip::kCount - 1) {
 		nextStageFlag_ = true;
 	}
 	else {
 		nextStageFlag_ = false;
 	}
 	// 秒に直す
-	int clearTime = StageData::GetClearTime(IScene::stageNo_) / 60;
-	int conditionTime = StageData::GetConditionTime(IScene::stageNo_) / 60;
+	int clearTime = StageData::GetClearTime(stageNo_) / 60;
+	int conditionTime = StageData::GetConditionTime(stageNo_) / 60;
 	int place = 100;
 	if (clearTime >= 999) {
 		for (int i = 0; i < 3; i++) {
@@ -130,8 +132,8 @@ void ClearSprites::Init() {
 		}
 	}
 	// アイテム数
-	int clearItem = StageData::GetClearItemCount(IScene::stageNo_);
-	int conditionItem = StageData::GetConditionItemCount(IScene::stageNo_);
+	int clearItem = StageData::GetClearItemCount(stageNo_);
+	int conditionItem = StageData::GetConditionItemCount(stageNo_);
 	place = 10;
 	for (int i = 0; i < 2; i++) {
 		itemPlace_[1 - i] = clearItem / place;
@@ -141,21 +143,21 @@ void ClearSprites::Init() {
 		place /= 10;
 	}
 	// 条件1
-	if (StageData::GetClearFlag(IScene::stageNo_)) {
+	if (StageData::GetClearFlag(stageNo_)) {
 		starFlag_[0] = true;
 	}
 	else {
 		starFlag_[0] = false;
 	}
 	// 条件2
-	if (StageData::GetClearTime(IScene::stageNo_) <= StageData::GetConditionTime(IScene::stageNo_)) {
+	if (StageData::GetClearTime(stageNo_) <= StageData::GetConditionTime(stageNo_)) {
 		starFlag_[1] = true;
 	}
 	else {
 		starFlag_[1] = false;
 	}
 	// 条件3
-	if (StageData::GetClearItemCount(IScene::stageNo_) >= StageData::GetConditionItemCount(IScene::stageNo_)) {
+	if (StageData::GetClearItemCount(stageNo_) >= StageData::GetConditionItemCount(stageNo_)) {
 		starFlag_[2] = true;
 	}
 	else {
@@ -165,7 +167,7 @@ void ClearSprites::Init() {
 
 void ClearSprites::Update() {
 
-	if (IScene::stageNo_ != MapChip::kCount - 1 &&
+	if (stageNo_ != MapChip::kCount - 1 &&
 		input_->GetGamePadLStick().x != 0.0f &&
 		input_->GetPreGamePadLStick().x == 0.0f) {
 		nextStageFlag_ ^= true;
@@ -252,7 +254,7 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
-			if (IScene::stageNo_ == MapChip::kCount - 1) {
+			if (stageNo_ == MapChip::kCount - 1) {
 				sprite->SetTextureHandle(selectStage_[kTrue]);
 				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
@@ -268,7 +270,7 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kNextStage:
-			if (IScene::stageNo_ != MapChip::kCount - 1) {
+			if (stageNo_ != MapChip::kCount - 1) {
 				if (nextStageFlag_) {
 					sprite->SetTextureHandle(nextStage_[kTrue]);
 				}

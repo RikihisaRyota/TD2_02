@@ -253,6 +253,11 @@ void ItemManager::Draw(const ViewProjection& viewProjection)
 	}
 }
 
+void ItemManager::DrawUI()
+{
+
+}
+
 void ItemManager::SetGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();

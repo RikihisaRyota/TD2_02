@@ -141,5 +141,7 @@ private:
 	int conditionItemPlace_[2];
 	bool starFlag_[3];
 	bool nextStageFlag_;
+
+	int stageNo_;
 };
 

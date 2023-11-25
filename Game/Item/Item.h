@@ -113,6 +113,8 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
+	void DrawUI();
+
 	void AddGetCount() { getItemCount_++; }
 
 	const int GetMaxItemNum() const { return MaxItemCount_; }
@@ -132,6 +134,7 @@ private:
 	void Clear();
 
 	void SetItem(const Vector3& pos);
+
 
 private:
 
