@@ -155,15 +155,21 @@ void Item::IsLifeUpdate() {
 
 void Item::GetInit() {
 	getCount_ = 0.0f;
-	kMaxGetCount_ = 60.0f;
+	kMaxGetCount_ = 30.0f;
+	startPos_ = worldTransform_.translate_;
+	endPos_ = worldTransform_.translate_;
+	endPos_.y += 10.0f;
 	CreateGetParticle();
 }
 
 void Item::GetUpdate() {
+	getCount_++;
+	float t = float(getCount_) / float(kMaxGetCount_);
 	if (getCount_ >= kMaxGetCount_) {
 		isDraw_ = false;
 	}
-	worldTransform_.translate_.y += 1.0f;
+	worldTransform_.scale_ = Lerp(Vector3(1.0f,1.0f,1.0f), Vector3(0.0f, 0.0f, 0.0f), t);
+	worldTransform_.translate_ = Lerp(startPos_, endPos_, t);
 	worldTransform_.rotation_.y += 0.5f;
 }
 
