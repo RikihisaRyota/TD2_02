@@ -171,7 +171,7 @@ MapChip::MapChip() {
 void MapChip::Initialize(const ViewProjection& viewProjection) {
 	map_ = maps_[currentStage_];
 	preMap_ = map_;
-	normalColor_ = { 0.5f,0.5f,0.5f,1.0f };
+	normalColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	SetInstancing(viewProjection);
