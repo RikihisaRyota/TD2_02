@@ -138,11 +138,17 @@ private:
 
 	void SetNumTeces();
 
+	void SetSpriteSize();
+
 private:
 
 	int MaxItemCount_;
 
 	int getItemCount_;
+
+	Vector2 itemSize_;
+	Vector2 slashSize_;
+	Vector2 numSize_;
 
 	static const int MaxDigits = 2;
 
@@ -201,11 +207,17 @@ private:
 
 	enum FInfoNames {
 		kNumericInterval,
+		kItemScale,
+		kSlashScale_,
+		kNumScale,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
 		"数字の間隔",
+		"アイテムのスケール",
+		"スラッシュのスケール",
+		"数字のスケール",
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;

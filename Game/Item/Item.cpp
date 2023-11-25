@@ -194,8 +194,12 @@ void ItemManager::FirstInit()
 	uint32_t tex = TextureManager::Load("Resources/Textures/item.png");
 	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	itemSize_ = sprites_[SpriteNames::kItemSprite]->GetSize();
+
 	tex = TextureManager::Load("Resources/Textures/slash.png");
 	sprites_[SpriteNames::kSlash].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
+	slashSize_ = sprites_[SpriteNames::kSlash]->GetSize();
 
 	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/resultTime0.png");
 	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/resultTime1.png");
@@ -225,6 +229,8 @@ void ItemManager::FirstInit()
 		}
 	}
 
+	numSize_ = numSprites_[0][0]->GetSize();
+
 	Init();
 	SetGlobalVariable();
 }
@@ -232,6 +238,7 @@ void ItemManager::FirstInit()
 void ItemManager::Init()
 {
 	Clear();
+	SetSpriteSize();
 	SetNumTeces();
 	countFrame_ = 0;
 }
@@ -302,6 +309,18 @@ void ItemManager::SetNumTeces()
 
 				numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
 			}
+		}
+	}
+}
+
+void ItemManager::SetSpriteSize()
+{
+	sprites_[SpriteNames::kItemSprite]->SetSize(itemSize_ * fInfo_[FInfoNames::kItemScale]);
+	sprites_[SpriteNames::kSlash]->SetSize(slashSize_ * fInfo_[FInfoNames::kSlashScale_]);
+
+	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
+		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
+			sprite->SetSize(numSize_ * fInfo_[FInfoNames::kNumScale]);
 		}
 	}
 }
@@ -405,4 +424,6 @@ void ItemManager::ApplyGlobalVariable()
 	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {
 		iInfo_[i] = globalVariables->GetIntValue(groupName_, iInfoNames_[i]);
 	}*/
+
+	SetSpriteSize();
 }
