@@ -72,6 +72,10 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/rank.png");
 	sprites_[SpriteNames::kRank].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/retry.png");
+	sprites_[SpriteNames::kRetry].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+
+
 	for (uint32_t i = 0; i < kNumberCount; i++) {
 		number_[i] = TextureManager::Load("Resources/Textures/time" + std::to_string(i) + ".png");
 		conditionNumber_[i] = TextureManager::Load("Resources/Textures/resultTime" + std::to_string(i) + ".png");
@@ -85,6 +89,9 @@ ClearSprites::ClearSprites() {
 
 	selectStage_[kTrue] = TextureManager::Load("Resources/Textures/goStageSelectChoice.png");
 	selectStage_[kFalse] = TextureManager::Load("Resources/Textures/goStageSelect.png");
+
+	retry_[kTrue] = TextureManager::Load("Resources/Textures/retrySelect.png");
+	retry_[kFalse] = TextureManager::Load("Resources/Textures/retry.png");
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
@@ -103,10 +110,10 @@ void ClearSprites::Init() {
 	currentStageNo_ = IScene::stageNo_;
 	SetGlobalVariable();
 	if (IScene::stageNo_ != MapChip::kCount - 1) {
-		nextStageFlag_ = true;
+		state_ = State::kNextStageState;
 	}
 	else {
-		nextStageFlag_ = false;
+		state_ = State::kSelectStageState;
 	}
 	// 秒に直す
 	int clearTime = StageData::GetClearTime(IScene::stageNo_) / 60;
@@ -167,16 +174,36 @@ void ClearSprites::Init() {
 void ClearSprites::Update() {
 
 	if (IScene::stageNo_ != MapChip::kCount - 1 &&
-		input_->GetGamePadLStick().x != 0.0f &&
+		input_->GetGamePadLStick().x < 0.0f &&
 		input_->GetPreGamePadLStick().x == 0.0f) {
-		nextStageFlag_ ^= true;
+		switch (state_) {
+		case ClearSprites::State::kSelectStageState:
+			state_ = State::kNextStageState;
+			break;
+		case ClearSprites::State::kRetryState:
+			state_ = State::kSelectStageState;
+			break;
+		case ClearSprites::State::kNextStageState:
+			state_ = State::kRetryState;
+			break;
+		}
 	}
-	if (nextStageFlag_) {
-
+	if (IScene::stageNo_ != MapChip::kCount - 1 &&
+		input_->GetGamePadLStick().x > 0.0f &&
+		input_->GetPreGamePadLStick().x == 0.0f) {
+		switch (state_) {
+		case ClearSprites::State::kSelectStageState:
+			state_ = State::kRetryState;
+			break;
+		case ClearSprites::State::kRetryState:
+			state_ = State::kNextStageState;
+			break;
+		case ClearSprites::State::kNextStageState:
+			state_ = State::kSelectStageState;
+			break;
+		}
 	}
-	else {
-
-	}
+	
 #ifdef _DEBUG
 	ApplyGlobalVariable();
 #endif // _DEBUG
@@ -258,23 +285,35 @@ void ClearSprites::Draw() {
 				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
 			else {
-				if (nextStageFlag_) {
-					sprite->SetTextureHandle(selectStage_[kFalse]);
-				}
-				else {
+				if (state_==State::kSelectStageState) {
 					sprite->SetTextureHandle(selectStage_[kTrue]);
 				}
-				sprite->SetPosition(Vector2(450.0f, 600.0f));
+				else {
+					sprite->SetTextureHandle(selectStage_[kFalse]);
+				}
+				sprite->SetPosition(Vector2(248.0f, 600.0f));
 			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kNextStage:
 			if (currentStageNo_ != MapChip::kCount - 1) {
-				if (nextStageFlag_) {
+				if (state_ == State::kNextStageState) {
 					sprite->SetTextureHandle(nextStage_[kTrue]);
 				}
 				else {
 					sprite->SetTextureHandle(nextStage_[kFalse]);
+				}
+				sprite->Draw();
+
+			}
+			break;
+		case ClearSprites::kRetry:
+			if (currentStageNo_ != MapChip::kCount - 1) {
+				if (state_ == State::kRetryState) {
+					sprite->SetTextureHandle(retry_[kTrue]);
+				}
+				else {
+					sprite->SetTextureHandle(retry_[kFalse]);
 				}
 				sprite->Draw();
 

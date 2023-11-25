@@ -9,12 +9,20 @@
 
 class ClearSprites {
 public:
+	enum State {
+		kSelectStageState,
+		kRetryState,
+		kNextStageState,
+
+		kStateCount,
+	};
+public:
 	ClearSprites();
 	void Init();
 	void Update();
 	void Draw();
 
-	bool GetNextScene() { return nextStageFlag_; }
+	int GetState() { return state_; }
 private:
 
 	/// <summary>
@@ -28,6 +36,7 @@ private:
 	void ApplyGlobalVariable();
 
 private:
+
 	enum Number {
 		kZero,
 		kOne,
@@ -76,6 +85,7 @@ private:
 		kDecisionA,
 		kSelectLS,
 		kRank,
+		kRetry,
 
 		kSpriteCount,
 	};
@@ -106,7 +116,8 @@ private:
 		"次のステージ",
 		"Aボタン",
 		"Lスティック",
-		"ランク"
+		"ランク",
+		"リトライ"
 	};
 
 	enum V2ItemNames {
@@ -128,6 +139,7 @@ private:
 	uint32_t star_[kFlagCount];
 	uint32_t nextStage_[kFlagCount];
 	uint32_t selectStage_[kFlagCount];
+	uint32_t retry_[kFlagCount];
 
 	Vector2 v2Info_[kSpriteCount][kV2ItemCount];
 
@@ -140,8 +152,7 @@ private:
 	int itemPlace_[2];
 	int conditionItemPlace_[2];
 	bool starFlag_[3];
-	bool nextStageFlag_;
-
+	State state_;
 	int currentStageNo_;
 };
 
