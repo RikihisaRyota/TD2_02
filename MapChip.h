@@ -28,6 +28,7 @@ const static uint32_t kMaxScreenHeightBlockNum = 18;
 const static uint32_t kMaxWidth = kBlockSize * kMaxWidthBlockNum;
 const static uint32_t kMaxHeight = kBlockSize * kMaxHeightBlockNum;
 
+class Player;
 class MapChip : public Collider{
 public:
 	struct GPUParam {
@@ -102,8 +103,8 @@ public:
 	void SetCollider();
 
 	MapChip();
-	void Initialize(const ViewProjection& viewProjection);
-	void Update(const ViewProjection& viewProjection);
+	void Initialize();
+	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
 #pragma region Load,Save
@@ -114,7 +115,6 @@ public:
 	void SaveCSV(uint32_t stageNum);
 	void SaveCSV(std::string fileName);
 	void ChangeStage();
-
 #pragma endregion
 #pragma region BlockType
 	std::vector<std::vector<uint32_t>> GetBlocksTypes() { return map_; }
@@ -135,20 +135,23 @@ public:
 	void SetBlocks(const Vector3& pos, uint32_t blockType);
 	void SetBlocks(const Vector2& pos, uint32_t blockType);
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
+	void SetPlayer(Player* player) { player_ = player; }
 	bool InRange(const Vector3& pos);
 
 	void CheckChangeMap();
 private:
 	int CheckBlock(int y,int x);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
-	void SetInstancing(const ViewProjection& viewProjection);
+	void SetInstancing();
 	void SetInstancingBlock(int block, int y, int x);
 	void CreateItems();
 	void CheckBlockGrit(int y,int x);
+	void PlayerTouchBlock();
 private:
 	// ブロックの種類の最大数
 	const uint32_t kMaxTypeBlocks = static_cast<uint32_t>(MapChip::UseBlocks::kUseBlockCount);
 	ViewProjection* viewProjection_;
+	Player* player_;
 	// マップチップの種類
 	std::vector<std::vector<uint32_t>> map_;
 	std::vector<std::vector<std::vector<uint32_t>>> maps_;
@@ -163,6 +166,11 @@ private:
 
 	Vector4 normalColor_;
 	Vector4 touchingColor_;
+	int playerTouchBlockMinX_;
+	int playerTouchBlockMaxX_;
+	int playerTouchBlockMinY_;
+	int playerTouchBlockMaxY_;
+	float delayColor_;
 
 	std::vector<std::vector<uint32_t>> preMap_;
 	// インスタンシング描画用
