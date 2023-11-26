@@ -24,6 +24,10 @@ public:
 
 	void DrawUI();
 
+	void SetIsClear(const bool* is) { isClear_ = is; }
+
+	const int GetTime() const { return second_; }
+
 private:
 	TimerManager() = default;
 	~TimerManager() = default;
@@ -40,25 +44,24 @@ private:
 
 private:
 
-	int MaxItemCount_;
+	int time_;
 
-	int getItemCount_;
+	int second_;
 
-	Vector2 itemSize_;
-	Vector2 slashSize_;
+	const bool* isClear_ = nullptr;
+
+	Vector2 timerSize_;
 	Vector2 numSize_;
 
 	static const int MaxDigits = 3;
 
 	enum SpriteNames {
 		kTimerSprite,
-		kSlash,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
 		"タイマーの",
-		"スラッシュの"
 	};
 
 	enum V2ItemNames {
@@ -81,16 +84,14 @@ private:
 	};
 
 	enum DrawNumType {
-		kGetItem,
-		kMaxItem,
+		kTimer,
 		kNumTypeCount,
 	};
 
 	std::array<std::array<std::unique_ptr<Sprite>, MaxDigits>, DrawNumType::kNumTypeCount> numSprites_;
 
 	std::string numItemNames[DrawNumType::kNumTypeCount] = {
-		"取得したアイテム数の",
-		"全体のアイテム数の",
+		"タイマーの",
 	};
 
 	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
@@ -103,16 +104,14 @@ private:
 
 	enum FInfoNames {
 		kNumericInterval,
-		kItemScale,
-		kSlashScale_,
+		kTimerScale,
 		kNumScale,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
 		"数字の間隔",
-		"アイテムのスケール",
-		"スラッシュのスケール",
+		"タイマーのスケール",
 		"数字のスケール",
 	};
 

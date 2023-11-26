@@ -18,15 +18,10 @@ TimerManager* TimerManager::GetInstance()
 void TimerManager::FirstInit()
 {
 	
-	uint32_t tex = TextureManager::Load("Resources/Textures/item.png");
-	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	uint32_t tex = TextureManager::Load("Resources/Textures/time.png");
+	sprites_[SpriteNames::kTimerSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
-	itemSize_ = sprites_[SpriteNames::kItemSprite]->GetSize();
-
-	tex = TextureManager::Load("Resources/Textures/slash.png");
-	sprites_[SpriteNames::kSlash].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
-
-	slashSize_ = sprites_[SpriteNames::kSlash]->GetSize();
+	timerSize_ = sprites_[SpriteNames::kTimerSprite]->GetSize();
 
 	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/resultTime0.png");
 	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/resultTime1.png");
@@ -67,52 +62,26 @@ void TimerManager::Init()
 	SetSpriteSize();
 	SetNumTeces();
 	countFrame_ = 0;
+	time_ = 0;
+	second_ = 0;
 }
 
 
 void TimerManager::SetNumTeces()
 {
-	if (MaxItemCount_ < 10) {
+	int num = second_;
+	int drawNum = 0;
+	for (int i = 0; i < MaxDigits; i++) {
+		drawNum = num / int(pow(10, MaxDigits - 1 - i));
+		num = num % int(pow(10, MaxDigits - 1 - i));
 
-		numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-		numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-
-		numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][MaxItemCount_]);
-		numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][getItemCount_]);
-
-		return;
-	}
-	else {
-
-		int num = MaxItemCount_;
-		int drawNum = 0;
-		for (int i = 0; i < MaxDigits; i++) {
-			drawNum = num / int(pow(10, MaxDigits - 1 - i));
-			num = num % int(pow(10, MaxDigits - 1 - i));
-
-			numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
-		}
-
-		if (getItemCount_ < 10) {
-			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][getItemCount_]);
-		}
-		else {
-			num = getItemCount_;
-			for (int i = 0; i < MaxDigits; i++) {
-				drawNum = num / int(pow(10, MaxDigits - 1 - i));
-				num = num % int(pow(10, MaxDigits - 1 - i));
-
-				numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
-			}
-		}
+		numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
 	}
 }
 
 void TimerManager::SetSpriteSize()
 {
-	sprites_[SpriteNames::kItemSprite]->SetSize(itemSize_ * fInfo_[FInfoNames::kItemScale]);
-	sprites_[SpriteNames::kSlash]->SetSize(slashSize_ * fInfo_[FInfoNames::kSlashScale_]);
+	sprites_[SpriteNames::kTimerSprite]->SetSize(timerSize_ * fInfo_[FInfoNames::kTimerScale]);
 
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
