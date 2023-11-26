@@ -42,6 +42,7 @@ StageScene::StageScene()
 	player_ = std::make_unique<Player>();
 	pause_ = std::make_unique<Pause>();
 	timer_ = std::make_unique<Timer>();
+	stageUi_ = std::make_unique<StageUI>();
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
@@ -71,6 +72,7 @@ void StageScene::Init()
 	mapChip_->Initialize(viewProjection_);
 	pause_->Init();
 	timer_->Init();
+	stageUi_->Init();
 }
 
 void StageScene::Update()
@@ -88,7 +90,7 @@ void StageScene::Update()
 	}
 
 	timer_->Update();
-
+	stageUi_->Update();
 
 	CollisionManager* collisionManager = CollisionManager::GetInstance();
 	collisionManager->Clear();
@@ -183,6 +185,7 @@ void StageScene::Draw()
 	/// </summary>
 	background_->Draw(viewProjection_);
 	goal_->Draw(viewProjection_);
+	stageUi_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 	NeedleManager::GetInstance()->Draw(viewProjection_);

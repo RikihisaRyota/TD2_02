@@ -164,6 +164,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Game\SelectSprites\SelectSprites.cpp" />
     <ClCompile Include="Game\Sound\SoundManager.cpp" />
     <ClCompile Include="Game\StageData\StageData.cpp" />
+    <ClCompile Include="Game\StageUI\StageUI.cpp" />
     <ClCompile Include="Game\Timer\Timer.cpp" />
     <ClCompile Include="Game\TitleSprites\TitleSprites.cpp" />
     <ClCompile Include="GlobalVariables\GlobalVariables.cpp" />
@@ -269,6 +270,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Game\Player\Player.h" />
     <ClInclude Include="Game\SelectSprites\SelectSprites.h" />
     <ClInclude Include="Game\StageData\StageData.h" />
+    <ClInclude Include="Game\StageUI\StageUI.h" />
     <ClInclude Include="Game\Timer\Timer.h" />
     <ClInclude Include="Game\TitleSprites\TitleSprites.h" />
     <ClInclude Include="Game\Sound\SoundManager.h" />

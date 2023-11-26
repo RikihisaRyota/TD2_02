@@ -10,6 +10,7 @@
 #include "MapChipEditor.h"
 #include "Game/Pause/Pause.h"
 #include "Game/Timer/Timer.h"
+#include "Game/StageUI/StageUI.h"
 
 class StageScene : public IScene
 {
@@ -39,4 +40,5 @@ private:
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Pause> pause_;
 	std::unique_ptr<Timer> timer_;
+	std::unique_ptr<StageUI> stageUi_;
 };
