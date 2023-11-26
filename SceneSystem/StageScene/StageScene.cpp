@@ -17,6 +17,7 @@
 #include "Game/StageData/StageData.h"
 #include "Game/Nedle/Needle.h"
 #include "Game/Item/Item.h"
+#include "Game/Block/Block.h"
 
 StageScene::StageScene()
 {
@@ -118,6 +119,8 @@ void StageScene::Update()
 	mapChip_->Update();
 
 	NeedleManager::GetInstance()->Update();
+
+	OutBlockManager::GetInstance()->Update();
 
 	player_->Update();
 
