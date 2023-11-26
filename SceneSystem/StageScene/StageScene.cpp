@@ -41,11 +41,14 @@ StageScene::StageScene()
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
 	player_ = std::make_unique<Player>();
 	pause_ = std::make_unique<Pause>();
+	timer_ = std::make_unique<Timer>();
+	stageUi_ = std::make_unique<StageUI>();
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
-	mapChip_->Initialize(viewProjection_);
 	mapChip_->SetViewProjection(&viewProjection_);
+	mapChip_->SetPlayer(player_.get());
+	mapChip_->Initialize();
 
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
@@ -53,6 +56,7 @@ StageScene::StageScene()
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	pause_->SetIsClear(player_->GetIsCollisionGaolPtr());
+	timer_->SetIsClear(player_->GetIsCollisionGaolPtr());
 }
 
 void StageScene::Init()
@@ -66,8 +70,10 @@ void StageScene::Init()
 	followCamera_->Update();
 	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
-	mapChip_->Initialize(viewProjection_);
+	mapChip_->Initialize();
 	pause_->Init();
+	timer_->Init();
+	stageUi_->Init();
 }
 
 void StageScene::Update()
@@ -84,6 +90,8 @@ void StageScene::Update()
 		return;
 	}
 
+	timer_->Update();
+	stageUi_->Update();
 
 	CollisionManager* collisionManager = CollisionManager::GetInstance();
 	collisionManager->Clear();
@@ -107,7 +115,7 @@ void StageScene::Update()
 
 	background_->Update();
 
-	mapChip_->Update(viewProjection_);
+	mapChip_->Update();
 
 	NeedleManager::GetInstance()->Update();
 
@@ -133,13 +141,13 @@ void StageScene::Update()
 
 	// クリアフラグ
 	if (player_->GetIsClear()) {
-		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 
 #ifdef _DEBUG
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
-		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 #endif // _DEBUG
@@ -178,6 +186,7 @@ void StageScene::Draw()
 	/// </summary>
 	background_->Draw(viewProjection_);
 	goal_->Draw(viewProjection_);
+	stageUi_->Draw(viewProjection_);
 	mapChip_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 	NeedleManager::GetInstance()->Draw(viewProjection_);
@@ -224,6 +233,7 @@ void StageScene::UIDraw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+	timer_->DrawUI();
 	pause_->Draw();
 
 	// スプライト描画後処理

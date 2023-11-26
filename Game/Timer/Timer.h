@@ -9,26 +9,24 @@
 #include <optional>
 #include "Sprite.h"
 
-class TimerManager
+class Timer
 {
 public:
-	static TimerManager* GetInstance();
-
-	void FirstInit();
+	Timer();
 
 	void Init();
 
 	void Update();
 
-	void Draw(const ViewProjection& viewProjection);
-
 	void DrawUI();
 
+	void SetIsClear(const bool* is) { isClear_ = is; }
+
+	void SetStageNo(const int* no) { stage_ = no; }
+
+	const int GetTime() const { return time_; }
+
 private:
-	TimerManager() = default;
-	~TimerManager() = default;
-	TimerManager(const TimerManager&) = delete;
-	const TimerManager& operator=(const TimerManager&) = delete;
 
 	void SetGlobalVariable();
 
@@ -40,25 +38,26 @@ private:
 
 private:
 
-	int MaxItemCount_;
+	int time_;
 
-	int getItemCount_;
+	int second_;
 
-	Vector2 itemSize_;
-	Vector2 slashSize_;
+	const int* stage_;
+
+	const bool* isClear_ = nullptr;
+
+	Vector2 timerSize_;
 	Vector2 numSize_;
 
 	static const int MaxDigits = 3;
 
 	enum SpriteNames {
-		kItemSprite,
-		kSlash,
+		kTimerSprite,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
-		"アイテムの",
-		"スラッシュの"
+		"タイマーの",
 	};
 
 	enum V2ItemNames {
@@ -81,16 +80,14 @@ private:
 	};
 
 	enum DrawNumType {
-		kGetItem,
-		kMaxItem,
+		kTimer,
 		kNumTypeCount,
 	};
 
 	std::array<std::array<std::unique_ptr<Sprite>, MaxDigits>, DrawNumType::kNumTypeCount> numSprites_;
 
 	std::string numItemNames[DrawNumType::kNumTypeCount] = {
-		"取得したアイテム数の",
-		"全体のアイテム数の",
+		"数字の",
 	};
 
 	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
@@ -99,20 +96,18 @@ private:
 
 	const std::string groupName_ = "Timer";
 
-	int countFrame_;
+	const std::string groupName2_ = "selectSprites";
 
 	enum FInfoNames {
 		kNumericInterval,
-		kItemScale,
-		kSlashScale_,
+		kTimerScale,
 		kNumScale,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
 		"数字の間隔",
-		"アイテムのスケール",
-		"スラッシュのスケール",
+		"タイマーのスケール",
 		"数字のスケール",
 	};
 

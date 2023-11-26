@@ -93,6 +93,7 @@ void Player::Initialize() {
 
 	jumpCount_ = 0;
 	isJump_ = true;
+	isRight_ = true;
 	velocity_ = {};
 
 	isCollisionGoal_ = false;

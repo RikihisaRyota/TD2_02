@@ -146,7 +146,7 @@ void FollowCamera::ZoomUpdate()
 		viewProjection_.translate_ = Ease::UseEase(
 			beforePos_, pos, frame, iInfo_[IInfoNames::kGoalEaseFrame], Ease::EaseType::Constant);
 
-		frame = std::clamp<int>(countFrame_, 0, iInfo_[IInfoNames::kGoalZoomEaseFrame]);
+		frame = std::clamp<int>(countFrame_ - iInfo_[IInfoNames::kGoalEaseFrame], 0, iInfo_[IInfoNames::kGoalZoomEaseFrame]);
 
 		viewProjection_.translate_.z = Ease::UseEase(
 			beforePos_.z, fParameters_[FParameterNames::kZoomZ], frame, iInfo_[IInfoNames::kGoalZoomEaseFrame],

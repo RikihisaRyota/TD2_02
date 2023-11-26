@@ -97,6 +97,9 @@
     <Filter Include="Game\Timer">
       <UniqueIdentifier>{ad181e1f-c5ca-47c5-ae44-705c17d9532f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\StageUI">
+      <UniqueIdentifier>{37d6d902-329f-4fde-b173-f8d9c38df4eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -343,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="Game\Timer\Timer.cpp">
       <Filter>Game\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\StageUI\StageUI.cpp">
+      <Filter>Game\StageUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -646,6 +652,9 @@
     </ClInclude>
     <ClInclude Include="Game\Timer\Timer.h">
       <Filter>Game\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\StageUI\StageUI.h">
+      <Filter>Game\StageUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
