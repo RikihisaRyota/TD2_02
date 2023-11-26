@@ -55,7 +55,12 @@ Timer::Timer()
 void Timer::Init()
 {
 	time_ = 0;
-	second_ = 0;
+	if (isClear_) {
+		second_ = 0;
+	}
+	else if (stage_) {
+		second_ = StageData::GetConditionTime(*stage_) / 60;
+	}
 	SetSpriteSize();
 	SetNumTeces();
 }
