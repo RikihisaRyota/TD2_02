@@ -54,10 +54,10 @@ Timer::Timer()
 
 void Timer::Init()
 {
-	SetSpriteSize();
-	SetNumTeces();
 	time_ = 0;
 	second_ = 0;
+	SetSpriteSize();
+	SetNumTeces();
 }
 
 
