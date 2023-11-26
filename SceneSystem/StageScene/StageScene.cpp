@@ -79,11 +79,15 @@ void StageScene::Update()
 		Init();
 		return;
 	}
+	else if (pause_->GetIsStageSelect()) {
+		sceneNo_ = SELECT;
+		return;
+	}
 
 
 	CollisionManager* collisionManager = CollisionManager::GetInstance();
 	collisionManager->Clear();
-
+#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_TAB)) {
 		isDebug_ ^= true;
 		if (isDebug_) {
@@ -96,7 +100,9 @@ void StageScene::Update()
 			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
 			viewProjection_.UpdateMatrix();
 		}
-	}
+}
+#endif // _DEBUG
+
 	goal_->Update();
 
 	background_->Update();
@@ -126,11 +132,18 @@ void StageScene::Update()
 	}
 
 	// クリアフラグ
-	if (player_->GetIsClear() ||
-		Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+	if (player_->GetIsClear()) {
 		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
+
+#ifdef _DEBUG
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+		sceneNo_ = CLEAR;
+	}
+#endif // _DEBUG
+
 
 	ParticleManager::GetInstance()->Update();
 }

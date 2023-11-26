@@ -1121,9 +1121,7 @@ void (Player::* Player::spStateUpdateFuncTable[])() {
 };
 
 void Player::Update() {
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
 	if (stateRequest_) {
 		state_ = stateRequest_.value();

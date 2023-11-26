@@ -205,9 +205,7 @@ void ClearSprites::Update() {
 		}
 	}
 	
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 }
 
 void ClearSprites::Draw() {

@@ -185,7 +185,6 @@ void NeedleManager::FirstInit()
 void NeedleManager::Init()
 {
 	Clear();
-	SetGlobalVariable();
 	countFrame_ = 0;
 }
 
@@ -218,6 +217,8 @@ void NeedleManager::Clear()
 
 void NeedleManager::Update()
 {
+	ApplyGlobalVariable();
+
 	countFrame_++;
 
 	for (const std::unique_ptr<Needle>& needle : needles_) {
