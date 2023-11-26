@@ -51,13 +51,13 @@ private:
 	static const int MaxDigits = 3;
 
 	enum SpriteNames {
-		kItemSprite,
+		kTimerSprite,
 		kSlash,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
-		"アイテムの",
+		"タイマーの",
 		"スラッシュの"
 	};
 
