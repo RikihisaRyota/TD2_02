@@ -51,6 +51,7 @@ Player::Player() {
 
 	isJump_ = true;
 	isRight_ = true;
+	isClear_ = false;
 	velocity_ = {};
 	parameters_[FloatParameterNames::kMoveSpeed] = 0.1f;
 	parameters_[FloatParameterNames::kJumpInitialVelocity] = 1.0f;
@@ -85,8 +86,8 @@ void Player::Initialize() {
 	modelWorldTransforms_.at(Parts::kMain).translate_ = { 0.0f,0.0f,0.0f };
 
 	modelWorldTransforms_.at(Parts::kTail).scale_ = { 1.0f,1.0f,1.0f };
-	modelWorldTransforms_.at(Parts::kTail).rotation_ = { 0.0f,0.0f,0.0f };
-	modelWorldTransforms_.at(Parts::kTail).translate_ = { 0.0f,0.0f,0.0f };
+	modelWorldTransforms_.at(Parts::kTail).rotation_ = { 0.0f,0.0f,0.5f };
+	modelWorldTransforms_.at(Parts::kTail).translate_ = { -0.9f,-0.1f,0.0 };
 
 	UpdateMatrix();
 
@@ -94,6 +95,7 @@ void Player::Initialize() {
 	isJump_ = true;
 	velocity_ = {};
 
+	isCollisionGoal_ = false;
 	isDead_ = false;
 	isChangeCamera_ = false;
 	isClear_ = false;
@@ -985,6 +987,7 @@ void Player::ClearMoveInitialize() {
 	clearRot_ = 0.0f;
 	preClearScale_ = worldTransform_.scale_;
 	isChangeCamera_ = true;
+	isCollisionGoal_ = true;
 }
 
 void Player::ClearMoveUpdate() {
@@ -1017,18 +1020,18 @@ void Player::ClearMoveUpdate() {
 void Player::DeadModeInitialize() {
 	deathAnimationTime_ = 0.0f;
 	MaxDeathAnimationTime = 60.0f;
-	isDead_ = true;
 	DeathParticleCreate();
+	worldTransform_.scale_ = {};
 }
 
 void Player::DeadModeUpdate() {
 	if (deathAnimationTime_ >= MaxDeathAnimationTime) {
-		Initialize();
+		//Initialize();
+		isDead_ = true;
 	}
 	deathAnimationTime_ += 1.0f;
 	// プレイヤーが死んだときの処理
-	// 更新がすべて終わったら isDead_ = true; Initializeは消す
-
+	
 #ifdef _DEBUG
 
 #endif // _DEBUG

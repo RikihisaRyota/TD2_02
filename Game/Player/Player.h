@@ -75,6 +75,7 @@ public:
 	const bool GetIsChangeCamera() const { return isChangeCamera_; }
 
 	bool GetIsClear() { return isClear_; }
+	const bool* GetIsCollisionGaolPtr() const { return &isCollisionGoal_; }
 
 	const bool GetIsDead() const { return isDead_; }
 
@@ -181,6 +182,8 @@ private:
 	int jumpCount_;
 
 	bool isDead_;
+
+	bool isCollisionGoal_;
 
 	bool kIs2Jump_ = true;
 
