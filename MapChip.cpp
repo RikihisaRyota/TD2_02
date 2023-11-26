@@ -19,11 +19,12 @@
 #include "Game/Nedle/Needle.h"
 #include "ImGuiManager.h"
 #include "Game/Item/Item.h"
+#include "Game/Player/Player.h"
 
 using namespace Microsoft::WRL;
 
 void MapChip::OnCollision() {
-	for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
+	/*for (std::pair<int, int> yx : editInfo_.pairIInfo_) {
 		auto blockType = map_[yx.first][yx.second];
 		switch (blockType) {
 		case uint32_t(MapChip::UseBlocks::kBlock):
@@ -63,7 +64,7 @@ void MapChip::OnCollision() {
 			}
 			break;
 		}
-	}
+	}*/
 }
 
 void MapChip::SetCollider() {
@@ -71,7 +72,7 @@ void MapChip::SetCollider() {
 	CollisionManager::GetInstance()->SetCollider(this);
 }
 
-void MapChip::Update(const ViewProjection& viewProjection) {
+void MapChip::Update() {
 
 #ifdef _DEBUG
 	CheckChangeMap();
@@ -96,11 +97,21 @@ void MapChip::Update(const ViewProjection& viewProjection) {
 	if (ImGui::TreeNode("MapChip")) {
 		ImGui::DragFloat4("normalColor", &normalColor_.x, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat4("touchingColor", &touchingColor_.x, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("delayColor", &delayColor_, 0.01f, 0.0f, 1.0f);
+		if (ImGui::TreeNode("touch")) {
+			ImGui::Text("MinX:%d", playerTouchBlockMinX_);
+			ImGui::Text("MaxX:%d", playerTouchBlockMaxX_);
+			ImGui::Text("MinY:%d", playerTouchBlockMinY_);
+			ImGui::Text("MaxY:%d", playerTouchBlockMaxY_);
+			ImGui::TreePop();
+		}
 		ImGui::TreePop();
 	}
 	ImGui::End();
 
-	SetInstancing(viewProjection);
+	PlayerTouchBlock();
+
+	SetInstancing();
 
 	SetCollider();
 }
@@ -128,7 +139,9 @@ MapChip::MapChip() {
 	for (uint32_t stage = 0; stage < Stage::kCount; stage++) {
 		maps_.push_back(std::vector<std::vector<uint32_t>>());
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
-			blockWorldTransform_.push_back(std::vector<BlockWorldTransform>());
+			if (stage == 0) {
+				blockWorldTransform_.push_back(std::vector<BlockWorldTransform>());
+			}
 			maps_[stage].push_back(std::vector<uint32_t>());
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
 				if (stage == 0) {
@@ -168,13 +181,13 @@ MapChip::MapChip() {
 	InstancingInitialize();
 }
 
-void MapChip::Initialize(const ViewProjection& viewProjection) {
+void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
 	preMap_ = map_;
-	normalColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	normalColor_ = { 0.8f,0.8f,0.8f,1.0f };
 	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
-
-	SetInstancing(viewProjection);
+	delayColor_ = 1.0f;
+	SetInstancing();
 	CreateItems();
 }
 
@@ -462,24 +475,24 @@ ComPtr<ID3D12Resource> MapChip::CreateBuffer(UINT size) {
 	return buffer;
 }
 
-void MapChip::SetInstancing(const ViewProjection& viewProjection) {
+void MapChip::SetInstancing() {
 	for (auto& instancing : instancing_) {
 		instancing->currentInstance = 0;
 		instancing->instanceCount.clear();
 	}
-	float ratio = std::tanf(viewProjection.fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection.translate_.z) * 2;
+	float ratio = std::tanf(viewProjection_->fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection_->translate_.z) * 2;
 
 	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
-	int32_t xNum = static_cast<int32_t>(ratio * viewProjection.aspectRatio_ / int32_t(kBlockSize)) + 1;
+	int32_t xNum = static_cast<int32_t>(ratio * viewProjection_->aspectRatio_ / int32_t(kBlockSize)) + 1;
 
-	int32_t xMin = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
+	int32_t xMin = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
 	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
-	int32_t xMax = int32_t(int32_t(viewProjection.translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
+	int32_t xMax = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
 	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
-	int32_t yMin = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
+	int32_t yMin = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
 	yMin = kMaxHeightBlockNum - yMin;
 	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
-	int32_t yMax = int32_t(int32_t(viewProjection.translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
+	int32_t yMax = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
 	yMax = kMaxHeightBlockNum - yMax;
 	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
 
@@ -509,8 +522,17 @@ void MapChip::SetInstancing(const ViewProjection& viewProjection) {
 }
 
 void MapChip::SetInstancingBlock(int block, int y, int x) {
+
 	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = normalColor_;
+	if ((x >= playerTouchBlockMinX_ &&
+		x <= playerTouchBlockMaxX_) &&
+		(y >= playerTouchBlockMinY_ &&
+			y <= playerTouchBlockMaxY_)) {
+		instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = touchingColor_;
+	}
+	else {
+		instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = Lerp(instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color,normalColor_, delayColor_);
+	}
 	instancing_.at(block)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
 	instancing_.at(block)->currentInstance++;
 }
@@ -601,7 +623,7 @@ void MapChip::CheckBlockGrit(int y, int x) {
 			SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
 			return;
 		}
-		
+
 	}
 	if (x + 1 > kMaxWidthBlockNum - 1) {
 		// 左にブロック
@@ -895,4 +917,14 @@ void MapChip::CheckBlockGrit(int y, int x) {
 		return;
 	}
 	SetInstancingBlock(InstancingBlocks::kBlockNone, y, x);
+}
+
+void MapChip::PlayerTouchBlock() {
+	static const float kPlayerSize = 2.0f;
+	playerTouchBlockMaxX_ = int(player_->GetWorldTransform()->worldPos_.x + 1.5f) / 2;
+	playerTouchBlockMinX_ = int(player_->GetWorldTransform()->worldPos_.x - 1.5f) / 2;
+	int minY = int(player_->GetWorldTransform()->worldPos_.y - 1.0f + 1.5f) / 2;
+	int maxY = int(player_->GetWorldTransform()->worldPos_.y - 1.0f - 1.5f) / 2;
+	playerTouchBlockMaxY_ = kMaxHeightBlockNum - maxY;
+	playerTouchBlockMinY_ = kMaxHeightBlockNum - minY;
 }

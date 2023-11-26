@@ -46,8 +46,9 @@ StageScene::StageScene()
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
-	mapChip_->Initialize(viewProjection_);
 	mapChip_->SetViewProjection(&viewProjection_);
+	mapChip_->SetPlayer(player_.get());
+	mapChip_->Initialize();
 
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
@@ -69,7 +70,7 @@ void StageScene::Init()
 	followCamera_->Update();
 	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
-	mapChip_->Initialize(viewProjection_);
+	mapChip_->Initialize();
 	pause_->Init();
 	timer_->Init();
 	stageUi_->Init();
@@ -114,7 +115,7 @@ void StageScene::Update()
 
 	background_->Update();
 
-	mapChip_->Update(viewProjection_);
+	mapChip_->Update();
 
 	NeedleManager::GetInstance()->Update();
 

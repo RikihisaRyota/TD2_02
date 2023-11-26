@@ -3,8 +3,8 @@
 #include "MyMath.h"
 
 void Particle::Initialize(Emitter* emitter, ParticleMotion* particleMotion) {
-	emitter_.reset(emitter);
-	originalParticle_.reset(particleMotion);
+	emitter_ = emitter;
+	originalParticle_ = particleMotion;
 	flameInterval_ = emitter->flameInterval;
 	emitter->flameInterval = 0;
 	isAlive_ = true;
@@ -37,7 +37,7 @@ void Particle::Update() {
 				particle->rotate = particle->motion.rotate.currentRotate;
 				particle->transform = particle->motion.position;
 				particle->UpdateMatrix();
-				particleWorldTransform_.emplace_back(std::move(particle));
+				particleWorldTransform_.emplace_back(particle);
 
 			}
 			emitter_->flameInterval = flameInterval_;
@@ -96,7 +96,7 @@ void Particle::Update() {
 	// 死んでいたら消す
 	particleWorldTransform_.erase(std::remove_if(
 		particleWorldTransform_.begin(), particleWorldTransform_.end(),
-		[](const std::unique_ptr<ParticleWorldTransform>& particle) {
+		[](const ParticleWorldTransform* particle) {
 			return !particle->motion.isAlive;
 		}),
 		particleWorldTransform_.end()
@@ -114,8 +114,8 @@ void Particle::Reset() {
 	particleWorldTransform_.clear();
 	isAlive_ = false;
 	numAliveParticle_ = 0;
-	emitter_.reset();
-	originalParticle_.reset();
+	emitter_=nullptr;
+	originalParticle_=nullptr;
 }
 
 

@@ -36,7 +36,7 @@ public:
 	void AddParticle(Emitter* emitter, ParticleMotion* particleMotion,uint32_t textureHandle);
 private:
 	static const size_t kNumInstancing = 100;
-	static bool CompareParticles(const std::unique_ptr<Instancing>& a, const std::unique_ptr<Instancing>& b) {
+	static bool CompareParticles(const Instancing* a, const Instancing* b) {
 		return a->isAlive_> b->isAlive_;
 	}
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBuffer(UINT size);
@@ -60,7 +60,7 @@ private:
 	std::vector<uint16_t> indices_;
 #pragma endregion
 #pragma region 
-	std::vector<std::unique_ptr<Instancing>> instancing_;
+	std::vector<Instancing*> instancing_;
 	// マテリアルリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuff_;
 	// マテリアル

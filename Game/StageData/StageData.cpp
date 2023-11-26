@@ -2,9 +2,9 @@
 
 #include "GlobalVariables/GlobalVariables.h"
 
-StageData::Data StageData::data_[MapChip::kCount];
+StageData::Data StageData::data_[MapChip::Stage::kCount];
 
-std::string StageData::stageNames_[MapChip::kCount] = {
+std::string StageData::stageNames_[MapChip::Stage::kCount] = {
 		"ステージ1",
 		"ステージ2",
 		"ステージ3",
@@ -19,7 +19,7 @@ std::string StageData::stageNames_[MapChip::kCount] = {
 std::string StageData::v2ItemNames_[V2ItemNames::kV2ItemCount] = {
 		"クリア条件タイム",
 };
-int StageData::v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
+int StageData::v2Info_[MapChip::Stage::kCount][V2ItemNames::kV2ItemCount];
 std::string StageData::groupName_ = "stageData";
 
 
@@ -54,7 +54,7 @@ void StageData::SetGlobalVariable() {
 void StageData::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	for (int i = 0; i < MapChip::kCount; i++) {
+	for (int i = 0; i < MapChip::Stage::kCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = globalVariables->GetIntValue(groupName_, stageNames_[i] + v2ItemNames_[j]);
 		}
