@@ -9,30 +9,24 @@
 #include <optional>
 #include "Sprite.h"
 
-class TimerManager
+class Timer
 {
 public:
-	static TimerManager* GetInstance();
-
-	void FirstInit();
+	Timer();
 
 	void Init();
 
 	void Update();
 
-	void Draw(const ViewProjection& viewProjection);
-
 	void DrawUI();
 
 	void SetIsClear(const bool* is) { isClear_ = is; }
 
-	const int GetTime() const { return second_; }
+	void SetStageNo(const int* no) { stage_ = no; }
+
+	const int GetTime() const { return time_; }
 
 private:
-	TimerManager() = default;
-	~TimerManager() = default;
-	TimerManager(const TimerManager&) = delete;
-	const TimerManager& operator=(const TimerManager&) = delete;
 
 	void SetGlobalVariable();
 
@@ -47,6 +41,8 @@ private:
 	int time_;
 
 	int second_;
+
+	const int* stage_;
 
 	const bool* isClear_ = nullptr;
 
@@ -91,7 +87,7 @@ private:
 	std::array<std::array<std::unique_ptr<Sprite>, MaxDigits>, DrawNumType::kNumTypeCount> numSprites_;
 
 	std::string numItemNames[DrawNumType::kNumTypeCount] = {
-		"タイマーの",
+		"数字の",
 	};
 
 	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
@@ -100,7 +96,7 @@ private:
 
 	const std::string groupName_ = "Timer";
 
-	int countFrame_;
+	const std::string groupName2_ = "selectSprites";
 
 	enum FInfoNames {
 		kNumericInterval,

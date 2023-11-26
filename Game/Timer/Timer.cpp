@@ -8,16 +8,11 @@
 #include "MapChip.h"
 #include <numbers>
 #include "TextureManager.h"
+#include "SceneSystem/IScene/IScene.h"
+#include "Game/StageData/StageData.h"
 
-TimerManager* TimerManager::GetInstance()
+Timer::Timer()
 {
-	static TimerManager instance;
-	return &instance;
-}
-
-void TimerManager::FirstInit()
-{
-	
 	uint32_t tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTimerSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
@@ -57,17 +52,16 @@ void TimerManager::FirstInit()
 	SetGlobalVariable();
 }
 
-void TimerManager::Init()
+void Timer::Init()
 {
 	SetSpriteSize();
 	SetNumTeces();
-	countFrame_ = 0;
 	time_ = 0;
 	second_ = 0;
 }
 
 
-void TimerManager::SetNumTeces()
+void Timer::SetNumTeces()
 {
 	int num = second_;
 	int drawNum = 0;
@@ -75,11 +69,23 @@ void TimerManager::SetNumTeces()
 		drawNum = num / int(pow(10, MaxDigits - 1 - i));
 		num = num % int(pow(10, MaxDigits - 1 - i));
 
-		numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+		if (isClear_) {
+
+			if (second_ <= StageData::GetConditionTime(IScene::stageNo_)) {
+				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+			}
+			else {
+				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
+			}
+
+		}
+		else {
+			numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+		}
 	}
 }
 
-void TimerManager::SetSpriteSize()
+void Timer::SetSpriteSize()
 {
 	sprites_[SpriteNames::kTimerSprite]->SetSize(timerSize_ * fInfo_[FInfoNames::kTimerScale]);
 
@@ -90,27 +96,44 @@ void TimerManager::SetSpriteSize()
 	}
 }
 
-void TimerManager::Update()
+void Timer::Update()
 {
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
-	countFrame_++;
+	if (isClear_) {
+		if (!*isClear_) {
 
+			time_++;
 
+			second_ = time_ / 60;
 
-	/*for (const std::unique_ptr<Item>& item : items_) {
-		item->Update();
-	}*/
+			if (second_ >= 999) {
+				second_ = 999;
+			}
+			else if (second_ < 0) {
+				second_ = 0;
+			}
+
+			SetNumTeces();
+		}
+	}
+	else if (stage_) {
+
+		second_ = StageData::GetConditionTime(*stage_) / 60;
+
+		if (second_ >= 999) {
+			second_ = 999;
+		}
+		else if (second_ < 0) {
+			second_ = 0;
+		}
+
+		SetNumTeces();
+	}
+
 }
 
-void TimerManager::Draw(const ViewProjection& viewProjection)
-{
-	
-}
-
-void TimerManager::DrawUI()
+void Timer::DrawUI()
 {
 	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Draw();
@@ -123,7 +146,7 @@ void TimerManager::DrawUI()
 	}
 }
 
-void TimerManager::SetGlobalVariable()
+void Timer::SetGlobalVariable()
 {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
@@ -147,30 +170,70 @@ void TimerManager::SetGlobalVariable()
 		globalVariables->AddItem(groupName_, iInfoNames_[i], iInfo_[i]);
 	}*/
 
-	ApplyGlobalVariable();
-}
-
-void TimerManager::ApplyGlobalVariable()
-{
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	globalVariables->CreateGroup(groupName2_);
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
-			v2Info_[i][j] = globalVariables->GetVector2Value(groupName_, spriteNames_[i] + v2ItemNames_[j]);
+			globalVariables->AddItem(groupName2_, spriteNames_[i] + v2ItemNames_[j], v2Info_[i][j]);
 		}
-
-		sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
-	}
-
-	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
-		fInfo_[i] = globalVariables->GetFloatValue(groupName_, fInfoNames_[i]);
 	}
 
 	for (int i = 0; i < DrawNumType::kNumTypeCount; i++) {
-		numPoses_[i] = globalVariables->GetVector2Value(groupName_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
-		
-		numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
-		numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+		globalVariables->AddItem(groupName2_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos], numPoses_[i]);
+	}
+
+	for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
+		globalVariables->AddItem(groupName2_, fInfoNames_[i], fInfo_[i]);
+	}
+
+	ApplyGlobalVariable();
+}
+
+void Timer::ApplyGlobalVariable()
+{
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+
+	if (stage_) {
+		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+			for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
+				v2Info_[i][j] = globalVariables->GetVector2Value(groupName2_, spriteNames_[i] + v2ItemNames_[j]);
+			}
+
+			sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
+		}
+
+		for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
+			fInfo_[i] = globalVariables->GetFloatValue(groupName2_, fInfoNames_[i]);
+		}
+
+		for (int i = 0; i < DrawNumType::kNumTypeCount; i++) {
+			numPoses_[i] = globalVariables->GetVector2Value(groupName2_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
+
+			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition(numPoses_[i]);
+			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+		}
+	}
+	else {
+		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+			for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
+				v2Info_[i][j] = globalVariables->GetVector2Value(groupName_, spriteNames_[i] + v2ItemNames_[j]);
+			}
+
+			sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
+		}
+
+		for (int i = 0; i < FInfoNames::kFInfoCount; i++) {
+			fInfo_[i] = globalVariables->GetFloatValue(groupName_, fInfoNames_[i]);
+		}
+
+		for (int i = 0; i < DrawNumType::kNumTypeCount; i++) {
+			numPoses_[i] = globalVariables->GetVector2Value(groupName_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
+
+			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition(numPoses_[i]);
+			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+		}
 	}
 
 	/*for (int i = 0; i < IInfoNames::kIInfoCount; i++) {

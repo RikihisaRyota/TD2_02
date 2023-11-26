@@ -41,6 +41,7 @@ StageScene::StageScene()
 	mapChipEditor_ = std::make_unique<MapChipEditor>();
 	player_ = std::make_unique<Player>();
 	pause_ = std::make_unique<Pause>();
+	timer_ = std::make_unique<Timer>();
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
@@ -53,6 +54,7 @@ StageScene::StageScene()
 	
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	pause_->SetIsClear(player_->GetIsCollisionGaolPtr());
+	timer_->SetIsClear(player_->GetIsCollisionGaolPtr());
 }
 
 void StageScene::Init()
@@ -68,6 +70,7 @@ void StageScene::Init()
 	mapChip_->SetCurrentStage(IScene::stageNo_);
 	mapChip_->Initialize(viewProjection_);
 	pause_->Init();
+	timer_->Init();
 }
 
 void StageScene::Update()
@@ -83,6 +86,8 @@ void StageScene::Update()
 		sceneNo_ = SELECT;
 		return;
 	}
+
+	timer_->Update();
 
 
 	CollisionManager* collisionManager = CollisionManager::GetInstance();
@@ -133,13 +138,13 @@ void StageScene::Update()
 
 	// クリアフラグ
 	if (player_->GetIsClear()) {
-		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 
 #ifdef _DEBUG
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
-		StageData::SetData(player_->GetClearTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
 		sceneNo_ = CLEAR;
 	}
 #endif // _DEBUG
@@ -224,6 +229,7 @@ void StageScene::UIDraw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+	timer_->DrawUI();
 	pause_->Draw();
 
 	// スプライト描画後処理

@@ -25,6 +25,12 @@ void SelectScene::Init()
 
 void SelectScene::Update()
 {
+
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::BACK)) {
+		IScene::sceneNo_ = TITLE;
+		return;
+	}
+
 	// この中に遷移フラグあり
 	selectSprites_->Update();
 
