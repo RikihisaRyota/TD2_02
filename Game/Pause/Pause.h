@@ -12,6 +12,7 @@ public:
 	void Draw();
 
 	const bool GetIsRetry() const { return isRetry_; }
+	const bool GetIsStageSelect() const { return isSelect_; }
 	void SetIsClear(const bool* is) { isClear_ = is; }
 
 private:
@@ -32,14 +33,17 @@ private:
 
 	bool isRetry_;
 
+	bool isSelect_;
 
 	enum SpriteNames {
 		kRetry,
+		kStageSelect,
 		kSpriteCount,
 	};
 
 	std::array<std::string, SpriteNames::kSpriteCount> spriteNames_ = {
 		"リトライの",
+		"ステージセレクトの",
 	};
 
 	enum V2ItemNames {

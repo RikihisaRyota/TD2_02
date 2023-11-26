@@ -111,9 +111,7 @@ void (SelectSprites::* SelectSprites::spStateUpdateFuncTable[])() {
 
 void SelectSprites::Update() {
 
-#ifdef _DEBUG
 	ApplyGlobalVariable();
-#endif // _DEBUG
 
 
 	if (stateRequest_) {

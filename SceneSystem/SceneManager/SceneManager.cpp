@@ -55,10 +55,12 @@ int SceneManager::Run() {
 
 		DirectXCommon::GetInstance()->Update();
 
+#ifdef _DEBUG
 		ImGui::Begin("fps");
 		ImGui::Text("Frame rate: %3.0f fps", ImGui::GetIO().Framerate);
 		ImGui::Text("Delta Time: %.4f", ImGui::GetIO().DeltaTime);
 		ImGui::End();
+#endif // _DEBUG
 
 		StageData::Update();
 		// ゲームシーンの毎フレーム処理
@@ -98,7 +100,9 @@ int SceneManager::Run() {
 		// シーン遷移の描画
 		sceneChange_->Draw();
 		// ImGui描画
+#ifdef _DEBUG
 		ImGuiManager::GetInstance()->Draw();
+#endif // DEBUG
 		DirectXCommon::GetInstance()->PostUIDraw();
 
 		soundManager_->Update();
