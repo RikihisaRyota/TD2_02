@@ -647,7 +647,7 @@ void Player::WallJumpInitialize() {
 
 		if (jumpCount_ >= 1) {
 			jumpCount_++;
-			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2JumpMagnification];
+			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2WallJumpMagnification];
 		}
 		else {
 			jumpCount_ = 1;
