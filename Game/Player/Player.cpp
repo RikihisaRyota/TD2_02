@@ -16,6 +16,7 @@
 
 #include "Ease/Ease.h"
 #include <numbers>
+#include "MapChip.h"
 
 Player::Player() {
 
@@ -111,6 +112,32 @@ void Player::UpdateMatrix() {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		modelWorldTransforms_[i].UpdateMatrix();
 	}
+}
+
+void Player::ChangeStateGrip2Normal(const MapChip& mapChip)
+{
+	if (state_ == State::kGripWall && !stateRequest_) {
+		if (isRight_) {
+
+			int y = kMaxHeightBlockNum - static_cast<int>((worldTransform_.worldPos_.y + worldTransform_.scale_.y) / (kBlockSize));
+			int x = static_cast<int>((worldTransform_.worldPos_.x + worldTransform_.scale_.x * 2) / (kBlockSize));
+
+			if (MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y) && MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y + 1)) {
+				StateRequest(State::kNormal);
+			}
+
+		}
+		else {
+
+			int y = kMaxHeightBlockNum - static_cast<int>((worldTransform_.worldPos_.y + worldTransform_.scale_.y) / (kBlockSize));
+			int x = static_cast<int>((worldTransform_.worldPos_.x - worldTransform_.scale_.x * 2) / (kBlockSize));
+
+			if (MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y) && MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y + 1)) {
+				StateRequest(State::kNormal);
+			}
+		}
+	}
+
 }
 
 void Player::OnCollision() {
