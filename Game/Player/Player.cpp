@@ -820,6 +820,9 @@ void Player::ParticleUpdate() {
 		emitter_->aliveTime = 1;
 		emitter_->spawn.position = worldTransform_.worldPos_;
 		if (jumpCount_ >= 2) {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
+		else if (jumpCount_ >= 1) {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.3f,0.6f) };
 		}
 		else {
@@ -1169,7 +1172,18 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& viewProjection) {
 	if (!isDead_) {
 		for (int i = 0; i < Parts::kCountParts; i++) {
+			auto material = models_[i]->GetMaterial()->GetMaterial();
+			if (jumpCount_ >= 2) {
+				material->color_ = { 0.2f,0.2f,1.0f,1.0f };
+
+			}else if (jumpCount_ >= 1) {
+				material->color_ = { 1.0f,1.0f,0.2f,1.0f };
+			}
+			else {
+				material->color_ = { 1.0f ,1.0f ,1.0f ,1.0f };
+			}
 			models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
+			models_[i]->GetMaterial()->SetMaterial(*material);
 		}
 	}
 }
