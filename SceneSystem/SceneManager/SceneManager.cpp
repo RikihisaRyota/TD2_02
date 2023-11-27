@@ -12,6 +12,7 @@
 #include "SceneSystem/StageScene/StageScene.h"
 #include "SceneSystem/ClearScene/ClearScene.h"
 #include "ParticleManager.h"
+#include "ParticleUIManager.h"
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
@@ -69,6 +70,7 @@ int SceneManager::Run() {
 		if (preSceneChangeSceneNo_ != currentSceneChangeSceneNo_) {
 			soundManager_->SetScene(preSceneChangeSceneNo_, currentSceneChangeSceneNo_);
 			ParticleManager::GetInstance()->Initialize();
+			ParticleUIManager::GetInstance()->Initialize();
 			// シーン遷移開始
 			sceneChange_->SetSceneChange(true);
 		}

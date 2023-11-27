@@ -6,14 +6,16 @@
 
 #include "Random.h"
 #include "Vector4.h"
+#include "Matrix4x4.h"
 
-class Particle {
+class ParticleUI {
 	struct ParticleWorldTransform {
 		ParticleMotion motion;
 		Vector3 scale;
 		Vector3 rotate;
 		Vector3 transform;
 		ParticleForGPU constantDate;
+		Matrix4x4 sMatProjection;
 		void UpdateMatrix();
 	};
 public:
@@ -25,6 +27,7 @@ public:
 	uint32_t GetAliveParticle() { return numAliveParticle_; }
 	bool GetIsAlive() { return isAlive_; }
 private:
+	Matrix4x4 sMatProjection;
 	static bool CompareParticles(const ParticleWorldTransform* a, const ParticleWorldTransform* b) {
 		return a->motion.isAlive > b->motion.isAlive;
 	}

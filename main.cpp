@@ -26,6 +26,7 @@
 #include "PrimitiveDrawer.h"
 #include "Audio.h"
 #include "Game/StageData/StageData.h"
+#include "ParticleUIManager.h"
 
 static ResourceLeackChecker leakCheck;
 
@@ -105,6 +106,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// パーティクル
 	ParticleManager::GetInstance()->StaticInitialize();
+	ParticleUIManager::GetInstance()->StaticInitialize();
 
 	// モデル
 	ModelManager::GetInstance()->LoadModel(
@@ -147,11 +149,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	ParticleManager::GetInstance()->Shutdown();
 
+	ParticleUIManager::GetInstance()->Shutdown();
+
 	// モデル
 	ModelManager::GetInstance()->Shutdown();
-
-	// パーティクル
-	ParticleManager::GetInstance()->Shutdown();
 
 	// スプライト
 	Sprite::Release();

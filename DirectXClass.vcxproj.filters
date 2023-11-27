@@ -350,6 +350,15 @@
     <ClCompile Include="Game\StageUI\StageUI.cpp">
       <Filter>Game\StageUI</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ParticleUIGraphicsPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleUIManager.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleUI.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -656,6 +665,15 @@
     <ClInclude Include="Game\StageUI\StageUI.h">
       <Filter>Game\StageUI</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\ParticleUIGraphicsPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleUIManager.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleUI.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -703,6 +721,9 @@
       <Filter>engine\shader</Filter>
     </None>
     <None Include=".editorconfig" />
+    <None Include="Resources\Shaders\ParticleUI.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Basic.PS.hlsl">
@@ -787,6 +808,12 @@
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\MapChip.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleUI.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleUI.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
   </ItemGroup>
