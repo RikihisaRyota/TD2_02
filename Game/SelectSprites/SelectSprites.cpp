@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Ease/Ease.h"
 #include "MapChip.h"
+#include "Audio.h"
 #include <numbers>
 
 SelectSprites::SelectSprites() {
@@ -64,6 +65,8 @@ SelectSprites::SelectSprites() {
 	kStageTexSize_ = stages_[0]->GetSize().x;
 
 	nowStage_ = 0;
+
+	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
 
 	timer_ = std::make_unique<Timer>();
 	timer_->SetStageNo(&nowStage_);
@@ -284,6 +287,7 @@ void SelectSprites::SelectUpdate() {
 	TransformationUpdate();
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
 		// シーン切り替え
 		IScene::stageNo_ = nowStage_;
 		IScene::sceneNo_ = STAGE;

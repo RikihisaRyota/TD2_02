@@ -16,4 +16,6 @@ public:
 	void UIDraw() override;
 private:
 	std::unique_ptr<ClearSprites> clearSprites_;
+	// サウンド
+	int32_t choiceSoundHandle_;
 };

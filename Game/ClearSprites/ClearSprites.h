@@ -154,5 +154,7 @@ private:
 	bool starFlag_[3];
 	State state_;
 	int currentStageNo_;
+
+	
 };
 

@@ -10,11 +10,16 @@
 #include "SphereRenderer.h"
 #include "Model.h"
 
+#include "Audio.h"
+
 ClearScene::ClearScene() {
 	// カメラの初期化
 	viewProjection_.Initialize();
 
 	clearSprites_ = std::make_unique<ClearSprites>();
+
+	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
+
 }
 
 void ClearScene::Init() {
@@ -26,6 +31,7 @@ void ClearScene::Update() {
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
 			switch (clearSprites_->GetState()) {
 			case ClearSprites::State::kSelectStageState:
 				sceneNo_ = SELECT;

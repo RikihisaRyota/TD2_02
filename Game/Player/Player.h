@@ -311,6 +311,7 @@ private:
 	// 音関係
 	int32_t jumpSoundHandle_;
 	int32_t deathSoundHandle_;
+	int32_t clearSoundHandle_;
 
 	// クリアフラグ
 	bool isClear_;

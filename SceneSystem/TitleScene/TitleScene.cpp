@@ -10,6 +10,7 @@
 #include "SphereRenderer.h"
 #include "Model.h"
 
+#include "Audio.h"
 #include "MyMath.h"
 #include "ParticleUIManager.h"
 
@@ -17,6 +18,7 @@ TitleScene::TitleScene() {
 	// カメラの初期化
 	viewProjection_.Initialize();
 	titleSprites_ = std::make_unique<TitleSprites>();
+	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
 }
 
 void TitleScene::Init() {
@@ -61,6 +63,7 @@ void TitleScene::Update() {
 	}
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
 		sceneNo_ = SELECT;
 	}
 	ParticleUIManager::GetInstance()->Update();

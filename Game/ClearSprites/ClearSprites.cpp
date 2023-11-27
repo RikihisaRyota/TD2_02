@@ -1,5 +1,6 @@
 #include "ClearSprites.h"
 
+#include "Audio.h"
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/StageData/StageData.h"

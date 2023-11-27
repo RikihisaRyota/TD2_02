@@ -1,5 +1,6 @@
 #include "TitleSprites.h"
 
+#include "Audio.h"
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Input.h"

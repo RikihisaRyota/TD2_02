@@ -832,7 +832,8 @@ void Player::ParticleInitialize() {
 }
 
 void Player::ParticleUpdate() {
-	if (!isDead_) {
+	if (!isDead_ &&
+		state_ != State::kDeadMove) {
 		emitter_->aliveTime = 1;
 		emitter_->spawn.position = worldTransform_.worldPos_;
 		if (jumpCount_ >= 2) {
@@ -1011,17 +1012,18 @@ void Player::SoundInitialize() {
 	auto audio = Audio::GetInstance();
 	deathSoundHandle_ = audio->SoundLoadWave("SE/death.wav");
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
+	clearSoundHandle_ = audio->SoundLoadWave("SE/clear.wav");
 	isChangeCamera_ = true;
 }
 
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
-
 	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
 	clearRot_ = 0.0f;
 	preClearScale_ = worldTransform_.scale_;
 	isChangeCamera_ = true;
 	isCollisionGoal_ = true;
+	Audio::GetInstance()->SoundPlayWave(clearSoundHandle_);
 }
 
 void Player::ClearMoveUpdate() {
@@ -1056,12 +1058,15 @@ void Player::DeadModeInitialize() {
 	MaxDeathAnimationTime = 60.0f;
 	DeathParticleCreate();
 	worldTransform_.scale_ = {};
+	uint32_t playHandle = Audio::GetInstance()->SoundPlayWave(deathSoundHandle_);
+	Audio::GetInstance()->SetValume(playHandle,2.0f);
 }
 
 void Player::DeadModeUpdate() {
 	if (deathAnimationTime_ >= MaxDeathAnimationTime) {
 		//Initialize();
 		isDead_ = true;
+		ParticleInitialize();
 	}
 	deathAnimationTime_ += 1.0f;
 	// プレイヤーが死んだときの処理
@@ -1192,7 +1197,8 @@ void Player::Draw(const ViewProjection& viewProjection) {
 			if (jumpCount_ >= 2) {
 				material->color_ = { 0.2f,0.2f,1.0f,1.0f };
 
-			}else if (jumpCount_ >= 1) {
+			}
+			else if (jumpCount_ >= 1) {
 				material->color_ = { 1.0f,1.0f,0.2f,1.0f };
 			}
 			else {

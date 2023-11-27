@@ -159,5 +159,8 @@ private:
 
 	std::vector<std::array<bool, StageData::kMaxCondition>> condition_;
 
+	// サウンド
+	int32_t choiceSoundHandle_;
+
 };
 

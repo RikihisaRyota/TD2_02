@@ -69,8 +69,6 @@ int SceneManager::Run() {
 		currentSceneChangeSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		if (preSceneChangeSceneNo_ != currentSceneChangeSceneNo_) {
 			soundManager_->SetScene(preSceneChangeSceneNo_, currentSceneChangeSceneNo_);
-			ParticleManager::GetInstance()->Initialize();
-			ParticleUIManager::GetInstance()->Initialize();
 			// シーン遷移開始
 			sceneChange_->SetSceneChange(true);
 		}
@@ -81,6 +79,8 @@ int SceneManager::Run() {
 		else {
 			sceneChange_->Update();
 			if (sceneChange_->GetInitialize()) {
+				ParticleManager::GetInstance()->Initialize();
+				ParticleUIManager::GetInstance()->Initialize();
 				currentSceneNo_ = currentSceneChangeSceneNo_;
 				preSceneNo_ = preSceneChangeSceneNo_;
 				sceneArr_[currentSceneNo_]->Init();
