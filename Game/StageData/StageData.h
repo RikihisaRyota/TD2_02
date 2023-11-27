@@ -27,6 +27,7 @@ public:
 public:
 	StageData();
 	static void Initialize();
+	static void BestInitialize();
 	static void Update();
 
 	static void SetData(int time, int itemCount, int maxItemCount, bool flag, int currentStage);
@@ -34,11 +35,18 @@ public:
 
 	static int GetClearTime(int currentStage) {return data_[currentStage].clearTime;}
 	static int GetConditionTime(int currentStage) {return data_[currentStage].conditionTime;}
+	
+	static int GetBestClearTime(int currentStage) { return bestData_[currentStage].clearTime; }
+	static int GetBestConditionTime(int currentStage) { return bestData_[currentStage].conditionTime; }
 
 	static int GetClearItemCount(int currentStage) {return data_[currentStage].clearItemCount;}
 	static int GetConditionItemCount(int currentStage) {return data_[currentStage].conditionItemCount;}
+
+	static int GetBestClearItemCount(int currentStage) { return bestData_[currentStage].clearItemCount; }
+	static int GetBestConditionItemCount(int currentStage) { return bestData_[currentStage].conditionItemCount; }
 	
 	static bool GetClearFlag(int currentStage) {return data_[currentStage].isClear;}
+	static bool GetBestClearFlag(int currentStage) { return bestData_[currentStage].isClear; }
 	
 	static void SetConditionTime(int conditionTime,int currentStage) { data_[currentStage].conditionTime = conditionTime; }
 	static void SetClearTime(int clearTime, int currentStage) { data_[currentStage].clearTime = clearTime; }
@@ -51,6 +59,7 @@ private:
 	static void SetGlobalVariable();
 	static void ApplyGlobalVariable();
 	static Data data_[MapChip::kCount];
+	static Data bestData_[MapChip::kCount];
 
 	static std::string stageNames_[MapChip::kCount];
 

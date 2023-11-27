@@ -3,6 +3,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 
 StageData::Data StageData::data_[MapChip::Stage::kCount];
+StageData::Data StageData::bestData_[MapChip::Stage::kCount];
 
 std::string StageData::stageNames_[MapChip::Stage::kCount] = {
 		"ステージ1",
@@ -25,10 +26,22 @@ std::string StageData::groupName_ = "stageData";
 
 StageData::StageData() {
 	SetGlobalVariable();
+	BestInitialize();
 }
 
 void StageData::Initialize() {
 	SetGlobalVariable();
+	BestInitialize();
+}
+
+void StageData::BestInitialize() {
+	for (auto& data : bestData_) {
+		data.clearTime = 9999;
+		data.conditionTime = 9999;
+		data.clearItemCount = -9999;
+		data.conditionItemCount = 9999;
+		data.isClear = false;
+	}
 }
 
 void StageData::Update() {
@@ -59,12 +72,24 @@ void StageData::ApplyGlobalVariable() {
 			v2Info_[i][j] = globalVariables->GetIntValue(groupName_, stageNames_[i] + v2ItemNames_[j]);
 		}
 		data_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime]) * 60;
+		bestData_[i].conditionTime = int(v2Info_[i][V2ItemNames::kConditionTime]) * 60;
 	}
 }
 
 void StageData::SetData(int time, int itemCount,int maxItemCount ,bool flag, int currentStage) {
 	SetClearTime(time, currentStage);
+	if (data_[currentStage].clearTime <= bestData_[currentStage].clearTime) {
+		bestData_[currentStage].clearTime = data_[currentStage].clearTime;
+	}
 	SetClearItemCount(itemCount, currentStage);
+	if (data_[currentStage].clearItemCount >= bestData_[currentStage].clearItemCount) {
+		bestData_[currentStage].clearItemCount = data_[currentStage].clearItemCount;
+	}
 	SetConditionItemCount(maxItemCount, currentStage);
+	bestData_[currentStage].conditionItemCount = data_[currentStage].conditionItemCount;
 	SetClearFlag(flag, currentStage);
+	if (data_[currentStage].isClear==true &&
+		bestData_[currentStage].isClear == false) {
+		bestData_[currentStage].isClear = true;
+	}
 }

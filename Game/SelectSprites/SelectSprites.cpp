@@ -70,19 +70,19 @@ void SelectSprites::Init() {
 	nowStage_ = IScene::stageNo_;
 
 	for (int stage = 0; stage < MapChip::Stage::kCount; stage++) {
-		if (StageData::GetClearFlag(stage)) {
+		if (StageData::GetBestClearFlag(stage)) {
 			// クリアしているか
 			condition_.at(stage).at(0) = StageData::GetClearFlag(stage);
 
 			// 時間
-			if (StageData::GetClearTime(stage) <= StageData::GetConditionTime(stage)) {
+			if (StageData::GetBestClearTime(stage) <= StageData::GetConditionTime(stage)) {
 				condition_.at(stage).at(1) = true;
 			}
 			else {
 				condition_.at(stage).at(1) = false;
 			}
 			// アイテム数
-			if (StageData::GetClearItemCount(stage) >= StageData::GetConditionTime(stage)) {
+			if (StageData::GetBestClearItemCount(stage) >= StageData::GetBestConditionItemCount(stage)) {
 				condition_.at(stage).at(2) = true;
 			}
 			else {
