@@ -631,14 +631,14 @@ void Player::GripWallUpdate() {
 void Player::WallJumpInitialize() {
 	velocity_ = {};
 
-	if (isRight_) {
-		// 右の壁
-		velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
-	}
-	else {
-		// 左の壁
-		velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
-	}
+	//if (isRight_) {
+	//	// 右の壁
+	//	velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+	//}
+	//else {
+	//	// 左の壁
+	//	velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+	//}
 
 	if (kIs2WallJump_) {
 		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
@@ -647,10 +647,26 @@ void Player::WallJumpInitialize() {
 
 		if (jumpCount_ >= 1) {
 			jumpCount_++;
-			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2JumpMagnification];
+			if (isRight_) {
+				// 右の壁
+				velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX] * parameters_[FloatParameterNames::k2WallJumpMagnification];
+			}
+			else {
+				// 左の壁
+				velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX] * parameters_[FloatParameterNames::k2WallJumpMagnification];
+			}
+			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2WallJumpMagnification];
 		}
 		else {
 			jumpCount_ = 1;
+			if (isRight_) {
+				// 右の壁
+				velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+			}
+			else {
+				// 左の壁
+				velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+			}
 			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
 		}
 	}

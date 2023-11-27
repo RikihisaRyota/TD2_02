@@ -41,6 +41,7 @@ void Needle::Init(const Vector3& pos)
 	worldTransform_.Reset();
 	worldTransform_.rotation_.z = std::numbers::pi_v<float>;
 	worldTransform_.translate_ = pos;
+	worldTransform_.scale_ *= 2;
 	pos_ = worldTransform_.translate_;
 	worldTransform_.UpdateMatrix();
 	isLife_ = true;
