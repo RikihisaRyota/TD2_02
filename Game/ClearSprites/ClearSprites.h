@@ -6,6 +6,8 @@
 #include "Input.h"
 #include "Sprite.h"
 #include "Random.h"
+#include "ParticleManager.h"
+#include "ParticleShaderStruct.h"
 
 class ClearSprites {
 public:
@@ -24,6 +26,8 @@ public:
 
 	int GetState() { return state_; }
 private:
+	void ParticleInitialize();
+	void ParticleUpdate();
 
 	/// <summary>
 	/// jsonファイルへの書き込み
@@ -154,5 +158,8 @@ private:
 	bool starFlag_[3];
 	State state_;
 	int currentStageNo_;
+
+	Emitter* emitter_;
+	ParticleMotion* particleMotion_;
 };
 

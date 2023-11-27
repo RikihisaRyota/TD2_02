@@ -68,4 +68,6 @@ private:
 	static int v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
 
 	static std::string groupName_;
+
+
 };

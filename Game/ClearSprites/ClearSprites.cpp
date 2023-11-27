@@ -6,6 +6,7 @@
 #include "MapChip.h"
 #include "SceneSystem/IScene/IScene.h"
 
+
 ClearSprites::ClearSprites() {
 	input_ = Input::GetInstance();
 
@@ -335,6 +336,8 @@ void ClearSprites::Draw() {
 		i++;
 	}
 }
+void ClearSprites::ParticleInitialize() {}
+void ClearSprites::ParticleUpdate() {}
 void ClearSprites::SetGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
