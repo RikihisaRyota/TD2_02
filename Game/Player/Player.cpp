@@ -363,6 +363,10 @@ void Player::NormalUpdate() {
 		MoveInit();
 	}
 
+	if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+		jumpCount_ = 0;
+	}
+
 	velocity_.x = 0.0f;
 	velocity_ += move;
 
@@ -470,6 +474,7 @@ void Player::GripWallInitialize() {
 	else {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 	}
+
 	velocity_ = {};
 	countFrame_ = 0;
 
@@ -481,6 +486,10 @@ void Player::GripWallInitialize() {
 void Player::GripWallUpdate() {
 
 	countFrame_++;
+
+	if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+		jumpCount_ = 0;
+	}
 
 	Input* input = Input::GetInstance();
 
@@ -810,7 +819,12 @@ void Player::ParticleUpdate() {
 	if (!isDead_) {
 		emitter_->aliveTime = 1;
 		emitter_->spawn.position = worldTransform_.worldPos_;
-		particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		if (jumpCount_ >= 2) {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
+		else {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
 		//particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.4f) };
 		particleMotion_->color.currentColor = particleMotion_->color.startColor;
 	}
@@ -897,7 +911,7 @@ void Player::DeathParticleCreate() {
 	particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
 	particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
 	particleMotion->scale.currentScale = particleMotion->scale.startScale;
-	particleMotion->rotate.addRotate = {0.0f,0.0f,0.0f };
+	particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 	particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
 	particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
@@ -908,7 +922,7 @@ void Player::DeathParticleCreate() {
 	particleMotion->aliveTime.randomRange = 0;
 	particleMotion->isAlive = true;
 	ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
-	
+
 	Emitter* horizontalEmitter = new Emitter();
 	ParticleMotion* horizontalParticleMotion = new ParticleMotion();
 
@@ -1032,7 +1046,7 @@ void Player::DeadModeUpdate() {
 	}
 	deathAnimationTime_ += 1.0f;
 	// プレイヤーが死んだときの処理
-	
+
 #ifdef _DEBUG
 
 #endif // _DEBUG
