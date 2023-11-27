@@ -27,27 +27,26 @@ void ClearScene::Init() {
 }
 
 void ClearScene::Update() {
-	clearSprites_->Update();
 	// フラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
-		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
-			Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
-			switch (clearSprites_->GetState()) {
-			case ClearSprites::State::kSelectStageState:
-				sceneNo_ = SELECT;
-				break;
-			case ClearSprites::State::kRetryState:
-				sceneNo_ = STAGE;
-				break;
-			case ClearSprites::State::kNextStageState:
-				sceneNo_ = STAGE;
-				stageNo_++;
-				break;
-			default:
-				break;
-			}
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)&&
+		!clearSprites_->GetAnimationFlag()) {
+		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		switch (clearSprites_->GetState()) {
+		case ClearSprites::State::kSelectStageState:
+			sceneNo_ = SELECT;
+			break;
+		case ClearSprites::State::kRetryState:
+			sceneNo_ = STAGE;
+			break;
+		case ClearSprites::State::kNextStageState:
+			sceneNo_ = STAGE;
+			stageNo_++;
+			break;
+		default:
+			break;
 		}
 	}
+	clearSprites_->Update();
 }
 
 void ClearScene::Draw() {

@@ -34,8 +34,24 @@ void ParticleUI::Update() {
 				particle->motion.velocity.velocity = vector * rnd_.NextFloatRange(particle->motion.velocity.speed - particle->motion.velocity.randomRange, particle->motion.velocity.speed + particle->motion.velocity.randomRange);
 				particle->motion.position.x = rnd_.NextFloatRange(emitter_->spawn.position.x - emitter_->spawn.rangeX, emitter_->spawn.position.x + emitter_->spawn.rangeX);
 				particle->motion.position.y = rnd_.NextFloatRange(emitter_->spawn.position.y - emitter_->spawn.rangeY, emitter_->spawn.position.y + emitter_->spawn.rangeY);
+
 				particle->motion.aliveTime.time = rnd_.NextIntRange(particle->motion.aliveTime.time - particle->motion.aliveTime.randomRange, particle->motion.aliveTime.time + particle->motion.aliveTime.randomRange);
 				particle->motion.aliveTime.maxTime = particle->motion.aliveTime.time;
+
+				particle->motion.scale.startScale.x = rnd_.NextFloatRange(emitter_->scale.startScale.x - emitter_->randomScale.startRandomRange.x, emitter_->scale.startScale.x + emitter_->randomScale.startRandomRange.x);
+				particle->motion.scale.startScale.y = rnd_.NextFloatRange(emitter_->scale.startScale.y - emitter_->randomScale.startRandomRange.y, emitter_->scale.startScale.y + emitter_->randomScale.startRandomRange.y);
+				particle->motion.scale.startScale.z = rnd_.NextFloatRange(emitter_->scale.startScale.z - emitter_->randomScale.startRandomRange.z, emitter_->scale.startScale.z + emitter_->randomScale.startRandomRange.z);
+
+				particle->motion.scale.interimScale.x = rnd_.NextFloatRange(emitter_->scale.interimScale.x - emitter_->randomScale.interimRandomRange.x, emitter_->scale.interimScale.x + emitter_->randomScale.interimRandomRange.x);
+				particle->motion.scale.interimScale.y = rnd_.NextFloatRange(emitter_->scale.interimScale.y - emitter_->randomScale.interimRandomRange.y, emitter_->scale.interimScale.y + emitter_->randomScale.interimRandomRange.y);
+				particle->motion.scale.interimScale.z = rnd_.NextFloatRange(emitter_->scale.interimScale.z - emitter_->randomScale.interimRandomRange.z, emitter_->scale.interimScale.z + emitter_->randomScale.interimRandomRange.z);
+
+				particle->motion.scale.endScale.x = rnd_.NextFloatRange(emitter_->scale.endScale.x - emitter_->randomScale.endRandomRange.x, emitter_->scale.endScale.x + emitter_->randomScale.endRandomRange.x);
+				particle->motion.scale.endScale.y = rnd_.NextFloatRange(emitter_->scale.endScale.y - emitter_->randomScale.endRandomRange.y, emitter_->scale.endScale.y + emitter_->randomScale.endRandomRange.y);
+				particle->motion.scale.endScale.z = rnd_.NextFloatRange(emitter_->scale.endScale.z - emitter_->randomScale.endRandomRange.z, emitter_->scale.endScale.z + emitter_->randomScale.endRandomRange.z);
+
+				particle->motion.scale.currentScale = particle->motion.scale.startScale;
+
 				particle->motion.isAlive = true;
 				// ワールドトランスフォーム
 				particle->constantDate.color = particle->motion.color.currentColor;
@@ -133,8 +149,8 @@ void ParticleUI::ParticleWorldTransform::UpdateMatrix() {
 
 	// スケール、回転、平行移動行列の計算
 	matScale = MakeScaleMatrix(scale);
-	matRot *= MakeRotateXYZMatrix(rotate);
-	matTrans = MakeTranslateMatrix(Vector3(transform.x, transform.y,0.0f));
+	matRot = MakeRotateXYZMatrix(rotate);
+	matTrans = MakeTranslateMatrix(Vector3(transform.x, transform.y, 0.0f));
 
 	// ワールド行列の合成
 	constantDate.matWorld = MakeIdentity4x4(); // 変形をリセット

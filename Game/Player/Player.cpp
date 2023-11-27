@@ -807,6 +807,8 @@ void Player::ParticleInitialize() {
 	emitter_->spawn.position = worldTransform_.worldPos_;
 	emitter_->spawn.rangeX = 0.0f;
 	emitter_->spawn.rangeY = 0.0f;
+	emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
+	emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
 	emitter_->inOnce = 2;
 	//emitter_->angle.start = DegToRad(0.0f);
 	//emitter_->angle.end = DegToRad(180.0f);
@@ -815,8 +817,6 @@ void Player::ParticleInitialize() {
 	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
 	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
-	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
 	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
 	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
 	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
@@ -861,6 +861,8 @@ void Player::WallParticleCreate(const Vector2& vector) {
 		emitter->spawn.position = worldTransform_.worldPos_;
 		emitter->spawn.rangeX = 1.5f;
 		emitter->spawn.rangeY = 1.5f;
+		emitter->scale.startScale = { 0.3f,0.3f,0.3f };
+		emitter->scale.endScale = { 0.01f,0.01f,0.01f };
 		emitter->inOnce = 20;
 		// 右の壁
 		if (vector.x < 0) {
@@ -899,9 +901,6 @@ void Player::WallParticleCreate(const Vector2& vector) {
 		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.5f,0.8f),1.0f };
 		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.1f,0.5f),0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
-		particleMotion->scale.startScale = { 0.3f,0.3f,0.3f };
-		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
@@ -920,6 +919,8 @@ void Player::DeathParticleCreate() {
 	emitter->spawn.position = worldTransform_.worldPos_;
 	emitter->spawn.rangeX = 0.0f;
 	emitter->spawn.rangeY = 0.0f;
+	emitter->scale.startScale= { 0.5f,0.5f,0.5f };
+	emitter->scale.endScale= { 0.01f,0.01f,0.01f };
 	emitter->inOnce = 60;
 	emitter->angle.start = DegToRad(0.0f);
 	emitter->angle.end = DegToRad(360.0f);
@@ -928,9 +929,6 @@ void Player::DeathParticleCreate() {
 	particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),1.0f };
 	particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),0.0f };
 	particleMotion->color.currentColor = particleMotion->color.startColor;
-	particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
-	particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-	particleMotion->scale.currentScale = particleMotion->scale.startScale;
 	particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 	particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
@@ -1195,7 +1193,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 		for (int i = 0; i < Parts::kCountParts; i++) {
 			auto material = models_[i]->GetMaterial()->GetMaterial();
 			if (jumpCount_ >= 2) {
-				material->color_ = { 0.2f,0.2f,1.0f,1.0f };
+				material->color_ = { 1.0f,0.5f,0.2f,1.0f };
 
 			}
 			else if (jumpCount_ >= 1) {

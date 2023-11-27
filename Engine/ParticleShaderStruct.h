@@ -53,9 +53,17 @@ struct Spawn {
     float rangeY;
 };
 
+struct RandomScale {
+    Vector3 startRandomRange;
+    Vector3 interimRandomRange;
+    Vector3 endRandomRange;
+};
+
 struct Emitter {
     Spawn spawn;
     Angel angle;
+    RandomScale randomScale;
+    Scale scale;
     int32_t inOnce;
     int32_t flameInterval;
     int32_t aliveTime;

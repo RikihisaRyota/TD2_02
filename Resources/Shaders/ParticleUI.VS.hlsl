@@ -18,7 +18,7 @@ struct VertexShaderInput
 VSOutput main(VertexShaderInput input, uint instanceID : SV_InstanceID)
 {
     VSOutput output; // ピクセルシェーダーに渡す値
-    output.svpos = mul(gParticleForGPU[instanceID].world, input.position);
+    output.svpos = mul(input.position, gParticleForGPU[instanceID].world);
     output.uv = input.texcoord;
     output.color = gParticleForGPU[instanceID].color;
     return output;

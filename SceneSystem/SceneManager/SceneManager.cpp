@@ -88,13 +88,14 @@ int SceneManager::Run() {
 				sceneChange_->SetInitialize(false);
 			}
 		}
-
+		ParticleUIManager::GetInstance()->Update();
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
 		DirectXCommon::GetInstance()->PreDraw();
 		// ゲームシーンの描画
 		sceneArr_[currentSceneNo_]->Draw();
+		ParticleUIManager::GetInstance()->Draw();
 		// 描画終わり
 		DirectXCommon::GetInstance()->PostDraw();
 		DirectXCommon::GetInstance()->PreUIDraw();

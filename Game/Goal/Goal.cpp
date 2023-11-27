@@ -119,6 +119,8 @@ void Goal::ParticleInitialize() {
 		emitter_[i]->spawn.position = worldTransform_.worldPos_;
 		emitter_[i]->spawn.rangeX = 0.0f;
 		emitter_[i]->spawn.rangeY = 0.0f;
+		emitter_[i]->scale.startScale = { 1.0f,1.0f,1.0f };
+		emitter_[i]->scale.endScale = { 0.01f,0.01f,0.01f };
 		emitter_[i]->inOnce = 1;
 		emitter_[i]->angle.start = 0.0f;
 		emitter_[i]->angle.end = 0.0f;
@@ -127,9 +129,6 @@ void Goal::ParticleInitialize() {
 		particleMotion_[i]->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.75f,0.8f),rnd_.NextFloatRange(0.8f,1.0f) };
 		particleMotion_[i]->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.5f,0.6f),rnd_.NextFloatRange(0.0f,0.0f) };
 		particleMotion_[i]->color.currentColor = particleMotion_[i]->color.startColor;
-		particleMotion_[i]->scale.startScale = { 1.0f,1.0f,1.0f };
-		particleMotion_[i]->scale.endScale = { 0.01f,0.01f,0.01f };
-		particleMotion_[i]->scale.currentScale = particleMotion_[i]->scale.startScale;
 		particleMotion_[i]->rotate.addRotate = { 0.0f,0.0f,0.0f };
 		particleMotion_[i]->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 		particleMotion_[i]->acceleration_ = { 0.0f,0.0f,0.0f };

@@ -23,6 +23,7 @@ public:
 	void Draw();
 
 	int GetState() { return state_; }
+	bool GetAnimationFlag() { return isAnimation_; }
 private:
 
 	/// <summary>
@@ -34,6 +35,8 @@ private:
 	/// jsonファイルからの呼び出し
 	/// </summary>
 	void ApplyGlobalVariable();
+
+	void CreateParticle(const Vector2& position);
 
 private:
 
@@ -155,6 +158,18 @@ private:
 	State state_;
 	int currentStageNo_;
 
-	
+	bool isAnimation_;
+	float animationCount_;
+	float kMaxAnimationCount_;
+
+	float firstStarCount_;
+	float secondStarCount_;
+	float thirdStarCount_;
+	float kMaxStarCount_;
+
+	Vector2 startStarSize_;
+	Vector2 endStarSize_;
+
+	bool createFlag_[3];
 };
 
