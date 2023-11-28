@@ -7,6 +7,7 @@
 
 #include "Sprite.h"
 #include "../StageData/StageData.h"
+#include "Game/Timer/Timer.h"
 
 class SelectSprites {
 public:
@@ -56,6 +57,8 @@ private:
 
 private:
 
+	std::unique_ptr<Timer> timer_;
+
 	State state_ = State::kSelect;
 	std::optional<State> stateRequest_ = std::nullopt;
 
@@ -89,6 +92,7 @@ private:
 		kDecisionA,
 		kSelectLS,
 		kStarFram,
+		kGoTitle,
 		kSpriteCount,
 	};
 
@@ -96,7 +100,8 @@ private:
 		"セレクトの",
 		"決定Aの",
 		"選択の",
-		"星のフレームの"
+		"星のフレームの",
+		"タイトルへの"
 	};
 
 	enum V2ItemNames {
@@ -153,5 +158,9 @@ private:
 	std::string groupName_ = "selectSprites";
 
 	std::vector<std::array<bool, StageData::kMaxCondition>> condition_;
+
+	// サウンド
+	int32_t choiceSoundHandle_;
+
 };
 

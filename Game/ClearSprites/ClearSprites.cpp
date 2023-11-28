@@ -1,10 +1,15 @@
 #include "ClearSprites.h"
 
+#include "Audio.h"
+#include "Ease/Ease.h"
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/StageData/StageData.h"
 #include "MapChip.h"
 #include "SceneSystem/IScene/IScene.h"
+#include "ParticleUIManager.h"
+#include "MyMath.h"
+#include "ImGuiManager.h"
 
 
 ClearSprites::ClearSprites() {
@@ -57,6 +62,8 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kStarSecond].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
+	endStarSize_ = sprites_[SpriteNames::kStarFirst]->GetSize();
+	startStarSize_ = endStarSize_ * 3.0f;
 
 	tex = TextureManager::Load("Resources/Textures/goStageSelect.png");
 	sprites_[SpriteNames::kSelectStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -106,9 +113,27 @@ ClearSprites::ClearSprites() {
 	}
 
 	currentStageNo_ = 0;
+
+	speed_ = 15.0f;
+	acceleration_ = 0.5f;
+	position_ = { 640.0f,-10.0f };
 }
 
 void ClearSprites::Init() {
+	isAnimation_ = true;
+	animationCount_ = 0.0f;
+	kMaxAnimationCount_ = 60.0f;
+	firstStarCount_ = 0.0f;
+	secondStarCount_ = 0.0f;
+	thirdStarCount_ = 0.0f;
+	kMaxStarCount_ = 15.0f;
+	for (auto& flag : createFlag_) {
+		flag = false;
+	}
+	sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
+	sprites_[SpriteNames::kStarSecond]->SetTextureHandle(star_[kFalse]);
+	sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kFalse]);
+
 	currentStageNo_ = IScene::stageNo_;
 	SetGlobalVariable();
 	if (IScene::stageNo_ != MapChip::kCount - 1) {
@@ -174,39 +199,123 @@ void ClearSprites::Init() {
 }
 
 void ClearSprites::Update() {
+	if (!isAnimation_) {
+		if (currentStageNo_ != MapChip::kCount - 1 &&
+			input_->GetGamePadLStick().x < 0.0f &&
+			input_->GetPreGamePadLStick().x == 0.0f) {
+			switch (state_) {
+			case ClearSprites::State::kSelectStageState:
+				state_ = State::kNextStageState;
+				break;
+			case ClearSprites::State::kRetryState:
+				state_ = State::kSelectStageState;
+				break;
+			case ClearSprites::State::kNextStageState:
+				state_ = State::kRetryState;
+				break;
+			}
+		}
+		if (currentStageNo_ != MapChip::kCount - 1 &&
+			input_->GetGamePadLStick().x > 0.0f &&
+			input_->GetPreGamePadLStick().x == 0.0f) {
+			switch (state_) {
+			case ClearSprites::State::kSelectStageState:
+				state_ = State::kRetryState;
+				break;
+			case ClearSprites::State::kRetryState:
+				state_ = State::kNextStageState;
+				break;
+			case ClearSprites::State::kNextStageState:
+				state_ = State::kSelectStageState;
+				break;
+			}
+		}
+	}
+	if (input_->PressedGamePadButton(Input::GamePadButton::A)) {
+		animationCount_ = kMaxAnimationCount_;
+		firstStarCount_ = kMaxStarCount_;
+		secondStarCount_ = kMaxStarCount_;
+		thirdStarCount_ = kMaxStarCount_;
+	}
+	animationCount_ += 1.0f;
+	if (animationCount_ >= kMaxAnimationCount_) {
+		if (starFlag_[2]) {
+			sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kTrue]);
+			if (thirdStarCount_ <= kMaxStarCount_) {
+				thirdStarCount_ += 1.0f;
+				float t = thirdStarCount_ / kMaxStarCount_;
+				sprites_[SpriteNames::kStarThird]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, thirdStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				//sprites_[SpriteNames::kStarThird]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
+			}
+			else if (!createFlag_[2]) {
+				CreateCompleteParticle();
+				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
+				createFlag_[2] = true;
+			}
+		}
+		else {
+			sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kFalse]);
+		}
+		isAnimation_ = false;
+	}
+	else {
+		sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kFalse]);
+	}
+	if (animationCount_ >= kMaxAnimationCount_ * 2.0f / 3.0f) {
+		if (starFlag_[1]) {
+			if (secondStarCount_ <= kMaxStarCount_) {
+				sprites_[SpriteNames::kStarSecond]->SetTextureHandle(star_[kTrue]);
+				secondStarCount_ += 1.0f;
+				float t = secondStarCount_ / kMaxStarCount_;
+				sprites_[SpriteNames::kStarSecond]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, secondStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				//sprites_[SpriteNames::kStarSecond]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
+			}
+			else if (!createFlag_[1]) {
+				CreateParticle(sprites_[SpriteNames::kStarSecond]->GetPosition());
+				createFlag_[1] = true;
+			}
+		}
+		else {
+			sprites_[SpriteNames::kStarSecond]->SetTextureHandle(star_[kFalse]);
+		}
+	}
+	else {
+		sprites_[SpriteNames::kStarSecond]->SetTextureHandle(star_[kFalse]);
+	}
+	if (animationCount_ >= kMaxAnimationCount_ * 1.0f / 3.0f) {
+		if (starFlag_[0]) {
+			sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kTrue]);
+			if (firstStarCount_ <= kMaxStarCount_) {
+				firstStarCount_ += 1.0f;
+				float t = firstStarCount_ / kMaxStarCount_;
+				sprites_[SpriteNames::kStarFirst]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, firstStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				//sprites_[SpriteNames::kStarFirst]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
+			}
+			else if (!createFlag_[0]) {
+				CreateParticle(sprites_[SpriteNames::kStarFirst]->GetPosition());
+				createFlag_[0] = true;
+			}
+		}
+		else {
+			sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
+		}
+	}
+	else {
+		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
+	}
+	if(input_->TriggerKey(DIK_SPACE)){
+		CreateCompleteParticle();
+	}
+	if(ImGui::TreeNode("Clear")){
+		ImGui::DragFloat("speed", &speed_, 0.1f);
+		ImGui::DragFloat("acceleration", &acceleration_, 0.1f);
+		ImGui::DragFloat2("position", &position_.x, 1.0f);
+		ImGui::TreePop();
 
-	if (currentStageNo_ != MapChip::kCount - 1 &&
-		input_->GetGamePadLStick().x < 0.0f &&
-		input_->GetPreGamePadLStick().x == 0.0f) {
-		switch (state_) {
-		case ClearSprites::State::kSelectStageState:
-			state_ = State::kNextStageState;
-			break;
-		case ClearSprites::State::kRetryState:
-			state_ = State::kSelectStageState;
-			break;
-		case ClearSprites::State::kNextStageState:
-			state_ = State::kRetryState;
-			break;
-		}
 	}
-	if (currentStageNo_ != MapChip::kCount - 1 &&
-		input_->GetGamePadLStick().x > 0.0f &&
-		input_->GetPreGamePadLStick().x == 0.0f) {
-		switch (state_) {
-		case ClearSprites::State::kSelectStageState:
-			state_ = State::kRetryState;
-			break;
-		case ClearSprites::State::kRetryState:
-			state_ = State::kNextStageState;
-			break;
-		case ClearSprites::State::kNextStageState:
-			state_ = State::kSelectStageState;
-			break;
-		}
-	}
-	
-	ApplyGlobalVariable();
+	//#ifdef _DEBUG
+	//	ApplyGlobalVariable();
+	//#endif // _DEBUG
 }
 
 void ClearSprites::Draw() {
@@ -253,39 +362,21 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:
-			if (starFlag_[0]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarSecond:
-			if (starFlag_[1]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarThird:
-			if (starFlag_[2]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
-			if (currentStageNo_ == MapChip::Stage::kCount -1) {
+			if (currentStageNo_ == MapChip::Stage::kCount - 1) {
 				sprite->SetTextureHandle(selectStage_[kTrue]);
 				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
 			else {
-				if (state_==State::kSelectStageState) {
+				if (state_ == State::kSelectStageState) {
 					sprite->SetTextureHandle(selectStage_[kTrue]);
 				}
 				else {
@@ -362,5 +453,115 @@ void ClearSprites::ApplyGlobalVariable() {
 
 		sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
 		sprites_[i]->SetSize(v2Info_[i][V2ItemNames::kScale]);
+	}
+}
+
+void ClearSprites::CreateParticle(const Vector2& position) {
+	{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 1;
+		emitter->flameInterval = 0;
+		emitter->spawn.position = Vector3(position.x, position.y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 0.0f,0.0f,0.0f };
+		emitter->scale.interimScale = { 10.0f,10.0f,10.0f };
+		emitter->scale.endScale = { 0.0f,0.0f,10.0f };
+
+		emitter->color.startColor_ = { 0.7f,0.7f,0.1f,1.0f };
+		emitter->color.endColor_ = { 0.7f, 0.7f, 0.1f, 1.0f };
+
+		emitter->inOnce = 50;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 1.5f;
+		particleMotion->velocity.randomRange = 0.0f;
+
+		particleMotion->aliveTime.time = 60;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+
+	}
+
+	/*{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 1;
+		emitter->flameInterval = 0;
+		emitter->spawn.position = Vector3(position.x, position.y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 5.0f,50.0f,5.0f };
+		emitter->scale.interimScale = { 5.0f,50.0f,5.0f };
+		emitter->scale.endScale = { 5.0f,50.0f,5.0f };
+
+		emitter->inOnce = 50;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+
+		particleMotion->color.startColor = { 0.3f,0.3f,0.3f,1.0f };
+		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,1.0f };
+		particleMotion->color.currentColor = particleMotion->color.startColor;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.1f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 2.0f;
+		particleMotion->velocity.randomRange = 1.0f;
+
+		particleMotion->aliveTime.time = 20;
+		particleMotion->aliveTime.randomRange = 20;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+
+	}*/
+}
+
+void ClearSprites::CreateCompleteParticle() {
+	{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 120;
+		emitter->flameInterval = 3;
+		emitter->spawn.position = Vector3(position_.x, position_.y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 20.0f,20.0f,20.0f };
+		emitter->scale.endScale = { 20.0f,20.0f,20.0f };
+		emitter->color.startColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		emitter->color.endColor_ = { 0.0f,0.0f,0.0f,1.0f };
+		emitter->color.startBeginMinRandomColor_ = { 0.0f,0.0f,0.0f,1.0f };
+		emitter->color.startBeginMaxRandomColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		
+		emitter->inOnce = 5;
+		emitter->angle.start = DegToRad(45.0f);
+		emitter->angle.end = DegToRad(135.0f);
+		emitter->isAlive = true;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.1f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,acceleration_,0.0f };
+		particleMotion->velocity.speed = -speed_;
+		particleMotion->velocity.randomRange = 1.0f;
+
+		particleMotion->aliveTime.time = 600;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+
 	}
 }

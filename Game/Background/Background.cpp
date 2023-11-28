@@ -22,13 +22,6 @@ void Background::Initialize() {
 }
 
 void Background::Update() {
-	ImGui::Begin("Debug");
-	if (ImGui::TreeNode("Background")) {
-		ImGui::DragFloat4("color", &color_.x,0.01f);
-		ImGui::TreePop();
-	}
-	ImGui::End();
-	sprite_->SetColor(color_);
 	time_++;
 	static const int kMaxTime = 60;
 	if (time_>= kMaxTime) {
@@ -37,6 +30,10 @@ void Background::Update() {
 		emitter->spawn.position = MakeTranslate(player_->GetWorldTransform()->matWorld_);
 		emitter->spawn.rangeX = 40.0f;
 		emitter->spawn.rangeY = 40.0f;
+		float scale = rnd_.NextFloatRange(10.0f, 20.0f);
+		emitter->scale.startScale = { 0.01f,0.01f,0.01f };
+		emitter->scale.interimScale = { scale,scale ,scale };
+		emitter->scale.endScale = { 0.01f,0.01f,0.01f };
 		emitter->inOnce = 4;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
@@ -45,11 +42,6 @@ void Background::Update() {
 		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.2f) };
 		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.4f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.0f) };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
-		float scale = rnd_.NextFloatRange(10.0f, 20.0f);
-		particleMotion->scale.startScale = {0.01f,0.01f,0.01f };
-		particleMotion->scale.interimScale = {scale,scale ,scale };
-		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.02f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };

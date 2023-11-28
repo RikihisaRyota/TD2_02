@@ -9,6 +9,9 @@
 #include "Collision/Collider.h"
 #include "PlaneRenderer.h"
 #include "ParticleShaderStruct.h"
+
+class MapChip;
+
 class Player : public Collider
 {
 public:
@@ -80,6 +83,8 @@ public:
 	const bool GetIsDead() const { return isDead_; }
 
 	const int GetClearTime() { return clearTime_; }
+
+	void ChangeStateGrip2Normal(const MapChip& mapChip);
 private:
 
 	void OnCollision() override;
@@ -225,6 +230,7 @@ private:
 		k2JumpMagnification, // 2段ジャンプの倍率
 		kClearRotateSpeed, // クリア時の回転の速さ
 		kWallGravity,
+		k2WallJumpMagnification,
 		kCountFloatParameter, // 末尾
 	};
 
@@ -243,7 +249,8 @@ private:
 		"ジャンプ時のプレイヤーの回転スピード",
 		"2段ジャンプの倍率",
 		"クリア時の回転の速さ",
-		"壁ずり時の落下加速度"
+		"壁ずり時の落下加速度",
+		"2段壁キックの倍率"
 	};
 
 	enum V3ParameterNames {
@@ -309,6 +316,7 @@ private:
 	// 音関係
 	int32_t jumpSoundHandle_;
 	int32_t deathSoundHandle_;
+	int32_t clearSoundHandle_;
 
 	// クリアフラグ
 	bool isClear_;

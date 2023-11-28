@@ -12,6 +12,7 @@
 #include "SceneSystem/StageScene/StageScene.h"
 #include "SceneSystem/ClearScene/ClearScene.h"
 #include "ParticleManager.h"
+#include "ParticleUIManager.h"
 #include "Game/StageData/StageData.h"
 
 #include "GlobalVariables/GlobalVariables.h"
@@ -68,7 +69,6 @@ int SceneManager::Run() {
 		currentSceneChangeSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
 		if (preSceneChangeSceneNo_ != currentSceneChangeSceneNo_) {
 			soundManager_->SetScene(preSceneChangeSceneNo_, currentSceneChangeSceneNo_);
-			ParticleManager::GetInstance()->Initialize();
 			// シーン遷移開始
 			sceneChange_->SetSceneChange(true);
 		}
@@ -79,6 +79,8 @@ int SceneManager::Run() {
 		else {
 			sceneChange_->Update();
 			if (sceneChange_->GetInitialize()) {
+				ParticleManager::GetInstance()->Initialize();
+				ParticleUIManager::GetInstance()->Initialize();
 				currentSceneNo_ = currentSceneChangeSceneNo_;
 				preSceneNo_ = preSceneChangeSceneNo_;
 				sceneArr_[currentSceneNo_]->Init();
@@ -86,13 +88,14 @@ int SceneManager::Run() {
 				sceneChange_->SetInitialize(false);
 			}
 		}
-
+		ParticleUIManager::GetInstance()->Update();
 		// ImGui受付終了
 		ImGuiManager::GetInstance()->End();
 		// 描画開始
 		DirectXCommon::GetInstance()->PreDraw();
 		// ゲームシーンの描画
 		sceneArr_[currentSceneNo_]->Draw();
+		ParticleUIManager::GetInstance()->Draw();
 		// 描画終わり
 		DirectXCommon::GetInstance()->PostDraw();
 		DirectXCommon::GetInstance()->PreUIDraw();

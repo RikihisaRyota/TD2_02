@@ -16,5 +16,7 @@ public:
 private:
 
 	std::unique_ptr<TitleSprites> titleSprites_;
+	// サウンド
+	int32_t choiceSoundHandle_;
 };
 

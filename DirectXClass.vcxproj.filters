@@ -97,6 +97,9 @@
     <Filter Include="Game\Timer">
       <UniqueIdentifier>{ad181e1f-c5ca-47c5-ae44-705c17d9532f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\StageUI">
+      <UniqueIdentifier>{37d6d902-329f-4fde-b173-f8d9c38df4eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -343,6 +346,18 @@
     </ClCompile>
     <ClCompile Include="Game\Timer\Timer.cpp">
       <Filter>Game\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\StageUI\StageUI.cpp">
+      <Filter>Game\StageUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleUIGraphicsPipeline.cpp">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleUIManager.cpp">
+      <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ParticleUI.cpp">
+      <Filter>engine\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -647,6 +662,18 @@
     <ClInclude Include="Game\Timer\Timer.h">
       <Filter>Game\Timer</Filter>
     </ClInclude>
+    <ClInclude Include="Game\StageUI\StageUI.h">
+      <Filter>Game\StageUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleUIGraphicsPipeline.h">
+      <Filter>engine\graphicsPipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleUIManager.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ParticleUI.h">
+      <Filter>engine\base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -694,6 +721,9 @@
       <Filter>engine\shader</Filter>
     </None>
     <None Include=".editorconfig" />
+    <None Include="Resources\Shaders\ParticleUI.hlsli">
+      <Filter>engine\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\Basic.PS.hlsl">
@@ -778,6 +808,12 @@
       <Filter>engine\shader</Filter>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\MapChip.VS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleUI.PS.hlsl">
+      <Filter>engine\shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\ParticleUI.VS.hlsl">
       <Filter>engine\shader</Filter>
     </FxCompile>
   </ItemGroup>

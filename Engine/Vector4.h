@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 struct Vector4 {
     float x;
@@ -41,4 +42,7 @@ struct Vector4 {
     bool operator!=(const Vector4& other) const {
         return !(*this == other);
     }
+
+    // ベクトルの長さを計算する関数
+    float Length() const { return std::sqrt(x * x + y * y + z * z + w * w); }
 };

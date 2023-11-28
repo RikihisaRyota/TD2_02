@@ -20,6 +20,7 @@
 #include "ImGuiManager.h"
 #include "Game/Item/Item.h"
 #include "Game/Player/Player.h"
+#include "Game/Block/Block.h"
 
 using namespace Microsoft::WRL;
 
@@ -173,7 +174,7 @@ MapChip::MapChip() {
 
 	//shapeType_->mapChip2D_.SetNoCollider(0);
 	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kBlock));
-	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kRedBlock));
+	//shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kRedBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kNeedleBlock));
 	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
@@ -539,12 +540,16 @@ void MapChip::SetInstancingBlock(int block, int y, int x) {
 
 void MapChip::CreateItems() {
 	ItemManager::GetInstance()->Init();
+	OutBlockManager::GetInstance()->Init();
 
 	for (int row = 0; row < int(map_.size()); row++) {
 		for (int column = 0; column < int(map_[row].size()); column++) {
 
 			if (map_[row][column] == uint32_t(UseBlocks::kItemBlock)) {
 				ItemManager::GetInstance()->CreateItem(blockWorldTransform_[row][column].worldPos_);
+			}
+			else if (map_[row][column] == uint32_t(UseBlocks::kRedBlock)) {
+				OutBlockManager::GetInstance()->CreateOutBlock(blockWorldTransform_[row][column].worldPos_);
 			}
 		}
 	}

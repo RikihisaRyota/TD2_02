@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Ease/Ease.h"
 #include "MapChip.h"
+#include "Audio.h"
 #include <numbers>
 
 SelectSprites::SelectSprites() {
@@ -22,10 +23,12 @@ SelectSprites::SelectSprites() {
 	tex = TextureManager::Load("Resources/Textures/selectLS.png");
 	sprites_[SpriteNames::kSelectLS].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/goTitle.png");
+	sprites_[SpriteNames::kGoTitle].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
 	tex = TextureManager::Load("Resources/Textures/stageSelectFram.png");
 	sprites_[SpriteNames::kStarFram].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarFram]->SetSize({ sprites_[SpriteNames::kStarFram]->GetSize().x * 0.8f, sprites_[SpriteNames::kStarFram]->GetSize().y });
-
 
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
@@ -62,6 +65,13 @@ SelectSprites::SelectSprites() {
 	kStageTexSize_ = stages_[0]->GetSize().x;
 
 	nowStage_ = 0;
+
+	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
+
+	timer_ = std::make_unique<Timer>();
+	timer_->SetStageNo(&nowStage_);
+	timer_->Init();
+	timer_->Update();
 }
 
 void SelectSprites::Init() {
@@ -96,6 +106,11 @@ void SelectSprites::Init() {
 		}
 	}
 
+	state_ = State::kSelect;
+	stateRequest_ = State::kSelect;
+
+	timer_->Init();
+
 	SetStageNo();
 }
 
@@ -124,7 +139,7 @@ void SelectSprites::Update() {
 
 	(this->*spStateUpdateFuncTable[static_cast<size_t>(state_)])();
 
-
+	timer_->Update();
 }
 
 void SelectSprites::FarDraw() {
@@ -150,6 +165,7 @@ void SelectSprites::NearDraw() {
 		stars_[i]->Draw();
 	}
 
+	timer_->DrawUI();
 }
 
 void SelectSprites::StateRequest(State state) {
@@ -271,6 +287,7 @@ void SelectSprites::SelectUpdate() {
 	TransformationUpdate();
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
 		// シーン切り替え
 		IScene::stageNo_ = nowStage_;
 		IScene::sceneNo_ = STAGE;

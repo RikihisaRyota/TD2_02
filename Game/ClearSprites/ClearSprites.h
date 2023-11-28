@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 
+#include "ParticleShaderStruct.h"
 #include "Input.h"
 #include "Sprite.h"
 #include "Random.h"
@@ -25,6 +26,7 @@ public:
 	void Draw();
 
 	int GetState() { return state_; }
+	bool GetAnimationFlag() { return isAnimation_; }
 private:
 	void ParticleInitialize();
 	void ParticleUpdate();
@@ -39,6 +41,8 @@ private:
 	/// </summary>
 	void ApplyGlobalVariable();
 
+	void CreateParticle(const Vector2& position);
+	void CreateCompleteParticle();
 private:
 
 	enum Number {
@@ -159,7 +163,24 @@ private:
 	State state_;
 	int currentStageNo_;
 
+	bool isAnimation_;
+	float animationCount_;
+	float kMaxAnimationCount_;
+
+	float firstStarCount_;
+	float secondStarCount_;
+	float thirdStarCount_;
+	float kMaxStarCount_;
+
+	Vector2 startStarSize_;
+	Vector2 endStarSize_;
+
+	bool createFlag_[3];
+
 	Emitter* emitter_;
 	ParticleMotion* particleMotion_;
+	Vector2 position_;
+	float speed_;
+	float acceleration_;
 };
 

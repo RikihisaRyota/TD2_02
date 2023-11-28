@@ -71,5 +71,6 @@ private:
 	int onMax_;
 	int offMin_;
 	int offMax_;
+
 };
 

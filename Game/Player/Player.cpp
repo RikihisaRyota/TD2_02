@@ -16,6 +16,7 @@
 
 #include "Ease/Ease.h"
 #include <numbers>
+#include "MapChip.h"
 
 Player::Player() {
 
@@ -93,6 +94,7 @@ void Player::Initialize() {
 
 	jumpCount_ = 0;
 	isJump_ = true;
+	isRight_ = true;
 	velocity_ = {};
 
 	isCollisionGoal_ = false;
@@ -110,6 +112,32 @@ void Player::UpdateMatrix() {
 	for (int i = 0; i < Parts::kCountParts; i++) {
 		modelWorldTransforms_[i].UpdateMatrix();
 	}
+}
+
+void Player::ChangeStateGrip2Normal(const MapChip& mapChip)
+{
+	if (state_ == State::kGripWall && !stateRequest_) {
+		if (isRight_) {
+
+			int y = kMaxHeightBlockNum - static_cast<int>((worldTransform_.worldPos_.y + worldTransform_.scale_.y) / (kBlockSize));
+			int x = static_cast<int>((worldTransform_.worldPos_.x + worldTransform_.scale_.x * 2) / (kBlockSize));
+
+			if (MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y) && MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y + 1)) {
+				StateRequest(State::kNormal);
+			}
+
+		}
+		else {
+
+			int y = kMaxHeightBlockNum - static_cast<int>((worldTransform_.worldPos_.y + worldTransform_.scale_.y) / (kBlockSize));
+			int x = static_cast<int>((worldTransform_.worldPos_.x - worldTransform_.scale_.x * 2) / (kBlockSize));
+
+			if (MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y) && MapChip::UseBlocks::kNone == mapChip.GetBlocksType(x, y + 1)) {
+				StateRequest(State::kNormal);
+			}
+		}
+	}
+
 }
 
 void Player::OnCollision() {
@@ -362,6 +390,10 @@ void Player::NormalUpdate() {
 		MoveInit();
 	}
 
+	if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+		jumpCount_ = 0;
+	}
+
 	velocity_.x = 0.0f;
 	velocity_ += move;
 
@@ -469,6 +501,7 @@ void Player::GripWallInitialize() {
 	else {
 		worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 	}
+
 	velocity_ = {};
 	countFrame_ = 0;
 
@@ -480,6 +513,10 @@ void Player::GripWallInitialize() {
 void Player::GripWallUpdate() {
 
 	countFrame_++;
+
+	if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
+		jumpCount_ = 0;
+	}
 
 	Input* input = Input::GetInstance();
 
@@ -621,14 +658,14 @@ void Player::GripWallUpdate() {
 void Player::WallJumpInitialize() {
 	velocity_ = {};
 
-	if (isRight_) {
-		// 右の壁
-		velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
-	}
-	else {
-		// 左の壁
-		velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
-	}
+	//if (isRight_) {
+	//	// 右の壁
+	//	velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+	//}
+	//else {
+	//	// 左の壁
+	//	velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+	//}
 
 	if (kIs2WallJump_) {
 		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
@@ -637,10 +674,26 @@ void Player::WallJumpInitialize() {
 
 		if (jumpCount_ >= 1) {
 			jumpCount_++;
-			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2JumpMagnification];
+			if (isRight_) {
+				// 右の壁
+				velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX] * parameters_[FloatParameterNames::k2WallJumpMagnification];
+			}
+			else {
+				// 左の壁
+				velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX] * parameters_[FloatParameterNames::k2WallJumpMagnification];
+			}
+			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY] * parameters_[FloatParameterNames::k2WallJumpMagnification];
 		}
 		else {
 			jumpCount_ = 1;
+			if (isRight_) {
+				// 右の壁
+				velocity_.x -= parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+			}
+			else {
+				// 左の壁
+				velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
+			}
 			velocity_.y += parameters_[FloatParameterNames::kWallJumpInitialVelocityY];
 		}
 	}
@@ -781,6 +834,8 @@ void Player::ParticleInitialize() {
 	emitter_->spawn.position = worldTransform_.worldPos_;
 	emitter_->spawn.rangeX = 0.0f;
 	emitter_->spawn.rangeY = 0.0f;
+	emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
+	emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
 	emitter_->inOnce = 2;
 	//emitter_->angle.start = DegToRad(0.0f);
 	//emitter_->angle.end = DegToRad(180.0f);
@@ -789,8 +844,6 @@ void Player::ParticleInitialize() {
 	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
 	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->scale.startScale = { 1.0f,1.0f,1.0f };
-	particleMotion_->scale.endScale = { 0.01f,0.01f,0.01f };
 	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
 	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
 	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
@@ -806,10 +859,19 @@ void Player::ParticleInitialize() {
 }
 
 void Player::ParticleUpdate() {
-	if (!isDead_) {
+	if (!isDead_ &&
+		state_ != State::kDeadMove) {
 		emitter_->aliveTime = 1;
 		emitter_->spawn.position = worldTransform_.worldPos_;
-		particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		if (jumpCount_ >= 2) {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
+		else if (jumpCount_ >= 1) {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
+		else {
+			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+		}
 		//particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.4f) };
 		particleMotion_->color.currentColor = particleMotion_->color.startColor;
 	}
@@ -826,6 +888,8 @@ void Player::WallParticleCreate(const Vector2& vector) {
 		emitter->spawn.position = worldTransform_.worldPos_;
 		emitter->spawn.rangeX = 1.5f;
 		emitter->spawn.rangeY = 1.5f;
+		emitter->scale.startScale = { 0.3f,0.3f,0.3f };
+		emitter->scale.endScale = { 0.01f,0.01f,0.01f };
 		emitter->inOnce = 20;
 		// 右の壁
 		if (vector.x < 0) {
@@ -864,9 +928,6 @@ void Player::WallParticleCreate(const Vector2& vector) {
 		particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.5f,0.8f),1.0f };
 		particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.0f,0.05f),rnd_.NextFloatRange(0.1f,0.5f),0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
-		particleMotion->scale.startScale = { 0.3f,0.3f,0.3f };
-		particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.2f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
@@ -885,6 +946,8 @@ void Player::DeathParticleCreate() {
 	emitter->spawn.position = worldTransform_.worldPos_;
 	emitter->spawn.rangeX = 0.0f;
 	emitter->spawn.rangeY = 0.0f;
+	emitter->scale.startScale= { 0.5f,0.5f,0.5f };
+	emitter->scale.endScale= { 0.01f,0.01f,0.01f };
 	emitter->inOnce = 60;
 	emitter->angle.start = DegToRad(0.0f);
 	emitter->angle.end = DegToRad(360.0f);
@@ -893,10 +956,7 @@ void Player::DeathParticleCreate() {
 	particleMotion->color.startColor = { rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),1.0f };
 	particleMotion->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),0.0f };
 	particleMotion->color.currentColor = particleMotion->color.startColor;
-	particleMotion->scale.startScale = { 0.5f,0.5f,0.5f };
-	particleMotion->scale.endScale = { 0.01f,0.01f,0.01f };
-	particleMotion->scale.currentScale = particleMotion->scale.startScale;
-	particleMotion->rotate.addRotate = {0.0f,0.0f,0.0f };
+	particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 	particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
 	particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
@@ -907,7 +967,7 @@ void Player::DeathParticleCreate() {
 	particleMotion->aliveTime.randomRange = 0;
 	particleMotion->isAlive = true;
 	ParticleManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
-	
+
 	Emitter* horizontalEmitter = new Emitter();
 	ParticleMotion* horizontalParticleMotion = new ParticleMotion();
 
@@ -916,6 +976,9 @@ void Player::DeathParticleCreate() {
 	horizontalEmitter->spawn.position = worldTransform_.worldPos_;
 	horizontalEmitter->spawn.rangeX = 0.0f;
 	horizontalEmitter->spawn.rangeY = 0.0f;
+	horizontalEmitter->scale.startScale = { 0.0f,0.0f,0.0f };
+	horizontalEmitter->scale.interimScale = { 2.5f,500.0f,10.0f };
+	horizontalEmitter->scale.endScale = { 0.0f,0.0f,0.0f };
 	horizontalEmitter->inOnce = 1;
 	horizontalEmitter->angle.start = 0.0f;
 	horizontalEmitter->angle.end = 0.0f;
@@ -948,6 +1011,9 @@ void Player::DeathParticleCreate() {
 	verticalEmitter->spawn.position = worldTransform_.worldPos_;
 	verticalEmitter->spawn.rangeX = 0.0f;
 	verticalEmitter->spawn.rangeY = 0.0f;
+	verticalEmitter->scale.startScale = { 0.0f,0.0f,0.0f };
+	verticalEmitter->scale.interimScale= { 500.0f,2.5f,10.0f };
+	verticalEmitter->scale.endScale= { 0.0f,0.0f,0.0f };
 	verticalEmitter->inOnce = 1;
 	verticalEmitter->angle.start = 0.0f;
 	verticalEmitter->angle.end = 0.0f;
@@ -956,10 +1022,6 @@ void Player::DeathParticleCreate() {
 	verticalParticleMotion->color.startColor = { 0.2f,0.2f,0.2f,1.0f };
 	verticalParticleMotion->color.endColor = { 0.2f,0.2f,0.2f,1.0f };
 	verticalParticleMotion->color.currentColor = verticalParticleMotion->color.startColor;
-	verticalParticleMotion->scale.startScale = { 0.0f,0.0f,0.0f };
-	verticalParticleMotion->scale.interimScale = { 500.0f,2.5f,10.0f };
-	verticalParticleMotion->scale.endScale = { 0.0f,0.0f,0.0f };
-	verticalParticleMotion->scale.currentScale = verticalParticleMotion->scale.startScale;
 	verticalParticleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 	verticalParticleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
@@ -977,17 +1039,18 @@ void Player::SoundInitialize() {
 	auto audio = Audio::GetInstance();
 	deathSoundHandle_ = audio->SoundLoadWave("SE/death.wav");
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
+	clearSoundHandle_ = audio->SoundLoadWave("SE/clear.wav");
 	isChangeCamera_ = true;
 }
 
 void Player::ClearMoveInitialize() {
 	countFrame_ = 0;
-
 	preClearPos_ = { worldTransform_.translate_.x,worldTransform_.translate_.y };
 	clearRot_ = 0.0f;
 	preClearScale_ = worldTransform_.scale_;
 	isChangeCamera_ = true;
 	isCollisionGoal_ = true;
+	Audio::GetInstance()->SoundPlayWave(clearSoundHandle_);
 }
 
 void Player::ClearMoveUpdate() {
@@ -1022,16 +1085,19 @@ void Player::DeadModeInitialize() {
 	MaxDeathAnimationTime = 60.0f;
 	DeathParticleCreate();
 	worldTransform_.scale_ = {};
+	uint32_t playHandle = Audio::GetInstance()->SoundPlayWave(deathSoundHandle_);
+	Audio::GetInstance()->SetValume(playHandle,2.0f);
 }
 
 void Player::DeadModeUpdate() {
 	if (deathAnimationTime_ >= MaxDeathAnimationTime) {
 		//Initialize();
 		isDead_ = true;
+		ParticleInitialize();
 	}
 	deathAnimationTime_ += 1.0f;
 	// プレイヤーが死んだときの処理
-	
+
 #ifdef _DEBUG
 
 #endif // _DEBUG
@@ -1154,7 +1220,19 @@ void Player::Update() {
 void Player::Draw(const ViewProjection& viewProjection) {
 	if (!isDead_) {
 		for (int i = 0; i < Parts::kCountParts; i++) {
+			auto material = models_[i]->GetMaterial()->GetMaterial();
+			if (jumpCount_ >= 2) {
+				material->color_ = { 1.0f,0.2f,0.2f,1.0f };
+
+			}
+			else if (jumpCount_ >= 1) {
+				material->color_ = { 1.0f,1.0f,0.2f,1.0f };
+			}
+			else {
+				material->color_ = { 1.0f ,1.0f ,1.0f ,1.0f };
+			}
 			models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
+			models_[i]->GetMaterial()->SetMaterial(*material);
 		}
 	}
 }
