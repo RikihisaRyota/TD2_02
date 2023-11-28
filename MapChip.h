@@ -159,6 +159,7 @@ private:
 	std::vector<Model*> blockModels_;
 	// ブロックのワールドトランスフォーム
 	std::vector<std::vector<BlockWorldTransform>> blockWorldTransform_;
+	std::vector<std::vector<Vector4>> blockColor_;
 	// CSVの名前保存
 	std::vector<std::string> stageName_;
 	// 現在のステージ
