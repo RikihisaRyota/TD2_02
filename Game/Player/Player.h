@@ -190,6 +190,8 @@ private:
 
 	bool isAuto_;
 
+	bool isDown_;
+
 	bool isCollisionGoal_;
 
 	bool kIs2Jump_ = true;

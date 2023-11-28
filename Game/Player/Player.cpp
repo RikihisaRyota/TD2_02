@@ -525,6 +525,8 @@ void Player::GripWallInitialize() {
 	if (preState_ == State::kNormal || preState_ == State::kJump) {
 		jumpCount_ = 0;
 	}
+
+	isDown_ = false;
 }
 
 void Player::GripWallUpdate() {
@@ -598,8 +600,9 @@ void Player::GripWallUpdate() {
 
 	}
 	else {
-		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime]) {
+		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime] || isDown_ || move.y <= -0.3f) {
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
+			isDown_ = true;
 		}
 
 		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_)) {
