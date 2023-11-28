@@ -198,13 +198,9 @@ void MapChip::Initialize() {
 
 	}
 	delayColor_ = 0.2f;
+	PlayerTouchBlock();
 	SetInstancing();
 	CreateItems();
-	//playerTouchBlockMinX_ = 0;
-	//playerTouchBlockMaxX_ = 0;
-	//playerTouchBlockMinY_ = 0;
-	//playerTouchBlockMaxY_ = 0;
-	PlayerTouchBlock();
 }
 
 void MapChip::LoadCSV() {
