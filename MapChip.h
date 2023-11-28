@@ -118,10 +118,10 @@ public:
 #pragma endregion
 #pragma region BlockType
 	std::vector<std::vector<uint32_t>> GetBlocksTypes() { return map_; }
-	uint32_t GetBlocksType(uint32_t x, uint32_t y) { return map_[y][x]; }
-	uint32_t GetBlocksType(int x, int y) { return map_[static_cast<uint32_t>(y)][static_cast<uint32_t>(x)]; }
-	uint32_t GetBlocksType(const Vector3& pos) { return (map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
-	uint32_t GetBlocksType(const Vector2& pos) { return(map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
+	const uint32_t GetBlocksType(uint32_t x, uint32_t y) const { return map_[y][x]; }
+	const uint32_t GetBlocksType(int x, int y) const { return map_[static_cast<uint32_t>(y)][static_cast<uint32_t>(x)]; }
+	const uint32_t GetBlocksType(const Vector3& pos) const { return (map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
+	const uint32_t GetBlocksType(const Vector2& pos) const { return(map_[static_cast<uint32_t>(pos.y / kBlockSize)][static_cast<uint32_t>(pos.y / kBlockSize)]); }
 #pragma endregion
 	void InstancingInitialize();
 	void InstancingDraw(const ViewProjection& viewProjection);
