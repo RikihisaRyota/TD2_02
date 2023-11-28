@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 
+#include "ParticleShaderStruct.h"
 #include "Input.h"
 #include "Sprite.h"
 #include "Random.h"
@@ -37,7 +38,7 @@ private:
 	void ApplyGlobalVariable();
 
 	void CreateParticle(const Vector2& position);
-
+	void CreateCompleteParticle();
 private:
 
 	enum Number {
@@ -171,5 +172,11 @@ private:
 	Vector2 endStarSize_;
 
 	bool createFlag_[3];
+
+	Emitter* emitter_;
+	ParticleMotion* particleMotion_;
+	Vector2 position_;
+	float speed_;
+	float acceleration_;
 };
 

@@ -52,6 +52,34 @@ void ParticleUI::Update() {
 
 				particle->motion.scale.currentScale = particle->motion.scale.startScale;
 
+				particle->motion.color.startColor = emitter_->color.startColor_;
+				particle->motion.color.endColor = emitter_->color.endColor_;
+
+				if (emitter_->color.startBeginMaxRandomColor_.x > emitter_->color.startBeginMinRandomColor_.x) {
+					particle->motion.color.startColor.x = rnd_.NextFloatRange(emitter_->color.startBeginMinRandomColor_.x, emitter_->color.startBeginMaxRandomColor_.x);
+				}
+				if (emitter_->color.startBeginMaxRandomColor_.y > emitter_->color.startBeginMinRandomColor_.y) {
+					particle->motion.color.startColor.y = rnd_.NextFloatRange(emitter_->color.startBeginMinRandomColor_.y, emitter_->color.startBeginMaxRandomColor_.y);
+				}
+				if (emitter_->color.startBeginMaxRandomColor_.z > emitter_->color.startBeginMinRandomColor_.z) {
+					particle->motion.color.startColor.z = rnd_.NextFloatRange(emitter_->color.startBeginMinRandomColor_.z, emitter_->color.startBeginMaxRandomColor_.z);
+				}
+				if (emitter_->color.startBeginMaxRandomColor_.w > emitter_->color.startBeginMinRandomColor_.w) {
+					particle->motion.color.startColor.w = rnd_.NextFloatRange(emitter_->color.startBeginMinRandomColor_.w, emitter_->color.startBeginMaxRandomColor_.w);
+				}
+				if (emitter_->color.endBeginMaxRandomColor_.x > emitter_->color.endBeginMinRandomColor_.x) {
+					particle->motion.color.endColor.x = rnd_.NextFloatRange(emitter_->color.endBeginMinRandomColor_.x, emitter_->color.endBeginMaxRandomColor_.x);
+				}
+				if (emitter_->color.endBeginMaxRandomColor_.y > emitter_->color.endBeginMinRandomColor_.y) {
+					particle->motion.color.endColor.y = rnd_.NextFloatRange(emitter_->color.endBeginMinRandomColor_.y, emitter_->color.endBeginMaxRandomColor_.y);
+				}
+				if (emitter_->color.endBeginMaxRandomColor_.z > emitter_->color.endBeginMinRandomColor_.z) {
+					particle->motion.color.endColor.z = rnd_.NextFloatRange(emitter_->color.endBeginMinRandomColor_.z, emitter_->color.endBeginMaxRandomColor_.z);
+				}
+				if (emitter_->color.endBeginMaxRandomColor_.w > emitter_->color.endBeginMinRandomColor_.w) {
+					particle->motion.color.endColor.w = rnd_.NextFloatRange(emitter_->color.endBeginMinRandomColor_.w, emitter_->color.endBeginMaxRandomColor_.w);
+				}
+				particle->motion.color.currentColor = particle->motion.color.startColor;
 				particle->motion.isAlive = true;
 				// ワールドトランスフォーム
 				particle->constantDate.color = particle->motion.color.currentColor;

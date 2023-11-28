@@ -7,9 +7,9 @@
 #include "Game/StageData/StageData.h"
 #include "MapChip.h"
 #include "SceneSystem/IScene/IScene.h"
-#include "ParticleShaderStruct.h"
 #include "ParticleUIManager.h"
 #include "MyMath.h"
+#include "ImGuiManager.h"
 
 ClearSprites::ClearSprites() {
 	input_ = Input::GetInstance();
@@ -112,16 +112,20 @@ ClearSprites::ClearSprites() {
 	}
 
 	currentStageNo_ = 0;
+
+	speed_ = 15.0f;
+	acceleration_ = 0.5f;
+	position_ = { 640.0f,-10.0f };
 }
 
 void ClearSprites::Init() {
 	isAnimation_ = true;
 	animationCount_ = 0.0f;
-	kMaxAnimationCount_ = 120.0f;
+	kMaxAnimationCount_ = 60.0f;
 	firstStarCount_ = 0.0f;
 	secondStarCount_ = 0.0f;
 	thirdStarCount_ = 0.0f;
-	kMaxStarCount_ = 30.0f;
+	kMaxStarCount_ = 15.0f;
 	for (auto& flag : createFlag_) {
 		flag = false;
 	}
@@ -243,6 +247,7 @@ void ClearSprites::Update() {
 				//sprites_[SpriteNames::kStarThird]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[2]) {
+				CreateCompleteParticle();
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
 				createFlag_[2] = true;
 			}
@@ -297,6 +302,16 @@ void ClearSprites::Update() {
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
 	}
+	if(input_->TriggerKey(DIK_SPACE)){
+		CreateCompleteParticle();
+	}
+	if(ImGui::TreeNode("Clear")){
+		ImGui::DragFloat("speed", &speed_, 0.1f);
+		ImGui::DragFloat("acceleration", &acceleration_, 0.1f);
+		ImGui::DragFloat2("position", &position_.x, 1.0f);
+		ImGui::TreePop();
+
+	}
 	//#ifdef _DEBUG
 	//	ApplyGlobalVariable();
 	//#endif // _DEBUG
@@ -346,30 +361,12 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:
-			/*if (starFlag_[0]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}*/
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarSecond:
-			/*if (starFlag_[1]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}*/
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarThird:
-			/*if (starFlag_[2]) {
-				sprite->SetTextureHandle(star_[kTrue]);
-			}
-			else {
-				sprite->SetTextureHandle(star_[kFalse]);
-			}*/
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
@@ -470,14 +467,13 @@ void ClearSprites::CreateParticle(const Vector2& position) {
 		emitter->scale.interimScale = { 10.0f,10.0f,10.0f };
 		emitter->scale.endScale = { 0.0f,0.0f,10.0f };
 
+		emitter->color.startColor_ = { 0.7f,0.7f,0.1f,1.0f };
+		emitter->color.endColor_ = { 0.7f, 0.7f, 0.1f, 1.0f };
+
 		emitter->inOnce = 50;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
 		emitter->isAlive = true;
-
-		particleMotion->color.startColor = { 0.7f,0.7f,0.1f,1.0f };
-		particleMotion->color.endColor = { 0.7f,0.7f,0.1f,1.0f };
-		particleMotion->color.currentColor = particleMotion->color.startColor;
 
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
@@ -528,4 +524,41 @@ void ClearSprites::CreateParticle(const Vector2& position) {
 		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
 
 	}*/
+}
+
+void ClearSprites::CreateCompleteParticle() {
+	{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 120;
+		emitter->flameInterval = 3;
+		emitter->spawn.position = Vector3(position_.x, position_.y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 20.0f,20.0f,20.0f };
+		emitter->scale.endScale = { 20.0f,20.0f,20.0f };
+		emitter->color.startColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		emitter->color.endColor_ = { 0.0f,0.0f,0.0f,1.0f };
+		emitter->color.startBeginMinRandomColor_ = { 0.0f,0.0f,0.0f,1.0f };
+		emitter->color.startBeginMaxRandomColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		
+		emitter->inOnce = 5;
+		emitter->angle.start = DegToRad(45.0f);
+		emitter->angle.end = DegToRad(135.0f);
+		emitter->isAlive = true;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.1f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,acceleration_,0.0f };
+		particleMotion->velocity.speed = -speed_;
+		particleMotion->velocity.randomRange = 1.0f;
+
+		particleMotion->aliveTime.time = 600;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+
+	}
 }

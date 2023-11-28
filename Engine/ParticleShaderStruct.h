@@ -23,7 +23,7 @@ struct Rotate {
     Vector3 currentRotate;
 };
 
-struct Color {
+struct ParticleColor {
     Vector4 startColor;
     Vector4 endColor;
     Vector4 currentColor;
@@ -59,11 +59,22 @@ struct RandomScale {
     Vector3 endRandomRange;
 };
 
+struct Color {
+    Vector4 startColor_;
+    Vector4 startBeginMinRandomColor_;
+    Vector4 startBeginMaxRandomColor_;
+
+    Vector4 endColor_;
+    Vector4 endBeginMinRandomColor_;
+    Vector4 endBeginMaxRandomColor_;
+};
+
 struct Emitter {
     Spawn spawn;
     Angel angle;
     RandomScale randomScale;
     Scale scale;
+    Color color;
     int32_t inOnce;
     int32_t flameInterval;
     int32_t aliveTime;
@@ -76,7 +87,7 @@ struct ParticleMotion {
     Vector3 position;
     Velocity velocity;
     Vector3 acceleration_;
-    Color color;
+    ParticleColor color;
     AliveTime aliveTime;
     bool isAlive;
     ParticleForGPU constantBuff;
