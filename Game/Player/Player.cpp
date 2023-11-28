@@ -976,6 +976,9 @@ void Player::DeathParticleCreate() {
 	horizontalEmitter->spawn.position = worldTransform_.worldPos_;
 	horizontalEmitter->spawn.rangeX = 0.0f;
 	horizontalEmitter->spawn.rangeY = 0.0f;
+	horizontalEmitter->scale.startScale = { 0.0f,0.0f,0.0f };
+	horizontalEmitter->scale.interimScale = { 2.5f,500.0f,10.0f };
+	horizontalEmitter->scale.endScale = { 0.0f,0.0f,0.0f };
 	horizontalEmitter->inOnce = 1;
 	horizontalEmitter->angle.start = 0.0f;
 	horizontalEmitter->angle.end = 0.0f;
@@ -1008,6 +1011,9 @@ void Player::DeathParticleCreate() {
 	verticalEmitter->spawn.position = worldTransform_.worldPos_;
 	verticalEmitter->spawn.rangeX = 0.0f;
 	verticalEmitter->spawn.rangeY = 0.0f;
+	verticalEmitter->scale.startScale = { 0.0f,0.0f,0.0f };
+	verticalEmitter->scale.interimScale= { 500.0f,2.5f,10.0f };
+	verticalEmitter->scale.endScale= { 0.0f,0.0f,0.0f };
 	verticalEmitter->inOnce = 1;
 	verticalEmitter->angle.start = 0.0f;
 	verticalEmitter->angle.end = 0.0f;
@@ -1016,10 +1022,6 @@ void Player::DeathParticleCreate() {
 	verticalParticleMotion->color.startColor = { 0.2f,0.2f,0.2f,1.0f };
 	verticalParticleMotion->color.endColor = { 0.2f,0.2f,0.2f,1.0f };
 	verticalParticleMotion->color.currentColor = verticalParticleMotion->color.startColor;
-	verticalParticleMotion->scale.startScale = { 0.0f,0.0f,0.0f };
-	verticalParticleMotion->scale.interimScale = { 500.0f,2.5f,10.0f };
-	verticalParticleMotion->scale.endScale = { 0.0f,0.0f,0.0f };
-	verticalParticleMotion->scale.currentScale = verticalParticleMotion->scale.startScale;
 	verticalParticleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 	verticalParticleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
