@@ -132,7 +132,7 @@ void ClearSprites::Init() {
 
 	currentStageNo_ = IScene::stageNo_;
 	SetGlobalVariable();
-	if (IScene::stageNo_ != MapChip::kCount - 1) {
+	if (IScene::stageNo_ <= stageRange_) {
 		state_ = State::kNextStageState;
 	}
 	else {
@@ -196,7 +196,7 @@ void ClearSprites::Init() {
 
 void ClearSprites::Update() {
 	if (!isAnimation_) {
-		if (currentStageNo_ != MapChip::kCount - 1 &&
+		if (currentStageNo_ < stageRange_ &&
 			input_->GetGamePadLStick().x < 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
 			switch (state_) {
@@ -215,7 +215,7 @@ void ClearSprites::Update() {
 			sprites_[SpriteNames::kRetry]->SetSize(retrySize);
 			sprites_[SpriteNames::kNextStage]->SetSize(nextStageSize);
 		}
-		if (currentStageNo_ != MapChip::kCount - 1 &&
+		if (currentStageNo_ < stageRange_ &&
 			input_->GetGamePadLStick().x > 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
 			switch (state_) {
@@ -266,7 +266,7 @@ void ClearSprites::Update() {
 		thirdStarCount_ = kMaxStarCount_;
 	}
 	animationCount_ += 1.0f;
-	if (animationCount_ >= kMaxAnimationCount_) {
+	if (animationCount_ <= kMaxAnimationCount_) {
 		if (starFlag_[2]) {
 			sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kTrue]);
 			if (thirdStarCount_ <= kMaxStarCount_) {
@@ -403,23 +403,23 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
-			if (currentStageNo_ == MapChip::Stage::kCount - 1) {
-				sprite->SetTextureHandle(selectStage_[kTrue]);
-				sprite->SetPosition(Vector2(640.0f, 600.0f));
-			}
-			else {
+			if (currentStageNo_ < stageRange_) {
 				if (state_ == State::kSelectStageState) {
 					sprite->SetTextureHandle(selectStage_[kTrue]);
 				}
 				else {
 					sprite->SetTextureHandle(selectStage_[kFalse]);
 				}
+			}
+			else {
 				sprite->SetPosition(Vector2(248.0f, 600.0f));
+				sprite->SetTextureHandle(selectStage_[kTrue]);
+				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kNextStage:
-			if (currentStageNo_ != MapChip::kCount - 1) {
+			if (currentStageNo_ < stageRange_) {
 				if (state_ == State::kNextStageState) {
 					sprite->SetTextureHandle(nextStage_[kTrue]);
 				}
@@ -431,7 +431,7 @@ void ClearSprites::Draw() {
 			}
 			break;
 		case ClearSprites::kRetry:
-			if (currentStageNo_ != MapChip::kCount - 1) {
+			if (currentStageNo_ < stageRange_) {
 				if (state_ == State::kRetryState) {
 					sprite->SetTextureHandle(retry_[kTrue]);
 				}
