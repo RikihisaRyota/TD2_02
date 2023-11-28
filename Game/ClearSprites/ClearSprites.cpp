@@ -1,5 +1,7 @@
 #include "ClearSprites.h"
 
+#include <numbers>
+
 #include "Audio.h"
 #include "Ease/Ease.h"
 #include "TextureManager.h"
@@ -214,6 +216,10 @@ void ClearSprites::Update() {
 				state_ = State::kRetryState;
 				break;
 			}
+			scaleTheta_ = 0.0f;
+			sprites_[SpriteNames::kSelectStage]->SetSize(selectStageSize);
+			sprites_[SpriteNames::kRetry]->SetSize(retrySize);
+			sprites_[SpriteNames::kNextStage]->SetSize(nextStageSize);
 		}
 		if (currentStageNo_ != MapChip::kCount - 1 &&
 			input_->GetGamePadLStick().x > 0.0f &&
@@ -229,6 +235,34 @@ void ClearSprites::Update() {
 				state_ = State::kSelectStageState;
 				break;
 			}
+			scaleTheta_ = 0.0f;
+			sprites_[SpriteNames::kSelectStage]->SetSize(selectStageSize);
+			sprites_[SpriteNames::kRetry]->SetSize(retrySize);
+			sprites_[SpriteNames::kNextStage]->SetSize(nextStageSize);
+		}
+
+		const float pi = std::numbers::pi_v<float>;
+
+		const float step = 2.0f * pi / 120.0f;
+
+		scaleTheta_ += step;
+
+		scaleTheta_ = std::fmod(scaleTheta_, 2.0f * pi);
+
+		const float amplitude = 5.0f;
+
+		float scale = std::sinf(scaleTheta_) * amplitude;
+
+		switch (state_) {
+		case ClearSprites::State::kSelectStageState:
+			sprites_[SpriteNames::kSelectStage]->SetSize({ selectStageSize.x + scale, selectStageSize.y + scale });
+			break;
+		case ClearSprites::State::kRetryState:
+			sprites_[SpriteNames::kRetry]->SetSize({ retrySize.x + scale, retrySize.y + scale });
+			break;
+		case ClearSprites::State::kNextStageState:
+			sprites_[SpriteNames::kNextStage]->SetSize({ nextStageSize.x + scale, nextStageSize.y + scale });
+			break;
 		}
 	}
 	if (input_->PressedGamePadButton(Input::GamePadButton::A)) {
@@ -453,6 +487,15 @@ void ClearSprites::ApplyGlobalVariable() {
 
 		sprites_[i]->SetPosition(v2Info_[i][V2ItemNames::kPos]);
 		sprites_[i]->SetSize(v2Info_[i][V2ItemNames::kScale]);
+		if (i == SpriteNames::kSelectStage) {
+			selectStageSize = v2Info_[i][V2ItemNames::kScale];
+		}
+		if (i == SpriteNames::kNextStage) {
+			nextStageSize = v2Info_[i][V2ItemNames::kScale];
+		}
+		if (i == SpriteNames::kRetry) {
+			retrySize = v2Info_[i][V2ItemNames::kScale];
+		}
 	}
 }
 

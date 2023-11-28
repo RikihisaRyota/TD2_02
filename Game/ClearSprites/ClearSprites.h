@@ -182,5 +182,10 @@ private:
 	Vector2 position_;
 	float speed_;
 	float acceleration_;
+
+	float scaleTheta_;
+	Vector2 selectStageSize;
+	Vector2 nextStageSize;
+	Vector2 retrySize;
 };
 

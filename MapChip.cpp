@@ -191,14 +191,20 @@ void MapChip::Initialize() {
 	normalColor_ = { 0.8f,0.8f,0.8f,1.0f };
 	touchingColor_ = { 255.0f,255.0f,1.0f,255.0f };
 	isClear_ = false;
-	for (auto& blockColorY : blockColor_) {
-		for (auto& blockColorX : blockColorY) {
-			blockColorX = normalColor_;
+	for (int y = 0; y < kMaxHeightBlockNum;y++) {
+		for (int x = 0; x < kMaxWidthBlockNum; x++) {
+			blockColor_[y][x] = normalColor_;
 		}
+
 	}
 	delayColor_ = 0.2f;
 	SetInstancing();
 	CreateItems();
+	//playerTouchBlockMinX_ = 0;
+	//playerTouchBlockMaxX_ = 0;
+	//playerTouchBlockMinY_ = 0;
+	//playerTouchBlockMaxY_ = 0;
+	PlayerTouchBlock();
 }
 
 void MapChip::LoadCSV() {
