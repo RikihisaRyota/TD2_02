@@ -282,7 +282,11 @@ void ClearSprites::Update() {
 				//sprites_[SpriteNames::kStarThird]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[2]) {
-				CreateCompleteParticle();
+				if (starFlag_[0] &&
+					starFlag_[1] &&
+					starFlag_[2]) {
+					CreateCompleteParticle();
+				}
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
 				createFlag_[2] = true;
 			}
@@ -588,7 +592,7 @@ void ClearSprites::CreateCompleteParticle() {
 		emitter->color.endColor_ = { 0.0f,0.0f,0.0f,1.0f };
 		emitter->color.startBeginMinRandomColor_ = { 0.0f,0.0f,0.0f,1.0f };
 		emitter->color.startBeginMaxRandomColor_ = { 1.0f,1.0f,1.0f,1.0f };
-		
+
 		emitter->inOnce = 5;
 		emitter->angle.start = DegToRad(45.0f);
 		emitter->angle.end = DegToRad(135.0f);

@@ -498,17 +498,17 @@ void MapChip::SetInstancing() {
 	}
 	float ratio = std::tanf(viewProjection_->fovAngleY_ / 2) * (blockWorldTransform_[0][0].translate_.z - viewProjection_->translate_.z) * 2;
 
-	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 1;
-	int32_t xNum = static_cast<int32_t>(ratio * viewProjection_->aspectRatio_ / int32_t(kBlockSize)) + 1;
+	int32_t yNum = static_cast<int32_t>(ratio / int32_t(kBlockSize)) + 2;
+	int32_t xNum = static_cast<int32_t>(ratio * viewProjection_->aspectRatio_ / int32_t(kBlockSize)) + 2;
 
-	int32_t xMin = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) - xNum / 2) - 1;
+	int32_t xMin = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) - xNum / 2) - 2;
 	xMin = std::clamp(xMin, 0, int32_t(kMaxWidthBlockNum));
-	int32_t xMax = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) + xNum / 2) + 1;
+	int32_t xMax = int32_t(int32_t(viewProjection_->translate_.x) / int32_t(kBlockSize) + xNum / 2) + 2;
 	xMax = std::clamp(xMax, 0, int32_t(kMaxWidthBlockNum));
-	int32_t yMin = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) + yNum / 2) + 1;
+	int32_t yMin = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) + yNum / 2) + 2;
 	yMin = kMaxHeightBlockNum - yMin;
 	yMin = std::clamp(yMin, 0, int32_t(kMaxHeightBlockNum));
-	int32_t yMax = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) - yNum / 2) - 1;
+	int32_t yMax = int32_t(int32_t(viewProjection_->translate_.y) / int32_t(kBlockSize) - yNum / 2) - 2;
 	yMax = kMaxHeightBlockNum - yMax;
 	yMax = std::clamp(yMax, 0, int32_t(kMaxHeightBlockNum));
 
