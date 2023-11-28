@@ -142,6 +142,7 @@ MapChip::MapChip() {
 		for (uint32_t y = 0; y < kMaxHeightBlockNum; y++) {
 			if (stage == 0) {
 				blockWorldTransform_.push_back(std::vector<BlockWorldTransform>());
+				blockColor_.push_back(std::vector<Vector4>());
 			}
 			maps_[stage].push_back(std::vector<uint32_t>());
 			for (uint32_t x = 0; x < kMaxWidthBlockNum; x++) {
@@ -154,6 +155,8 @@ MapChip::MapChip() {
 						0.0f
 					);
 					blockWorldTransform_[y][x].UpdateMatrix();
+					blockColor_.at(y).push_back(Vector4());
+					blockColor_.at(y).at(x) = { 1.0f,1.0f,1.0f,1.0f };
 				}
 				maps_[stage][y].push_back(uint32_t());
 			}
@@ -186,8 +189,13 @@ void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
 	preMap_ = map_;
 	normalColor_ = { 0.8f,0.8f,0.8f,1.0f };
-	touchingColor_ = { 1.0f,1.0f,1.0f,1.0f };
-	delayColor_ = 1.0f;
+	touchingColor_ = { 255.0f,255.0f,1.0f,255.0f };
+	for (auto& blockColorY : blockColor_) {
+		for (auto& blockColorX : blockColorY) {
+			blockColorX = normalColor_;
+		}
+	}
+	delayColor_ = 0.2f;
 	SetInstancing();
 	CreateItems();
 }
@@ -529,11 +537,12 @@ void MapChip::SetInstancingBlock(int block, int y, int x) {
 		x <= playerTouchBlockMaxX_) &&
 		(y >= playerTouchBlockMinY_ &&
 			y <= playerTouchBlockMaxY_)) {
-		instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = touchingColor_;
+		blockColor_[y][x] = touchingColor_;
 	}
 	else {
-		instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = Lerp(instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color,normalColor_, delayColor_);
+		blockColor_[y][x] = Lerp(blockColor_[y][x], normalColor_, delayColor_);
 	}
+	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].color = blockColor_[y][x];
 	instancing_.at(block)->instanceCount.emplace_back(std::pair<int, int>(int(y), int(x)));
 	instancing_.at(block)->currentInstance++;
 }

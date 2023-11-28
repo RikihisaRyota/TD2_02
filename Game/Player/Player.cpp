@@ -1222,7 +1222,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 		for (int i = 0; i < Parts::kCountParts; i++) {
 			auto material = models_[i]->GetMaterial()->GetMaterial();
 			if (jumpCount_ >= 2) {
-				material->color_ = { 1.0f,0.0f,0.0f,1.0f };
+				material->color_ = { 255.0f,69.0f,0.0f,1.0f };
 
 			}
 			else if (jumpCount_ >= 1) {
