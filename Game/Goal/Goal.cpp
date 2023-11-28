@@ -79,7 +79,7 @@ void Goal::SetGlobalVariable() {
 
 	globalVariables->CreateGroup(groupName_);
 
-	for (int i = 0; i < GoalNames::kGoalCount; i++) {
+	for (int i = 0; i < MapChip::Stage::kCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			globalVariables->AddItem(groupName_, spriteNames_[i] + v2ItemNames_[j], v2Info_[i][j]);
 		}
@@ -91,7 +91,7 @@ void Goal::SetGlobalVariable() {
 void Goal::ApplyGlobalVariable() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 
-	for (int i = 0; i < GoalNames::kGoalCount; i++) {
+	for (int i = 0; i < MapChip::Stage::kCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = globalVariables->GetVector3Value(groupName_, spriteNames_[i] + v2ItemNames_[j]);
 		}

@@ -16,6 +16,9 @@ std::string StageData::stageNames_[MapChip::Stage::kCount] = {
 		"ステージ8",
 		"ステージ9",
 		"ステージ10",
+		"ステージ11",
+		"ステージ12",
+		"ステージ13",
 };
 std::string StageData::v2ItemNames_[V2ItemNames::kV2ItemCount] = {
 		"クリア条件タイム",

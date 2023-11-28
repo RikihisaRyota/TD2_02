@@ -9,24 +9,12 @@
 #include "Collision/Collider.h"
 #include "ParticleShaderStruct.h"
 #include "Random.h"
+#include "MapChip.h"
 
 class Player;
 class Goal : public Collider
 {
 private:
-	enum GoalNames {
-		kStage_1,
-		kStage_2,
-		kStage_3,
-		kStage_4,
-		kStage_5,
-		kStage_6,
-		kStage_7,
-		kStage_8,
-		kStage_9,
-		kStage_10,
-		kGoalCount,
-	};
 	enum V2ItemNames {
 		kPos,
 		kScale,
@@ -59,7 +47,7 @@ private:
 
 	std::string groupName_ = "Goal";
 
-	std::string spriteNames_[kGoalCount] = {
+	std::string spriteNames_[MapChip::Stage::kCount] = {
 		"ステージ_1",
 		"ステージ_2",
 		"ステージ_3",
@@ -70,6 +58,9 @@ private:
 		"ステージ_8",
 		"ステージ_9",
 		"ステージ_10",
+		"ステージ_11",
+		"ステージ_12",
+		"ステージ_13",
 	};
 
 	std::string v2ItemNames_[kV2ItemCount] = {
@@ -77,7 +68,7 @@ private:
 		"スケール",
 	};
 
-	Vector3 v2Info_[kGoalCount][kV2ItemCount];
+	Vector3 v2Info_[MapChip::Stage::kCount][kV2ItemCount];
 
 	WorldTransform worldTransform_;
 	std::unique_ptr<PlaneRenderer> model_;

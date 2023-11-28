@@ -51,6 +51,9 @@ SelectSprites::SelectSprites() {
 	stageTeces_[7] = TextureManager::Load("Resources/Textures/stage8.png");
 	stageTeces_[8] = TextureManager::Load("Resources/Textures/stage9.png");
 	stageTeces_[9] = TextureManager::Load("Resources/Textures/stage10.png");
+	stageTeces_[10] = TextureManager::Load("Resources/Textures/stage3.png");
+	stageTeces_[11] = TextureManager::Load("Resources/Textures/stage5.png");
+	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage7.png");
 
 	starTeces_[StarState::kNotGet] = TextureManager::Load("Resources/Textures/starNotGet.png");
 	starTeces_[StarState::kGet] = TextureManager::Load("Resources/Textures/starGet.png");

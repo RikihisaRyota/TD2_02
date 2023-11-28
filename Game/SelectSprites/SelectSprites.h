@@ -64,7 +64,7 @@ private:
 
 	bool isRight_;
 
-	const int kMaxStage_ = 9;
+	const int kMaxStage_ = 12;
 
 	float kStageTexSize_;
 
@@ -139,7 +139,7 @@ private:
 
 	float fInfo_[FItemNames::kFItemCount];
 
-	uint32_t stageTeces_[10];
+	uint32_t stageTeces_[12];
 	std::unique_ptr<Sprite> stages_[5];
 
 	enum StarState {

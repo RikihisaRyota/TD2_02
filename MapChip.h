@@ -61,6 +61,9 @@ public:
 		kStage_8,
 		kStage_9,
 		kStage_10,
+		kStage_11,
+		kStage_12,
+		kStage_13,
 		kCount,
 	};
 	// 前までのBlocksと一緒
@@ -71,6 +74,7 @@ public:
 		kRedBlock,
 		kItemBlock,
 		kNeedleBlock,
+		kMarkBlock,
 
 		kUseBlockCount,
 	};
@@ -94,6 +98,7 @@ public:
 
 		kBlockRedBlock,
 		kBlockNeedleBlock,
+		kBlockMarkBlock,
 
 		kInstancingBlocksCount,
 	};

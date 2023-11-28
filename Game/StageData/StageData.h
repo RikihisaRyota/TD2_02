@@ -58,14 +58,14 @@ public:
 private:
 	static void SetGlobalVariable();
 	static void ApplyGlobalVariable();
-	static Data data_[MapChip::kCount];
-	static Data bestData_[MapChip::kCount];
+	static Data data_[MapChip::Stage::kCount];
+	static Data bestData_[MapChip::Stage::kCount];
 
-	static std::string stageNames_[MapChip::kCount];
+	static std::string stageNames_[MapChip::Stage::kCount];
 
 	static std::string v2ItemNames_[V2ItemNames::kV2ItemCount];
 
-	static int v2Info_[MapChip::kCount][V2ItemNames::kV2ItemCount];
+	static int v2Info_[MapChip::Stage::kCount][V2ItemNames::kV2ItemCount];
 
 	static std::string groupName_;
 

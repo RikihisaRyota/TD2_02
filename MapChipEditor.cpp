@@ -71,7 +71,7 @@ void MapChipEditor::Update() {
 	if (ImGui::TreeNode("MapChipEditor")) {
 		ImGui::Text("ブロックタイプ:%d", blockCount_);
 		// ドロップダウンメニューの表示
-		static const char* stage[] = { "stage_1", "stage_2", "stage_3", "stage_4","stage_5","stage_6","stage_7","stage_8" };
+		static const char* stage[] = { "stage_1", "stage_2", "stage_3", "stage_4","stage_5","stage_6","stage_7","stage_8","stage_9","stage_10","stage_11","stage_12","stage_13" };
 		int currenStage = mapChip_->GetCurrentStage();
 		if (ImGui::BeginCombo("Stage", stage[currenStage])) {
 			for (int i = 0; i < IM_ARRAYSIZE(stage); i++) {

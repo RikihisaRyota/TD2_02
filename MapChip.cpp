@@ -130,6 +130,9 @@ MapChip::MapChip() {
 		 "stage_8",
 		 "stage_9",
 		 "stage_10",
+		 "stage_11",
+		 "stage_12",
+		 "stage_13",
 	};
 
 	auto modelManager = ModelManager::GetInstance();
@@ -524,7 +527,9 @@ void MapChip::SetInstancing() {
 			case uint32_t(UseBlocks::kNeedleBlock):
 				SetInstancingBlock(InstancingBlocks::kBlockNeedleBlock, y, x);
 				break;
-
+			case uint32_t(UseBlocks::kMarkBlock):
+				SetInstancingBlock(InstancingBlocks::kBlockMarkBlock, y, x);
+				break;
 			default:
 				break;
 			}
