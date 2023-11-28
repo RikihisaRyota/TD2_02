@@ -818,7 +818,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									nextY += 1;
 									chipPos.y -= mapChipScale.y * 2;
 
-									if (column == 0) {
+									if (nextX == 0) {
 
 										if (b->shapeType_->mapChip2D_.IsRigitBody(nextY, nextX)) {
 											// めり込み処理する
