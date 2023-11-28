@@ -197,7 +197,7 @@ void MapChip::Initialize() {
 	normalColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	touchingColor_ = { 255.0f,255.0f,1.0f,255.0f };
 	isClear_ = false;
-	for (int y = 0; y < kMaxHeightBlockNum;y++) {
+	for (int y = 0; y < kMaxHeightBlockNum; y++) {
 		for (int x = 0; x < kMaxWidthBlockNum; x++) {
 			blockColor_[y][x] = normalColor_;
 		}
@@ -547,9 +547,10 @@ void MapChip::SetInstancingBlock(int block, int y, int x) {
 	if (x >= playerTouchBlockMinX_ &&
 		x <= playerTouchBlockMaxX_ &&
 		y >= playerTouchBlockMinY_ &&
-		y <= playerTouchBlockMaxY_ && 
+		y <= playerTouchBlockMaxY_ &&
 		!isClear_ &&
-		map_[y][x] == UseBlocks::kBlock) {
+		(map_[y][x] == UseBlocks::kBlock ||
+		map_[y][x] == UseBlocks::kMarkBlock)) {
 		blockColor_[y][x] = touchingColor_;
 	}
 	else {
