@@ -182,6 +182,7 @@ MapChip::MapChip() {
 	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kBlock));
 	//shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kRedBlock));
 	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kNeedleBlock));
+	shapeType_->mapChip2D_.SetNoRigitBody(int(UseBlocks::kMarkBlock));
 	//shapeType_->mapChip2D_.SetNoCollider(int(Blocks::kItemBlock));
 
 	// インスタンシング初期化
