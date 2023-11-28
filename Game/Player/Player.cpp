@@ -364,7 +364,7 @@ void Player::NormalUpdate() {
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if (input->PressingGamePadButton(Input::GamePadButton::A) && !isJump_) {
+	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
 		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
@@ -574,7 +574,7 @@ void Player::GripWallUpdate() {
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 
-		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
+		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
 			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			if (isRight_) {
 				// 右の壁
@@ -1126,7 +1126,7 @@ void Player::FloarAndWallUpdate() {
 
 	Vector2 move = input->GetGamePadLStick();
 
-	if (input->PressingGamePadButton(Input::GamePadButton::A)) {
+	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
 		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 
 		if ((isRight_ && move.x >= 0) || (!isRight_ && move.x <= 0)) {
