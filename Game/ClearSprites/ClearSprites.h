@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "ParticleManager.h"
 #include "ParticleShaderStruct.h"
+#include "MapChip.h"
 
 class ClearSprites {
 public:
@@ -185,5 +186,8 @@ private:
 	Vector2 selectStageSize;
 	Vector2 nextStageSize;
 	Vector2 retrySize;
+
+	// ステージ
+	int stageRange_ = MapChip::Stage::kStage_10;
 };
 

@@ -64,6 +64,8 @@ public:
 		kStage_11,
 		kStage_12,
 		kStage_13,
+		kStage_14,
+		kStage_15,
 		kCount,
 	};
 	// 前までのBlocksと一緒
