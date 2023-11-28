@@ -382,7 +382,7 @@ void ItemManager::SetSpriteSize() {
 }
 
 void ItemManager::Update() {
-	//ApplyGlobalVariable();
+	ApplyGlobalVariable();
 
 	countFrame_++;
 
