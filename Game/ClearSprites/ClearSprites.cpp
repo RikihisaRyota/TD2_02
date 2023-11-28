@@ -303,7 +303,7 @@ void ClearSprites::Update() {
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
 	}
-	if(input_->TriggerKey(DIK_SPACE)){
+	/*if(input_->TriggerKey(DIK_SPACE)){
 		CreateCompleteParticle();
 	}
 	if(ImGui::TreeNode("Clear")){
@@ -312,7 +312,7 @@ void ClearSprites::Update() {
 		ImGui::DragFloat2("position", &position_.x, 1.0f);
 		ImGui::TreePop();
 
-	}
+	}*/
 	//#ifdef _DEBUG
 	//	ApplyGlobalVariable();
 	//#endif // _DEBUG

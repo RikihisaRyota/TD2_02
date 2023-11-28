@@ -19,10 +19,9 @@
 #include "Game/Item/Item.h"
 #include "Game/Block/Block.h"
 
-StageScene::StageScene()
-{
+StageScene::StageScene() {
 #pragma region 
-	
+
 	// デバックカメラ
 	debugCamera_ = std::make_unique<DebugCamera>();
 	// カメラの初期化
@@ -54,14 +53,13 @@ StageScene::StageScene()
 	mapChipEditor_->SetMapChip(mapChip_.get());
 	mapChipEditor_->SetViewProjection(&viewProjection_);
 	mapChipEditor_->Initialize();
-	
+
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	pause_->SetIsClear(player_->GetIsCollisionGaolPtr());
 	timer_->SetIsClear(player_->GetIsCollisionGaolPtr());
 }
 
-void StageScene::Init()
-{
+void StageScene::Init() {
 	NeedleManager::GetInstance()->Init();
 	background_->Initialize();
 	goal_->Initialize();
@@ -77,11 +75,10 @@ void StageScene::Init()
 	stageUi_->Init();
 }
 
-void StageScene::Update()
-{
+void StageScene::Update() {
 	// 入力と処理受付
 	pause_->Update();
-	
+
 	if (pause_->GetIsRetry() || player_->GetIsDead()) {
 		Init();
 		return;
@@ -109,7 +106,7 @@ void StageScene::Update()
 			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
 			viewProjection_.UpdateMatrix();
 		}
-}
+	}
 #endif // _DEBUG
 
 	goal_->Update();
@@ -133,6 +130,7 @@ void StageScene::Update()
 	if (player_->GetIsChangeCamera()) {
 		followCamera_->SetTarget(goal_->GetWorldTransform());
 		followCamera_->ChangeCamera();
+		mapChip_->SetIsClear(true);
 	}
 
 	if (!isDebug_) {
@@ -143,7 +141,6 @@ void StageScene::Update()
 		// マップチップエディター
 		mapChipEditor_->Update();
 	}
-
 	// クリアフラグ
 	if (player_->GetIsClear()) {
 		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
@@ -161,8 +158,7 @@ void StageScene::Update()
 	ParticleManager::GetInstance()->Update();
 }
 
-void StageScene::Draw()
-{
+void StageScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = DirectXCommon::GetInstance()->GetCommandList();
 

@@ -137,6 +137,7 @@ public:
 	void SetViewProjection(ViewProjection* viewProjection) { viewProjection_ = viewProjection; }
 	void SetPlayer(Player* player) { player_ = player; }
 	bool InRange(const Vector3& pos);
+	void SetIsClear(bool flag) { isClear_ = flag; }
 
 	void CheckChangeMap();
 private:
@@ -172,6 +173,8 @@ private:
 	int playerTouchBlockMinY_;
 	int playerTouchBlockMaxY_;
 	float delayColor_;
+
+	bool isClear_;
 
 	std::vector<std::vector<uint32_t>> preMap_;
 	// インスタンシング描画用
