@@ -9,6 +9,9 @@
 #include "Collision/Collider.h"
 #include "PlaneRenderer.h"
 #include "ParticleShaderStruct.h"
+
+class MapChip;
+
 class Player : public Collider
 {
 public:
@@ -80,6 +83,8 @@ public:
 	const bool GetIsDead() const { return isDead_; }
 
 	const int GetClearTime() { return clearTime_; }
+
+	void ChangeStateGrip2Normal(const MapChip& mapChip);
 private:
 
 	void OnCollision() override;

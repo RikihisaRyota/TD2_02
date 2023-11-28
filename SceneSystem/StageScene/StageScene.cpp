@@ -128,6 +128,8 @@ void StageScene::Update()
 
 	collisionManager->CheckCollision();
 
+	player_->ChangeStateGrip2Normal(*mapChip_.get());
+
 	if (player_->GetIsChangeCamera()) {
 		followCamera_->SetTarget(goal_->GetWorldTransform());
 		followCamera_->ChangeCamera();
