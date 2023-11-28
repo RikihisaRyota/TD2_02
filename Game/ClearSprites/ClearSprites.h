@@ -187,6 +187,9 @@ private:
 	Vector2 nextStageSize;
 	Vector2 retrySize;
 
+	int32_t selectSoundHandle_;
+	int32_t starSoundHandle_;
+
 	// ステージ
 	int stageRange_ = MapChip::Stage::kStage_10;
 };

@@ -12,6 +12,7 @@
 #include "ParticleUIManager.h"
 #include "MyMath.h"
 #include "ImGuiManager.h"
+#include "Audio.h"
 
 
 ClearSprites::ClearSprites() {
@@ -113,6 +114,9 @@ ClearSprites::ClearSprites() {
 	speed_ = 15.0f;
 	acceleration_ = 0.5f;
 	position_ = { 640.0f,-10.0f };
+
+	selectSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/select.wav");
+	starSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/star.wav");
 }
 
 void ClearSprites::Init() {
@@ -199,6 +203,8 @@ void ClearSprites::Update() {
 		if (currentStageNo_ < stageRange_ &&
 			input_->GetGamePadLStick().x < 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
+			Audio::GetInstance()->SetValume(playHandle, 0.3f);
 			switch (state_) {
 			case ClearSprites::State::kSelectStageState:
 				state_ = State::kNextStageState;
@@ -218,6 +224,8 @@ void ClearSprites::Update() {
 		if (currentStageNo_ < stageRange_ &&
 			input_->GetGamePadLStick().x > 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
+			Audio::GetInstance()->SetValume(playHandle, 0.3f);
 			switch (state_) {
 			case ClearSprites::State::kSelectStageState:
 				state_ = State::kRetryState;
@@ -266,7 +274,7 @@ void ClearSprites::Update() {
 		thirdStarCount_ = kMaxStarCount_;
 	}
 	animationCount_ += 1.0f;
-	if (animationCount_ <= kMaxAnimationCount_) {
+	if (animationCount_ >= kMaxAnimationCount_) {
 		if (starFlag_[2]) {
 			sprites_[SpriteNames::kStarThird]->SetTextureHandle(star_[kTrue]);
 			if (thirdStarCount_ <= kMaxStarCount_) {
@@ -281,6 +289,8 @@ void ClearSprites::Update() {
 					starFlag_[2]) {
 					CreateCompleteParticle();
 				}
+				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+				Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
 				createFlag_[2] = true;
 			}
@@ -303,6 +313,8 @@ void ClearSprites::Update() {
 				//sprites_[SpriteNames::kStarSecond]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[1]) {
+				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+				Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				CreateParticle(sprites_[SpriteNames::kStarSecond]->GetPosition());
 				createFlag_[1] = true;
 			}
@@ -324,6 +336,8 @@ void ClearSprites::Update() {
 				//sprites_[SpriteNames::kStarFirst]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[0]) {
+				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+				Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				CreateParticle(sprites_[SpriteNames::kStarFirst]->GetPosition());
 				createFlag_[0] = true;
 			}
@@ -335,16 +349,6 @@ void ClearSprites::Update() {
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
 	}
-	/*if(input_->TriggerKey(DIK_SPACE)){
-		CreateCompleteParticle();
-	}
-	if(ImGui::TreeNode("Clear")){
-		ImGui::DragFloat("speed", &speed_, 0.1f);
-		ImGui::DragFloat("acceleration", &acceleration_, 0.1f);
-		ImGui::DragFloat2("position", &position_.x, 1.0f);
-		ImGui::TreePop();
-
-	}*/
 	//#ifdef _DEBUG
 	//	ApplyGlobalVariable();
 	//#endif // _DEBUG

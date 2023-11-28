@@ -1,4 +1,6 @@
 #include "Item.h"
+
+#include "Audio.h"
 #include "Collision/CollisionConfig.h"
 #include "Collision/CollisionManager.h"
 #include "Collision/ColliderShapes/ColliderShapeBox2D.h"
@@ -289,6 +291,8 @@ void ItemManager::FirstInit() {
 
 	numSize_ = numSprites_[0][0]->GetSize();
 
+	itemGetSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/item.wav");
+
 	Init();
 	SetGlobalVariable();
 }
@@ -416,6 +420,8 @@ void ItemManager::DrawUI() {
 }
 
 void ItemManager::AddGetCount() {
+	auto playHandle = Audio::GetInstance()->SoundPlayWave(itemGetSoundHandle_);
+	Audio::GetInstance()->SetValume(playHandle, 2.0f);
 	sprites_.at(SpriteNames::kItemSprite)->SetSize({ itemSize_.x + 20.0f, itemSize_.y + 20.0f });
 	getItemCount_++;
 	SetNumTeces();

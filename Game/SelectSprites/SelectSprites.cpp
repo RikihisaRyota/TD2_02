@@ -70,6 +70,7 @@ SelectSprites::SelectSprites() {
 	nowStage_ = 0;
 
 	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
+	selectSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/select.wav");
 
 	timer_ = std::make_unique<Timer>();
 	timer_->SetStageNo(&nowStage_);
@@ -290,16 +291,23 @@ void SelectSprites::SelectUpdate() {
 	TransformationUpdate();
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
-		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		Audio::GetInstance()->SetValume(playHandle, 1.5f);
 		// シーン切り替え
 		IScene::stageNo_ = nowStage_;
 		IScene::sceneNo_ = STAGE;
 	}
 	else if (input->GetGamePadLStick().x >= 0.3) {
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
+		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+
 		StateRequest(State::kMove);
 		isRight_ = true;
 	}
 	else if (input->GetGamePadLStick().x <= -0.3) {
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
+		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+
 		StateRequest(State::kMove);
 		isRight_ = false;
 	}

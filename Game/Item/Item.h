@@ -159,6 +159,8 @@ private:
 	Vector2 slashSize_;
 	Vector2 numSize_;
 
+	int32_t itemGetSoundHandle_;
+
 	static const int MaxDigits = 2;
 
 	enum SpriteNames {

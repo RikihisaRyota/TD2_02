@@ -365,7 +365,13 @@ void Player::NormalUpdate() {
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
-		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+		if (jumpCount_ >= 1) {
+			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+		}
+		else {
+			Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+		}
 		/*isJump_ = true;
 		move.y += parameters_[FloatParameterNames::kJumpInitialVelocity];*/
 		StateRequest(State::kJump);
@@ -535,11 +541,23 @@ void Player::GripWallUpdate() {
 	if (kIsWallDown_) {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
-			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			if (jumpCount_ >= 1) {
+				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+			}
+			else {
+				Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+			}
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
-			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			if (jumpCount_ >= 1) {
+				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+			}
+			else {
+				Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+			}
 			if (isRight_) {
 				// 右の壁
 				if (move.x <= -0.3f) {
@@ -575,7 +593,13 @@ void Player::GripWallUpdate() {
 		}
 
 		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
-			Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			if (jumpCount_ >= 1) {
+				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+			}
+			else {
+				Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+			}
 			if (isRight_) {
 				// 右の壁
 				if (move.x <= -0.3f) {
@@ -1127,7 +1151,13 @@ void Player::FloarAndWallUpdate() {
 	Vector2 move = input->GetGamePadLStick();
 
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
-		Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+		if (jumpCount_ >= 1) {
+			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+		}
+		else {
+			Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+		}
 
 		if ((isRight_ && move.x >= 0) || (!isRight_ && move.x <= 0)) {
 			StateRequest(State::kWallJump);
