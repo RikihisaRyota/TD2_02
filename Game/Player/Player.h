@@ -188,6 +188,8 @@ private:
 
 	bool isDead_;
 
+	bool isAuto_;
+
 	bool isCollisionGoal_;
 
 	bool kIs2Jump_ = true;

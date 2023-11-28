@@ -104,6 +104,13 @@ void Player::Initialize() {
 	isClear_ = false;
 	clearTime_ = 0;
 
+	if (IScene::stageNo_ == 2 || IScene::stageNo_ == 6 || IScene::stageNo_ == 11) {
+		isAuto_ = true;
+	}
+	else {
+		isAuto_ = false;
+	}
+
 	ParticleInitialize();
 }
 
@@ -364,7 +371,7 @@ void Player::NormalUpdate() {
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if (input->PressedGamePadButton(Input::GamePadButton::A) && !isJump_) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
@@ -403,6 +410,9 @@ void Player::NormalUpdate() {
 
 	velocity_.x = 0.0f;
 	velocity_ += move;
+	if (isAuto_) {
+		velocity_.x = 0;
+	}
 
 	worldTransform_.translate_ += velocity_;
 
@@ -592,7 +602,7 @@ void Player::GripWallUpdate() {
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 		}
 
-		if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
@@ -1150,7 +1160,7 @@ void Player::FloarAndWallUpdate() {
 
 	Vector2 move = input->GetGamePadLStick();
 
-	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
