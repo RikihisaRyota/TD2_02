@@ -867,13 +867,9 @@ void Player::ParticleUpdate() {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
 			emitter_->scale.startScale = { 1.5,1.5f,1.5f };
 		}
-		else if (jumpCount_ >= 1) {
-			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.3f,0.6f) };
-			emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
-		}
 		else {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
-			emitter_->scale.startScale = { 0.5f,0.5f,0.5f };
+			emitter_->scale.startScale = { 0.8f,0.8f,0.8f };
 		}
 		//particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.4f) };
 		particleMotion_->color.currentColor = particleMotion_->color.startColor;
@@ -1227,11 +1223,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 			if (jumpCount_ >= 2) {
 				material->color_ = { 255.0f,69.0f,0.0f,1.0f };
 
-			}
-			else if (jumpCount_ >= 1) {
-				material->color_ = { 1.0f,1.0f,0.2f,1.0f };
-			}
-			else {
+			} else {
 				material->color_ = { 1.0f ,1.0f ,1.0f ,1.0f };
 			}
 			models_[i]->Draw(modelWorldTransforms_[i], viewProjection);
