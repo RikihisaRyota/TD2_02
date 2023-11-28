@@ -844,7 +844,6 @@ void Player::ParticleInitialize() {
 	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
 	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->scale.currentScale = particleMotion_->scale.startScale;
 	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
 	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 	particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
@@ -865,12 +864,15 @@ void Player::ParticleUpdate() {
 		emitter_->spawn.position = worldTransform_.worldPos_;
 		if (jumpCount_ >= 2) {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+			emitter_->scale.startScale = { 1.5,1.5f,1.5f };
 		}
 		else if (jumpCount_ >= 1) {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.3f,0.6f) };
+			emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
 		}
 		else {
 			particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.3f,0.6f) };
+			emitter_->scale.startScale = { 0.5f,0.5f,0.5f };
 		}
 		//particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.0f,0.5f),rnd_.NextFloatRange(0.8f,1.0f),rnd_.NextFloatRange(0.0f,0.4f) };
 		particleMotion_->color.currentColor = particleMotion_->color.startColor;

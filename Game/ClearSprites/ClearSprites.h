@@ -69,7 +69,6 @@ private:
 	enum SpriteNames {
 		kBackground,
 		kResult,
-		kGoal,
 		kItem,
 		kTime,
 		kClear,
@@ -101,7 +100,6 @@ private:
 	std::string spriteNames_[kSpriteCount] = {
 		"黒背景の",
 		"リザルト",
-		"ゴール",
 		"クリアフラグ",
 		"アイテム",
 		"タイム",

@@ -188,7 +188,7 @@ MapChip::MapChip() {
 void MapChip::Initialize() {
 	map_ = maps_[currentStage_];
 	preMap_ = map_;
-	normalColor_ = { 0.8f,0.8f,0.8f,1.0f };
+	normalColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	touchingColor_ = { 255.0f,255.0f,1.0f,255.0f };
 	isClear_ = false;
 	for (int y = 0; y < kMaxHeightBlockNum;y++) {
@@ -536,11 +536,12 @@ void MapChip::SetInstancing() {
 void MapChip::SetInstancingBlock(int block, int y, int x) {
 
 	instancing_.at(block)->gpuPram[instancing_.at(block)->currentInstance].mat = blockWorldTransform_.at(y).at(x).matWorld_;
-	if ((x >= playerTouchBlockMinX_ &&
-		x <= playerTouchBlockMaxX_) &&
-		(y >= playerTouchBlockMinY_ &&
-			y <= playerTouchBlockMaxY_) && 
-		!isClear_) {
+	if (x >= playerTouchBlockMinX_ &&
+		x <= playerTouchBlockMaxX_ &&
+		y >= playerTouchBlockMinY_ &&
+		y <= playerTouchBlockMaxY_ && 
+		!isClear_ &&
+		map_[y][x] == UseBlocks::kBlock) {
 		blockColor_[y][x] = touchingColor_;
 	}
 	else {

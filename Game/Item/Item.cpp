@@ -167,7 +167,7 @@ void Item::GetUpdate() {
 	if (getCount_ >= kMaxGetCount_) {
 		isDraw_ = false;
 	}
-	worldTransform_.scale_ = Lerp(Vector3(1.0f,1.0f,1.0f), Vector3(0.0f, 0.0f, 0.0f), t);
+	worldTransform_.scale_ = Lerp(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), t);
 	worldTransform_.translate_ = Lerp(startPos_, endPos_, t);
 	worldTransform_.rotation_.y += 0.5f;
 }
@@ -179,6 +179,8 @@ void Item::CreateGetParticle() {
 		emitter->spawn.position = worldTransform_.worldPos_;
 		emitter->spawn.rangeX = 0.0f;
 		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 0.01f, 0.01f, 0.01f };
+		emitter->scale.endScale = { 0.1f,0.1f,0.1f };
 		emitter->inOnce = 70;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
@@ -187,9 +189,6 @@ void Item::CreateGetParticle() {
 		particleMotion->color.startColor = { 1.0f,1.0f,1.0f,1.0f };
 		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
-		particleMotion->scale.startScale = { 0.01f,0.01f,0.01f };
-		particleMotion->scale.endScale = { 0.1f,0.1f,0.1f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,DegToRad(45.0f) };
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
@@ -206,6 +205,8 @@ void Item::CreateGetParticle() {
 		emitter->spawn.position = worldTransform_.worldPos_;
 		emitter->spawn.rangeX = 0.0f;
 		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 0.2f,0.2f,0.2f };
+		emitter->scale.endScale = { 0.1f,0.1f,0.1f };
 		emitter->inOnce = 30;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
@@ -214,9 +215,6 @@ void Item::CreateGetParticle() {
 		particleMotion->color.startColor = { 0.5f,0.5f,0.0f,0.5f };
 		particleMotion->color.endColor = { 0.0f,0.0f,0.0f,0.0f };
 		particleMotion->color.currentColor = particleMotion->color.startColor;
-		particleMotion->scale.startScale = { 0.2f,0.2f,0.2f };
-		particleMotion->scale.endScale = { 0.1f,0.1f,0.1f };
-		particleMotion->scale.currentScale = particleMotion->scale.startScale;
 		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,DegToRad(45.0f) };
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
@@ -299,6 +297,7 @@ void ItemManager::Init() {
 	Clear();
 	SetSpriteSize();
 	SetNumTeces();
+	sprites_.at(SpriteNames::kItemSprite)->SetSize(itemSize_);
 	countFrame_ = 0;
 }
 
@@ -330,8 +329,7 @@ void ItemManager::SetItem(const Vector3& pos) {
 	}
 }
 
-void ItemManager::SetNumTeces()
-{
+void ItemManager::SetNumTeces() {
 	if (MaxItemCount_ < 10) {
 
 		numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
@@ -368,8 +366,7 @@ void ItemManager::SetNumTeces()
 	}
 }
 
-void ItemManager::SetSpriteSize()
-{
+void ItemManager::SetSpriteSize() {
 	sprites_[SpriteNames::kItemSprite]->SetSize(itemSize_ * fInfo_[FInfoNames::kItemScale]);
 	sprites_[SpriteNames::kSlash]->SetSize(slashSize_ * fInfo_[FInfoNames::kSlashScale_]);
 
@@ -380,11 +377,12 @@ void ItemManager::SetSpriteSize()
 	}
 }
 
-void ItemManager::Update()
-{
-	ApplyGlobalVariable();
+void ItemManager::Update() {
+	//ApplyGlobalVariable();
 
 	countFrame_++;
+
+	sprites_.at(SpriteNames::kItemSprite)->SetSize(Lerp(sprites_.at(SpriteNames::kItemSprite)->GetSize(), itemSize_, 0.1f));
 
 	for (int i = 0; i < MaxItemCount_; i++) {
 		items_[i]->Update();
@@ -404,21 +402,21 @@ void ItemManager::Draw(const ViewProjection& viewProjection) {
 	}
 }
 
-void ItemManager::DrawUI()
-{
-	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
-		sprite->Draw();
+void ItemManager::DrawUI() {
+	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+		sprites_.at(i)->Draw();
 	}
 
 	for (const std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (const std::unique_ptr<Sprite>& sprite : spriteArray) {
+			sprite->SetColor({ 1.0f,1.0f,1.0f,1.0f });
 			sprite->Draw();
 		}
 	}
 }
 
-void ItemManager::AddGetCount()
-{
+void ItemManager::AddGetCount() {
+	sprites_.at(SpriteNames::kItemSprite)->SetSize({ itemSize_.x + 20.0f, itemSize_.y + 20.0f });
 	getItemCount_++;
 	SetNumTeces();
 }
@@ -466,7 +464,7 @@ void ItemManager::ApplyGlobalVariable() {
 
 	for (int i = 0; i < DrawNumType::kNumTypeCount; i++) {
 		numPoses_[i] = globalVariables->GetVector2Value(groupName_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
-		
+
 		numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 		numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 	}

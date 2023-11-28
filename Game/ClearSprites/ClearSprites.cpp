@@ -25,9 +25,6 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/result.png");
 	sprites_[SpriteNames::kResult].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
-	tex = TextureManager::Load("Resources/Textures/goal.png");
-	sprites_[SpriteNames::kGoal].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-
 	tex = TextureManager::Load("Resources/Textures/clear.png");
 	sprites_[SpriteNames::kClear].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
@@ -63,9 +60,6 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kStarFirst].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarSecond].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kStarThird].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-
-	endStarSize_ = sprites_[SpriteNames::kStarFirst]->GetSize();
-	startStarSize_ = endStarSize_ * 3.0f;
 
 	tex = TextureManager::Load("Resources/Textures/goStageSelect.png");
 	sprites_[SpriteNames::kSelectStage].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -450,7 +444,6 @@ void ClearSprites::Draw() {
 			break;
 		case ClearSprites::kBackground:
 		case ClearSprites::kResult:
-		case ClearSprites::kGoal:
 		case ClearSprites::kClear:
 		case ClearSprites::kItem:
 		case ClearSprites::kTime:
@@ -500,6 +493,10 @@ void ClearSprites::ApplyGlobalVariable() {
 		if (i == SpriteNames::kRetry) {
 			retrySize = v2Info_[i][V2ItemNames::kScale];
 		}
+		if (i == SpriteNames::kStarFirst) {
+			endStarSize_ = sprites_[SpriteNames::kStarFirst]->GetSize();
+			startStarSize_ = endStarSize_ * 3.0f;
+		}
 	}
 }
 
@@ -514,7 +511,7 @@ void ClearSprites::CreateParticle(const Vector2& position) {
 		emitter->spawn.rangeX = 0.0f;
 		emitter->spawn.rangeY = 0.0f;
 		emitter->scale.startScale = { 0.0f,0.0f,0.0f };
-		emitter->scale.interimScale = { 10.0f,10.0f,10.0f };
+		emitter->scale.interimScale = { 15.0f,15.0f,15.0f };
 		emitter->scale.endScale = { 0.0f,0.0f,10.0f };
 
 		emitter->color.startColor_ = { 0.7f,0.7f,0.1f,1.0f };
@@ -529,7 +526,7 @@ void ClearSprites::CreateParticle(const Vector2& position) {
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
-		particleMotion->velocity.speed = 1.5f;
+		particleMotion->velocity.speed = 2.0f;
 		particleMotion->velocity.randomRange = 0.0f;
 
 		particleMotion->aliveTime.time = 60;
