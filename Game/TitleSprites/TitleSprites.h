@@ -43,6 +43,8 @@ private:
 		kBackground,
 		kTitle,
 		kDecisionA,
+		kController,
+
 		kSpriteCount,
 	};
 
@@ -50,6 +52,7 @@ private:
 		"黒背景の",
 		"タイトルの",
 		"プッシュAの",
+		"コントローラー"
 	};
 
 	enum V2ItemNames {

@@ -79,6 +79,22 @@ void StageScene::Init() {
 	stageBanner_->Initialize();
 }
 
+void StageScene::Reset() {
+	NeedleManager::GetInstance()->Init();
+	background_->Initialize();
+	player_->Initialize();
+	followCamera_->SetTarget(player_->GetWorldTransform());
+	followCamera_->Initialize();
+	followCamera_->Update();
+	viewProjection_ = followCamera_->GetViewProjection();
+	mapChip_->SetCurrentStage(IScene::stageNo_);
+	mapChip_->Initialize();
+	pause_->Init();
+	timer_->Init();
+	stageUi_->Init();
+	stageBanner_->Initialize();
+}
+
 void StageScene::Update() {
 	stageBanner_->Update();
 	if (!stageBanner_->GetIsAnimation()) {

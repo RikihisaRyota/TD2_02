@@ -24,6 +24,7 @@ public:
 	void Draw() override;
 	void UIDraw() override;
 
+	void Reset();
 private:
 
 	std::unique_ptr<DebugCamera> debugCamera_;

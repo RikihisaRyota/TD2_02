@@ -24,6 +24,10 @@ TitleSprites::TitleSprites() {
 	tex = TextureManager::Load("Resources/Textures/pushA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/titleController.png");
+	sprites_[SpriteNames::kController].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
+
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
@@ -78,7 +82,7 @@ void TitleSprites::Init() {
 		model->GetMaterial()->SetMaterial(*material);
 	}
 	time_ = 0.0f;
-	kMaxTime_ = 60.0f;
+	kMaxTime_ = 90.0f;
 }
 
 void TitleSprites::Update() {
@@ -158,6 +162,7 @@ void TitleSprites::Draw(const ViewProjection& viewProjection) {
 void TitleSprites::NearDraw() {
 	sprites_[SpriteNames::kTitle]->Draw();
 	sprites_[SpriteNames::kDecisionA]->Draw();
+	sprites_[SpriteNames::kController]->Draw();
 }
 
 void TitleSprites::CreateParticle() {
