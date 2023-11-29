@@ -241,12 +241,14 @@ void StageScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
-	if (!player_->GetIsChangeCamera()) {
+	if (!player_->GetIsChangeCamera()&&
+		!pause_->GetTransition()) {
 		timer_->DrawUI();
 		pause_->Draw();
 		ItemManager::GetInstance()->DrawUI();
 	}
 	stageBanner_->Draw();
+	pause_->DrawBackground();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion

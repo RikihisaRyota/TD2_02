@@ -10,6 +10,7 @@ public:
 	void Init();
 	void Update();
 	void Draw();
+	void DrawBackground();
 
 	const bool GetIsRetry() const { return isRetry_; }
 	const bool GetTransition() const { return isTransition_; }

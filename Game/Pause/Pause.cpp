@@ -76,6 +76,10 @@ void Pause::Draw() {
 	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
 		sprite->Draw();
 	}
+	
+}
+
+void Pause::DrawBackground() {
 	background_->Draw();
 }
 
