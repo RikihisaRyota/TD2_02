@@ -151,6 +151,8 @@ private:
 
 	void SetSpriteSize();
 
+	void CreateParticle();
+
 private:
 
 	int MaxItemCount_;

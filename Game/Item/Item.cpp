@@ -9,11 +9,9 @@
 #include "Ease/Ease.h"
 #include "MapChip.h"
 #include <numbers>
-#include "ParticleManager.h"
-#include "ParticleShaderStruct.h"
-#include "MyMath.h"
 #include "TextureManager.h"
 #include "ParticleManager.h"
+#include "ParticleUIManager.h"
 #include "ParticleShaderStruct.h"
 #include "MyMath.h"
 
@@ -251,7 +249,7 @@ void ItemManager::FirstInit() {
 		item.reset();
 		item = std::make_unique<Item>();
 	}
-	
+
 	fishTeces_[Fish::kNormal] = TextureManager::Load("Resources/Textures/item.png");
 	fishTeces_[Fish::kYellow] = TextureManager::Load("Resources/Textures/itemYellow.png");
 	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(fishTeces_[Fish::kNormal], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -409,8 +407,7 @@ void ItemManager::SetNumTeces() {
 	}
 }
 
-void ItemManager::SetTeces()
-{
+void ItemManager::SetTeces() {
 	if (MaxItemCount_ == getItemCount_) {
 		sprites_[SpriteNames::kSlash]->SetTextureHandle(slashTeces_[Fish::kYellow]);
 		sprites_[SpriteNames::kItemSprite]->SetTextureHandle(fishTeces_[Fish::kYellow]);
@@ -429,6 +426,74 @@ void ItemManager::SetSpriteSize() {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
 			sprite->SetSize(numSize_ * fInfo_[FInfoNames::kNumScale]);
 		}
+	}
+}
+
+void ItemManager::CreateParticle() {
+	{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 1;
+		emitter->flameInterval = 0;
+		emitter->spawn.position = Vector3(sprites_.at(SpriteNames::kItemSprite)->GetPosition().x, sprites_.at(SpriteNames::kItemSprite)->GetPosition().y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 0.0f,0.0f,0.0f };
+		emitter->scale.interimScale = { 5.0f,5.0f,5.0f };
+		emitter->scale.endScale = { 0.0f,0.0f,0.0f };
+
+		emitter->color.startColor_ = { 0.6f,0.6f,0.1f,1.0f };
+		emitter->color.endColor_ = { 0.6f, 0.6f, 0.1f, 1.0f };
+
+		emitter->inOnce = 50;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 2.0f;
+		particleMotion->velocity.randomRange = 0.0f;
+
+		particleMotion->aliveTime.time = 60;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
+	}
+	{
+		Emitter* emitter = new Emitter();
+		ParticleMotion* particleMotion = new ParticleMotion();
+
+		emitter->aliveTime = 1;
+		emitter->flameInterval = 0;
+		emitter->spawn.position = Vector3(sprites_.at(SpriteNames::kItemSprite)->GetPosition().x, sprites_.at(SpriteNames::kItemSprite)->GetPosition().y, 0.0f);
+		emitter->spawn.rangeX = 0.0f;
+		emitter->spawn.rangeY = 0.0f;
+		emitter->scale.startScale = { 10.0f,10.0f,10.0f };
+		emitter->scale.endScale = { 10.0f,10.0f,1.0f };
+
+		emitter->color.startColor_ = { 0.5f,0.5f,0.5f,1.0f };
+		emitter->color.endColor_ = { 0.5f,0.5f,0.5f, 1.0f };
+
+		emitter->inOnce = 10;
+		emitter->angle.start = DegToRad(0.0f);
+		emitter->angle.end = DegToRad(360.0f);
+		emitter->isAlive = true;
+
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+
+		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
+		particleMotion->velocity.speed = 3.0f;
+		particleMotion->velocity.randomRange = 1.5f;
+
+		particleMotion->aliveTime.time = 30;
+		particleMotion->aliveTime.randomRange = 0;
+		particleMotion->isAlive = true;
+		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
 	}
 }
 
@@ -478,6 +543,9 @@ void ItemManager::AddGetCount() {
 	sprites_.at(SpriteNames::kItemSprite)->SetSize({ itemSize_.x + 20.0f, itemSize_.y + 20.0f });
 	getItemCount_++;
 	SetNumTeces();
+	if (getItemCount_ >= MaxItemCount_) {
+		CreateParticle();
+	}
 }
 
 void ItemManager::SetGlobalVariable() {
