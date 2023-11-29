@@ -337,10 +337,10 @@ void ItemManager::SetNumTeces() {
 	if (MaxItemCount_ < 10) {
 
 		numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-		numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
+		numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
 
 		numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][MaxItemCount_]);
-		numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][getItemCount_]);
+		numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
 
 		return;
 	}
@@ -356,15 +356,15 @@ void ItemManager::SetNumTeces() {
 		}
 
 		if (getItemCount_ < 10) {
-			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][getItemCount_]);
+			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
+			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
 		}
 		else {
 			num = getItemCount_;
 			for (int i = 0; i < MaxDigits; i++) {
 				drawNum = num / int(pow(10, MaxDigits - 1 - i));
 				num = num % int(pow(10, MaxDigits - 1 - i));
-				numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+				numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 			}
 		}
 	}
@@ -382,7 +382,7 @@ void ItemManager::SetSpriteSize() {
 }
 
 void ItemManager::Update() {
-	//ApplyGlobalVariable();
+	ApplyGlobalVariable();
 
 	countFrame_++;
 

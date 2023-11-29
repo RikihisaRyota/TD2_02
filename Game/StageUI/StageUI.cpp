@@ -37,7 +37,7 @@ void StageUI::Init() {
 			}
 		}
 	}
-	else if (IScene::stageNo_ == 1) {
+	else if (IScene::stageNo_ == 3) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
 			if (i == SpriteNames::kWallJumpLeft || i == SpriteNames::kWallJumpRight) {
@@ -68,7 +68,7 @@ void StageUI::Update() {
 	if (IScene::stageNo_ == 0) {
 		countFrame_++;
 
-		if (countFrame_ == 30) {
+		if (countFrame_ == 45) {
 			countFrame_ = 0;
 			if (isDraws_[SpriteNames::kLStickLeft]) {
 				isDraws_[SpriteNames::kLStickLeft] = false;

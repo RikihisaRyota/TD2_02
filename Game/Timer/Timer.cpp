@@ -77,7 +77,7 @@ void Timer::SetNumTeces()
 		if (isClear_) {
 
 			if (second_ <= StageData::GetConditionTime(IScene::stageNo_)) {
-				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 			}
 			else {
 				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
@@ -85,7 +85,7 @@ void Timer::SetNumTeces()
 
 		}
 		else {
-			numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+			numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 		}
 	}
 }

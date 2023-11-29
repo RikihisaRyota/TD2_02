@@ -16,7 +16,7 @@ OutBlock::OutBlock(const Vector3& pos)
 	SetCollisionAttribute(kCollisionAttributeOut);
 	SetCollisionMask(kCollisionAttributePlayer);
 
-	shapeType_->SetV2Info(Vector2{ pos.x,pos.y }, Vector2{ 1.01f,1.0f }, Vector2{ 0.0f,0.0f });
+	shapeType_->SetV2Info(Vector2{ pos.x,pos.y }, Vector2{ 1.001f,0.8f }, Vector2{ 0.0f,0.0f });
 }
 
 void OutBlock::Update()
