@@ -368,9 +368,9 @@ void ClearSprites::Update() {
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
 	}
-	//#ifdef _DEBUG
-	//	ApplyGlobalVariable();
-	//#endif // _DEBUG
+#ifdef _DEBUG
+	ApplyGlobalVariable();
+#endif // _DEBUG
 }
 
 void ClearSprites::Draw() {
