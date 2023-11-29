@@ -30,6 +30,8 @@ Goal::Goal() {
 	angle_ = 0.0f;
 	addAngle_ = 5.0f;
 	speed_ = 0.1f;
+	SetGlobalVariable();
+	worldTransform_.UpdateMatrix();
 	ParticleInitialize();
 }
 
@@ -38,8 +40,10 @@ void Goal::Initialize() {
 	angle_ = 0.0f;
 	addAngle_ = 5.0f;
 	speed_ = 0.1f;
-	ParticleInitialize();
 	SetGlobalVariable();
+	worldTransform_.UpdateMatrix();
+	ParticleInitialize();
+	
 }
 
 void Goal::Update() {
