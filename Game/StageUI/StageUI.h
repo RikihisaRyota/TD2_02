@@ -45,6 +45,7 @@ private:
 		kLStickRight,
 		kWallJumpLeft,
 		kWallJumpRight,
+		kPressing,
 		kSpriteCount,
 	};
 
@@ -54,6 +55,7 @@ private:
 		"Lスティック右の",
 		"左壁キックの",
 		"右壁キックの",
+		"長押し可能の"
 	};
 
 	enum V2ItemNames {
