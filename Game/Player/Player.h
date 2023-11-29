@@ -334,8 +334,11 @@ private:
 	int32_t jumpSoundHandle_;
 	int32_t deathSoundHandle_;
 	int32_t clearSoundHandle_;
+	float jumpSoundValume_;
 
 	// クリアフラグ
 	bool isClear_;
 	int clearTime_;
+
+
 };

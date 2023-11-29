@@ -389,7 +389,7 @@ void Player::NormalUpdate() {
 	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_ ||
 		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 2.0f);
+		Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}
@@ -583,7 +583,7 @@ void Player::GripWallUpdate() {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 2.0f);
+			Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -594,7 +594,7 @@ void Player::GripWallUpdate() {
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 2.0f);
+			Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -639,7 +639,7 @@ void Player::GripWallUpdate() {
 		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
 			(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-				Audio::GetInstance()->SetValume(playHandle, 2.0f);
+				Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 				if (jumpCount_ >= 1) {
 					Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 				}
@@ -1151,6 +1151,7 @@ void Player::SoundInitialize() {
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
 	clearSoundHandle_ = audio->SoundLoadWave("SE/clear.wav");
 	isChangeCamera_ = true;
+	jumpSoundValume_ = 0.3f;
 }
 
 void Player::ClearMoveInitialize() {
@@ -1240,7 +1241,7 @@ void Player::FloarAndWallUpdate() {
 	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
 		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 1.0f);
+		Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}

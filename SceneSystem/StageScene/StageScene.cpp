@@ -89,18 +89,23 @@ void StageScene::Reset() {
 	viewProjection_ = followCamera_->GetViewProjection();
 	mapChip_->SetCurrentStage(IScene::stageNo_);
 	mapChip_->Initialize();
-	pause_->Init();
 	timer_->Init();
 	stageUi_->Init();
 }
 
 void StageScene::Update() {
 	stageBanner_->Update();
-	if (!stageBanner_->GetIsAnimation()) {
-		// 入力と処理受付
-		pause_->Update();
+	// 入力と処理受付
+	pause_->Update();
+	if (pause_->GetIsInitialize()) {
+		Reset();
+		pause_->SetIsInitialize(false);
+		return;
+	}
+	if (!stageBanner_->GetIsAnimation() &&
+		!pause_->GetTransition()) {
 
-		if (pause_->GetIsRetry() || player_->GetIsDead()) {
+		if (player_->GetIsDead()) {
 			Reset();
 			return;
 		}
@@ -236,7 +241,7 @@ void StageScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
-	if (!player_->GetIsClear()) {
+	if (!player_->GetIsChangeCamera()) {
 		timer_->DrawUI();
 		pause_->Draw();
 		ItemManager::GetInstance()->DrawUI();
