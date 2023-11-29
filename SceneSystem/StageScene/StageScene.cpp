@@ -216,10 +216,11 @@ void StageScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
-	//ItemManager::GetInstance()->DrawBloomUI();
-	timer_->DrawUI();
-	pause_->Draw();
-	ItemManager::GetInstance()->DrawUI();
+	if (!player_->GetIsClear()) {
+		timer_->DrawUI();
+		pause_->Draw();
+		ItemManager::GetInstance()->DrawUI();
+	}
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion
@@ -237,7 +238,7 @@ void StageScene::UIDraw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -280,7 +281,7 @@ void StageScene::UIDraw() {
 	/// </summary>
 	Sprite::SetBlendState(Sprite::BlendState::kNormal);
 
-	
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
