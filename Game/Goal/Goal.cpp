@@ -51,10 +51,10 @@ void Goal::Update() {
 	float t = colorTime_ / kColorMax;
 	auto material = model_->GetMaterial();
 	if (colorTime_ <= kColorMax / 2.0f) {
-		material->color_ = Lerp(Vector4(0.2f, 0.2f, 0.2f, 0.2f), Vector4(0.7f, 0.7f, 0.7f, 0.7f), std::clamp(t, 0.0f,1.0f));
+		material->color_ = Lerp(Vector4(0.5f, 0.5f, 0.5f, 0.5f), Vector4(0.7f, 0.7f, 0.7f, 0.7f), std::clamp(t, 0.0f,1.0f));
 	}
 	else {
-		material->color_ = Lerp(Vector4(0.7f, 0.7f, 0.7f, 0.7f), Vector4(0.2f, 0.2f, 0.2f, 0.2f), std::clamp(t, 0.0f, 1.0f));
+		material->color_ = Lerp(Vector4(0.7f, 0.7f, 0.7f, 0.7f), Vector4(0.5f, 0.5f, 0.5f, 0.5f), std::clamp(t, 0.0f, 1.0f));
 	}
 	model_->SetMaterial(*material);
 

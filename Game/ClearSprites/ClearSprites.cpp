@@ -136,7 +136,7 @@ void ClearSprites::Init() {
 
 	currentStageNo_ = IScene::stageNo_;
 	SetGlobalVariable();
-	if (IScene::stageNo_ <= stageRange_) {
+	if (IScene::stageNo_ < stageRange_) {
 		state_ = State::kNextStageState;
 	}
 	else {

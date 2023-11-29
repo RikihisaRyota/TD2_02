@@ -10,7 +10,7 @@ SoundManager::SoundManager() {
 	// タイトル
 	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/title.wav"));
 	// セレクト
-	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/play.wav"));
+	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/select.wav"));
 	// ステージ
 	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/play.wav"));
 	// クリア

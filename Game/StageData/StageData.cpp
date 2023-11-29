@@ -34,6 +34,10 @@ StageData::StageData() {
 	BestInitialize();
 }
 
+void StageData::Reset() {
+	BestInitialize();
+}
+
 void StageData::Initialize() {
 	SetGlobalVariable();
 	BestInitialize();
