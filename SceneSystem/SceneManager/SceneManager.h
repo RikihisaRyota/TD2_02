@@ -1,6 +1,9 @@
 #pragma once
 
+#include <chrono>
+#include <thread>
 #include <memory>
+
 #include "SceneSystem/IScene/IScene.h"
 #include "Game/Sound/SoundManager.h"
 #include "SceneSystem/SceneChange/SceneChange.h"
@@ -21,6 +24,10 @@ private:
 	// 音
 	std::unique_ptr<SoundManager> soundManager_;
 	std::unique_ptr<SceneChange> sceneChange_;
+
+	// FPS固定
+	std::chrono::steady_clock::time_point referenceTime;
+
 public:
 	SceneManager();
 	~SceneManager();
