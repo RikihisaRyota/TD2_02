@@ -399,7 +399,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									}
 									else {
 										if (Outer({ (chipPos.x - mapChipScale.x) - (beforePos.x + scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-											{ velocity.x,velocity.y }) >= -0.12f) {
+											{ velocity.x,velocity.y }) >= -0.2f) {
 											if (b->shapeType_->mapChip2D_.IsRigitBody(row + 1, column)) {
 												isFirstX = true;
 												nextY += 1;
@@ -715,7 +715,7 @@ bool CollisionManager::IsCollisionBox2DMapChip2D(Collider* a, Collider* b) const
 									}
 									else {
 										if (Outer({ (chipPos.x + mapChipScale.x) - (beforePos.x - scale.x), (chipPos.y - mapChipScale.y) - (beforePos.y + scale.y) },
-											{ velocity.x,velocity.y }) <= 0.1f) {
+											{ velocity.x,velocity.y }) <= 0.2f) {
 											//isFirstX = true;
 											if (b->shapeType_->mapChip2D_.IsRigitBody(row, column + 1)) {
 												isFirstX = false;
