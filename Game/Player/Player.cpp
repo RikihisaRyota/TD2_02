@@ -112,6 +112,7 @@ void Player::Initialize() {
 	}*/
 	isAuto_ = false;
 	isReservationJump_ = false;
+	countReservationFrame_ = 0;
 
 	ParticleInitialize();
 }
@@ -450,6 +451,11 @@ void Player::JumpUpdate() {
 	if (isPrecedingEntry_) {
 		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 			isReservationJump_ = true;
+			countReservationFrame_ = 0;
+		}
+
+		if (countReservationFrame_++ >= iParameters_[IParameterNames::kReservationFrame]) {
+			isReservationJump_ = false;
 		}
 	}
 
@@ -759,6 +765,11 @@ void Player::WallJumpUpdate() {
 	if (isPrecedingEntry_) {
 		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 			isReservationJump_ = true;
+			countReservationFrame_ = 0;
+		}
+
+		if (countReservationFrame_++ >= iParameters_[IParameterNames::kReservationFrame]) {
+			isReservationJump_ = false;
 		}
 	}
 
@@ -814,6 +825,11 @@ void Player::WallSideJumpUpdate() {
 	if (isPrecedingEntry_) {
 		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 			isReservationJump_ = true;
+			countReservationFrame_ = 0;
+		}
+
+		if (countReservationFrame_++ >= iParameters_[IParameterNames::kReservationFrame]) {
+			isReservationJump_ = false;
 		}
 	}
 
@@ -869,6 +885,11 @@ void Player::WallDownJumpUpdate() {
 	if (isPrecedingEntry_) {
 		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
 			isReservationJump_ = true;
+			countReservationFrame_ = 0;
+		}
+
+		if (countReservationFrame_++ >= iParameters_[IParameterNames::kReservationFrame]) {
+			isReservationJump_ = false;
 		}
 	}
 

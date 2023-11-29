@@ -198,6 +198,8 @@ private:
 
 	bool isReservationJump_;
 
+	int countReservationFrame_;
+
 	bool kIs2Jump_ = true;
 
 	bool kIs2WallJump_ = true;
@@ -288,6 +290,7 @@ private:
 		kGripStayTime, // 壁に捕まって動かないフレーム数
 		k2JumpExtensionFrame, // 2段ジャンプの猶予フレーム
 		kClearFrame, // クリア時にかけるフレーム数
+		kReservationFrame,
 		kCountIParameter, // 末尾
 	};
 
@@ -298,7 +301,7 @@ private:
 		"壁に捕まって動かないフレーム数",
 		"2段ジャンプの猶予フレーム",
 		"クリア時にかけるフレーム数",
-
+		"先行入力してからの有効フレーム"
 	};
 
 	Vector3 preInitialPos_;
