@@ -421,7 +421,7 @@ void ItemManager::DrawUI() {
 
 void ItemManager::AddGetCount() {
 	auto playHandle = Audio::GetInstance()->SoundPlayWave(itemGetSoundHandle_);
-	Audio::GetInstance()->SetValume(playHandle, 2.0f);
+	Audio::GetInstance()->SetValume(playHandle, 0.2f);
 	sprites_.at(SpriteNames::kItemSprite)->SetSize({ itemSize_.x + 20.0f, itemSize_.y + 20.0f });
 	getItemCount_++;
 	SetNumTeces();

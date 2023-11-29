@@ -376,7 +376,7 @@ void Player::NormalUpdate() {
 
 	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 1.0f);
+		Audio::GetInstance()->SetValume(playHandle, 2.0f);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}
@@ -570,7 +570,7 @@ void Player::GripWallUpdate() {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 1.0f);
+			Audio::GetInstance()->SetValume(playHandle, 2.0f);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -581,7 +581,7 @@ void Player::GripWallUpdate() {
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 1.0f);
+			Audio::GetInstance()->SetValume(playHandle, 2.0f);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -625,6 +625,7 @@ void Player::GripWallUpdate() {
 
 		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
+			Audio::GetInstance()->SetValume(playHandle, 2.0f);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -1221,7 +1222,7 @@ void Player::FloarAndWallUpdate() {
 
 	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 1.0f);
+		Audio::GetInstance()->SetValume(playHandle, 2.0f);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}

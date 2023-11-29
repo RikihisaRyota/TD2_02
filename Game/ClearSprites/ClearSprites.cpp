@@ -227,7 +227,7 @@ void ClearSprites::Update() {
 			input_->GetGamePadLStick().x > 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 0.3f);
+			Audio::GetInstance()->SetValume(playHandle, 0.8f);
 			switch (state_) {
 			case ClearSprites::State::kSelectStageState:
 				state_ = State::kRetryState;
