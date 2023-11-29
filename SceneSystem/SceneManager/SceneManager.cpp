@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 
-
+#include <Windows.h>
 
 #include "Input.h"
 #include "WinApp.h"
@@ -20,6 +20,8 @@
 
 #include "GlobalVariables/GlobalVariables.h"
 #include "Game/Nedle/Needle.h"
+
+#pragma comment(lib, "winmm.lib")
 
 SceneManager::SceneManager() {
 	IScene::sceneNo_ = TITLE;
@@ -48,6 +50,7 @@ int SceneManager::Run() {
 
 		// FPS固定
 		{
+			timeBeginPeriod(1);
 			std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 			std::chrono::microseconds elapsed =
 				std::chrono::duration_cast<std::chrono::microseconds>(now - referenceTime);
@@ -67,6 +70,7 @@ int SceneManager::Run() {
 			elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
 				std::chrono::steady_clock::now() - referenceTime);
 			referenceTime = std::chrono::steady_clock::now();
+			timeBeginPeriod(1);
 		}
 
 		// メッセージ処理

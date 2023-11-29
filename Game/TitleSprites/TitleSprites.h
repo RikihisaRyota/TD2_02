@@ -5,6 +5,9 @@
 
 #include "Sprite.h"
 #include "Random.h"
+#include "Model.h"
+#include "ViewProjection.h"
+#include "WorldTransform.h"
 
 class TitleSprites {
 public:
@@ -12,8 +15,10 @@ public:
 	void Init();
 	void Update();
 	void FarDraw();
+	void Draw(const ViewProjection& viewProjection);
 	void NearDraw();
 
+	void CreateParticle();
 private:
 
 	/// <summary>
@@ -64,13 +69,17 @@ private:
 
 	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
 
+	std::vector<Model*> models_;
+	std::vector<WorldTransform> worldTransforms_;
+	WorldTransform worldTransform_;
+
 	Random::RandomNumberGenerator rnd_;
-	int flashingCount_;
+	int32_t flashingCount_;
 	bool on_;
-	int onMin_;
-	int onMax_;
-	int offMin_;
-	int offMax_;
+	int32_t onMin_;
+	int32_t onMax_;
+	int32_t offMin_;
+	int32_t offMax_;
 
 };
 

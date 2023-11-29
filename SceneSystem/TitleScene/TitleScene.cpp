@@ -70,6 +70,7 @@ void TitleScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	titleSprites_->Draw(viewProjection_);
 
 	PrimitiveDrawer::Draw();
 	// 3Dオブジェクト描画後処理
