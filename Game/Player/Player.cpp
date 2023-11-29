@@ -111,6 +111,7 @@ void Player::Initialize() {
 		isAuto_ = false;
 	}*/
 	isAuto_ = false;
+	isReservationJump_ = false;
 
 	ParticleInitialize();
 }
@@ -372,7 +373,7 @@ void Player::NormalUpdate() {
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_) && !isJump_) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 1.0f);
 		if (jumpCount_ >= 1) {
@@ -441,10 +442,17 @@ void Player::JumpInitialize() {
 		velocity_ = {};
 		velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
 	}
-
+	isReservationJump_ = false;
 }
 
 void Player::JumpUpdate() {
+
+	if (isPrecedingEntry_) {
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			isReservationJump_ = true;
+		}
+	}
+
 	if (kIs2Jump_) {
 		if (jumpCount_ >= 2) {
 			if (isRight_) {
@@ -609,7 +617,7 @@ void Player::GripWallUpdate() {
 			isDown_ = true;
 		}
 
-		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_)) {
+		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
@@ -708,6 +716,7 @@ void Player::WallJumpInitialize() {
 	//	// 左の壁
 	//	velocity_.x += parameters_[FloatParameterNames::kWallJumpInitialVelocityX];
 	//}
+	isReservationJump_ = false;
 
 	if (kIs2WallJump_) {
 		if (countFrame_ > iParameters_[IParameterNames::k2JumpExtensionFrame]) {
@@ -746,6 +755,12 @@ void Player::WallJumpInitialize() {
 }
 
 void Player::WallJumpUpdate() {
+
+	if (isPrecedingEntry_) {
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			isReservationJump_ = true;
+		}
+	}
 
 	if (isRight_) {
 		// 右の壁
@@ -791,9 +806,17 @@ void Player::WallSideJumpInitialize() {
 	velocity_ = {};
 	velocity_.y += parameters_[FloatParameterNames::kJumpInitialVelocity];
 	jumpCount_ = 0;
+	isReservationJump_ = false;
 }
 
 void Player::WallSideJumpUpdate() {
+
+	if (isPrecedingEntry_) {
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			isReservationJump_ = true;
+		}
+	}
+
 	if (isRight_) {
 		velocity_.x += parameters_[FloatParameterNames::kJumpAccelerationX];
 		if (velocity_.x >= parameters_[FloatParameterNames::kJumpMaxSpeedX]) {
@@ -829,6 +852,7 @@ void Player::WallSideJumpUpdate() {
 
 void Player::WallDownJumpInitialize() {
 	velocity_ = {};
+	isReservationJump_ = false;
 
 	if (isRight_) {
 		// 右の壁
@@ -841,6 +865,13 @@ void Player::WallDownJumpInitialize() {
 }
 
 void Player::WallDownJumpUpdate() {
+
+	if (isPrecedingEntry_) {
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {
+			isReservationJump_ = true;
+		}
+	}
+
 	if (isRight_) {
 		velocity_.x -= parameters_[FloatParameterNames::kJumpAccelerationX];
 		if (velocity_.x <= 0.2f) {
@@ -1167,7 +1198,7 @@ void Player::FloarAndWallUpdate() {
 
 	Vector2 move = input->GetGamePadLStick();
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_)) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 1.0f);
 		if (jumpCount_ >= 1) {

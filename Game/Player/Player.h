@@ -194,6 +194,10 @@ private:
 
 	bool isCollisionGoal_;
 
+	bool isPrecedingEntry_ = true;
+
+	bool isReservationJump_;
+
 	bool kIs2Jump_ = true;
 
 	bool kIs2WallJump_ = true;
