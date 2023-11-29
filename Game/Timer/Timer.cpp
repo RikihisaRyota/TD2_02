@@ -115,8 +115,8 @@ void Timer::Update()
 
 			second_ = time_ / 60;
 
-			if (second_ >= 999) {
-				second_ = 999;
+			if (second_ >= 99) {
+				second_ = 99;
 			}
 			else if (second_ < 0) {
 				second_ = 0;
@@ -129,8 +129,8 @@ void Timer::Update()
 
 		second_ = StageData::GetConditionTime(*stage_) / 60;
 
-		if (second_ >= 999) {
-			second_ = 999;
+		if (second_ >= 99) {
+			second_ = 99;
 		}
 		else if (second_ < 0) {
 			second_ = 0;
@@ -218,8 +218,7 @@ void Timer::ApplyGlobalVariable()
 			numPoses_[i] = globalVariables->GetVector2Value(groupName2_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
 
 			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
-			numSprites_[i][1]->SetPosition(numPoses_[i]);
-			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 		}
 	}
 	else {
@@ -239,8 +238,7 @@ void Timer::ApplyGlobalVariable()
 			numPoses_[i] = globalVariables->GetVector2Value(groupName_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
 
 			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
-			numSprites_[i][1]->SetPosition(numPoses_[i]);
-			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 		}
 	}
 

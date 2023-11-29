@@ -24,7 +24,7 @@ public:
 
 	void SetStageNo(const int* no) { stage_ = no; }
 
-	const int GetTime() const { return time_; }
+	const int GetTime() const { return second_ * 60; }
 
 private:
 
@@ -50,7 +50,7 @@ private:
 	Vector2 numSize_;
 	Vector2 targetSize_;
 
-	static const int MaxDigits = 3;
+	static const int MaxDigits = 2;
 
 	enum SpriteNames {
 		kTimerSprite,
