@@ -94,6 +94,7 @@ void MapChip::Update() {
 			}
 		}
 	}
+#ifdef _DEBUG
 	ImGui::Begin("Debug");
 	if (ImGui::TreeNode("MapChip")) {
 		ImGui::DragFloat4("normalColor", &normalColor_.x, 0.01f, 0.0f, 1.0f);
@@ -109,6 +110,8 @@ void MapChip::Update() {
 		ImGui::TreePop();
 	}
 	ImGui::End();
+#endif // _DEBUG
+
 
 	PlayerTouchBlock();
 
@@ -532,7 +535,7 @@ void MapChip::SetInstancing() {
 				SetInstancingBlock(InstancingBlocks::kBlockNeedleBlock, y, x);
 				break;
 			case uint32_t(UseBlocks::kMarkBlock):
-				SetInstancingBlock(InstancingBlocks::kBlockMarkBlock, y, x);
+				//SetInstancingBlock(InstancingBlocks::kBlockMarkBlock, y, x);
 				break;
 			default:
 				break;

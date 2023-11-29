@@ -81,5 +81,7 @@ private:
 	int32_t offMin_;
 	int32_t offMax_;
 
+	float time_;
+	float kMaxTime_;
 };
 

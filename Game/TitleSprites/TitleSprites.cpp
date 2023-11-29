@@ -1,5 +1,7 @@
 #include "TitleSprites.h"
 
+#include <numbers>
+
 #include "Audio.h"
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
@@ -63,6 +65,7 @@ TitleSprites::TitleSprites() {
 	onMax_ = 300;
 	offMin_ = 5;
 	offMax_ = 15;
+	time_ = 0.0f;
 }
 
 void TitleSprites::Init() {
@@ -74,6 +77,8 @@ void TitleSprites::Init() {
 		material->color_ = { 1.0f,1.0f,1.0f,1.0f };
 		model->GetMaterial()->SetMaterial(*material);
 	}
+	time_ = 0.0f;
+	kMaxTime_ = 60.0f;
 }
 
 void TitleSprites::Update() {
@@ -90,7 +95,25 @@ void TitleSprites::Update() {
 		}
 		on_ ^= true;
 	}
+	const uint16_t cycle = 60;
 
+	const float pi = std::numbers::pi_v<float>;
+
+	const float step = 2.0f * pi / cycle;
+
+	time_ += step;
+
+	time_ = std::fmod(time_, 2.0f * pi);
+
+	const float amplitude = 0.2f;
+
+	float rotate = std::sinf(time_) * amplitude;
+
+	worldTransform_.rotation_.y = 2.5f + rotate;
+	worldTransform_.UpdateMatrix();
+	for (auto& pos : worldTransforms_) {
+		pos.UpdateMatrix();
+	}
 
 #ifdef _DEBUG
 	ImGui::Begin("Debug");
@@ -109,10 +132,7 @@ void TitleSprites::Update() {
 		ImGui::DragFloat3("scale", &worldTransform_.scale_.x, 0.1f);
 		ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.01f);
 		ImGui::DragFloat3("pos", &worldTransform_.translate_.x, 1.0f);
-		worldTransform_.UpdateMatrix();
-		for (auto& pos : worldTransforms_) {
-			pos.UpdateMatrix();
-		}
+		
 	}
 	ImGui::End();
 	ApplyGlobalVariable();
@@ -124,9 +144,9 @@ void TitleSprites::FarDraw() {
 }
 
 void TitleSprites::Draw(const ViewProjection& viewProjection) {
-	/*for (int i = 0; auto & model:models_) {
+	for (int i = 0; auto & model:models_) {
 		model->Draw(worldTransforms_.at(i++), viewProjection);
-	}*/
+	}
 }
 
 void TitleSprites::NearDraw() {
