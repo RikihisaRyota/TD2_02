@@ -20,8 +20,14 @@ SelectSprites::SelectSprites() {
 	tex = TextureManager::Load("Resources/Textures/decisionA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	pushATeces_[TexType::kEmpty] = tex;
+	pushATeces_[TexType::kRight] = TextureManager::Load("Resources/Textures/decisionARight.png");
+
 	tex = TextureManager::Load("Resources/Textures/selectLS.png");
 	sprites_[SpriteNames::kSelectLS].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
+	stickTeces_[TexType::kEmpty] = tex;
+	stickTeces_[TexType::kRight] = TextureManager::Load("Resources/Textures/selectLSRight.png");
 
 	tex = TextureManager::Load("Resources/Textures/goTitle.png");
 	sprites_[SpriteNames::kGoTitle].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -133,7 +139,14 @@ void SelectSprites::Init() {
 
 	timer_->Init();
 
+	sprites_[SpriteNames::kDecisionA]->SetTextureHandle(pushATeces_[TexType::kEmpty]);
+	sprites_[SpriteNames::kSelectLS]->SetTextureHandle(stickTeces_[TexType::kEmpty]);
+
 	SetStageNo();
+
+	isReleasedStick_ = true;
+	countPressingFrame_ = 0;
+	countContinuous_ = 0;
 }
 
 void (SelectSprites::* SelectSprites::spStateInitFuncTable[])() {
@@ -150,6 +163,12 @@ void SelectSprites::Update() {
 
 	ApplyGlobalVariable();
 
+	if (Input::GetInstance()->GetGamePadLStick().x != 0) {
+		sprites_[SpriteNames::kSelectLS]->SetTextureHandle(stickTeces_[TexType::kRight]);
+	}
+	else {
+		sprites_[SpriteNames::kSelectLS]->SetTextureHandle(stickTeces_[TexType::kEmpty]);
+	}
 
 	if (stateRequest_) {
 		state_ = stateRequest_.value();
@@ -303,6 +322,7 @@ void SelectSprites::TransformationUpdate() {
 void SelectSprites::SelectInitialize() {
 	SetStageNo();
 	TransformationInit();
+	countPressingFrame_ = 0;
 }
 
 void SelectSprites::SelectUpdate() {
@@ -310,34 +330,59 @@ void SelectSprites::SelectUpdate() {
 
 	TransformationUpdate();
 
+	if (!isReleasedStick_) {
+		countPressingFrame_++;
+
+		if (countPressingFrame_ >= iInfo_[IItemNames::kStopFrame]) {
+			countContinuous_++;
+			isReleasedStick_ = true;
+		}
+	}
+
 	if (input->PressedGamePadButton(Input::GamePadButton::A)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 1.5f);
 		// シーン切り替え
 		IScene::stageNo_ = nowStage_;
 		IScene::sceneNo_ = STAGE;
+		sprites_[SpriteNames::kDecisionA]->SetTextureHandle(pushATeces_[TexType::kRight]);
+
+		countContinuous_ = 0;
+		isReleasedStick_ = true;
 	}
-	else if (input->GetGamePadLStick().x >= 0.3) {
+	else if (input->GetGamePadLStick().x >= 0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 0.3f);
 
 		StateRequest(State::kMove);
 		isRight_ = true;
 	}
-	else if (input->GetGamePadLStick().x <= -0.3) {
+	else if (input->GetGamePadLStick().x <= -0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 0.3f);
 
 		StateRequest(State::kMove);
 		isRight_ = false;
 	}
+
+	if (input->GetGamePadLStick().x < 0.3f && input->GetGamePadLStick().x > -0.3f) {
+		isReleasedStick_ = true;
+		countContinuous_ = 0;
+	}
 }
 
 void SelectSprites::MoveInitialize() {
 	countFrame_ = 0;
+
+	isReleasedStick_ = false;
 }
 
 void SelectSprites::MoveUpdate() {
+
+	if (Input::GetInstance()->GetGamePadLStick().x < 0.3f && Input::GetInstance()->GetGamePadLStick().x > -0.3f) {
+		isReleasedStick_ = true;
+		countContinuous_ = 0;
+	}
 
 	if (isRight_) {
 		for (int i = 0; i < 5; i++) {

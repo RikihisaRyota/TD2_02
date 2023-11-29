@@ -64,6 +64,12 @@ private:
 
 	bool isRight_;
 
+	bool isReleasedStick_;
+
+	int countPressingFrame_;
+
+	int countContinuous_;
+
 	static const int kMaxStage_ = 15;
 
 	int drawMaxStage_;
@@ -79,15 +85,26 @@ private:
 	enum IItemNames {
 		kMaxMoveFrame,
 		kTransformationFrame,
+		kStopFrame,
 		kIItemCount,
 	};
 
 	std::string iItemNames_[IItemNames::kIItemCount] = {
 		"移動フレーム",
 		"真ん中のステージ変化のフレーム",
+		"Lスティックの押し込みで止めるフレーム"
 	};
 
 	int iInfo_[IItemNames::kIItemCount];
+
+	enum TexType {
+		kEmpty,
+		kRight,
+		kCountTexType,
+	};
+
+	std::array<uint32_t, TexType::kCountTexType> pushATeces_;
+	std::array<uint32_t, TexType::kCountTexType> stickTeces_;
 
 	enum SpriteNames {
 		kSelect,
