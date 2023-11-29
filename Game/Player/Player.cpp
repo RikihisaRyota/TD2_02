@@ -111,7 +111,7 @@ void Player::Initialize() {
 		isAuto_ = false;
 	}*/
 	if (isPressingJump_) {
-		if (IScene::stageNo_ == 3) {
+		if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
 			isPressing_ = true;
 		}
 		else {
