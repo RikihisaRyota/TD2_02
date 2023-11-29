@@ -40,7 +40,7 @@ void StageUI::Init() {
 			}
 		}
 	}
-	else if (IScene::stageNo_ == 5) {
+	else if (IScene::stageNo_ == 4) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
 			if (i == SpriteNames::kWallJumpLeft || i == SpriteNames::kWallJumpRight) {
