@@ -11,6 +11,7 @@
 #include "Model.h"
 
 #include "Audio.h"
+#include "Game/StageData/StageData.h"
 #include "MyMath.h"
 #include "ParticleUIManager.h"
 
@@ -23,43 +24,16 @@ TitleScene::TitleScene() {
 
 void TitleScene::Init() {
 	titleSprites_->Init();
+	IScene::stageNo_ = 0;
 }
 
 void TitleScene::Update() {
 
 	titleSprites_->Update();
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-		Emitter* verticalEmitter = new Emitter();
-		ParticleMotion* verticalParticleMotion = new ParticleMotion();
-
-		verticalEmitter->aliveTime = 1;
-		verticalEmitter->flameInterval = 0;
-		verticalEmitter->spawn.position = { 640.0f,360.0f,0.0f };
-		verticalEmitter->spawn.rangeX = 0.0f;
-		verticalEmitter->spawn.rangeY = 0.0f;
-		verticalEmitter->inOnce = 1;
-		verticalEmitter->angle.start = DegToRad(0.0f);
-		verticalEmitter->angle.end = DegToRad(0.0f);
-		verticalEmitter->isAlive = true;
-
-		verticalParticleMotion->color.startColor = { 1.0f,0.0f,0.0f,1.0f };
-		verticalParticleMotion->color.endColor = { 0.0f,0.0f,1.0f,1.0f };
-		verticalParticleMotion->color.currentColor = verticalParticleMotion->color.startColor;
-		verticalParticleMotion->scale.startScale = { 100.0f,100.0f,100.0f };
-		verticalParticleMotion->scale.interimScale = { 100.0f,100.0f,100.0f };
-		verticalParticleMotion->scale.endScale = { 100.0f,100.0f,100.0f };
-		verticalParticleMotion->scale.currentScale = verticalParticleMotion->scale.startScale;
-		verticalParticleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
-		verticalParticleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-
-		verticalParticleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
-		verticalParticleMotion->velocity.speed = 0.0f;
-		verticalParticleMotion->velocity.randomRange = 0.0f;
-		verticalParticleMotion->acceleration_ = {};
-		verticalParticleMotion->aliveTime.time = 60;
-		verticalParticleMotion->aliveTime.randomRange = 0;
-		verticalParticleMotion->isAlive = true;
-		ParticleUIManager::GetInstance()->AddParticle(verticalEmitter, verticalParticleMotion, 0); 
+	if (Input::GetInstance()->PushKey(DIK_LCONTROL)&&
+		Input::GetInstance()->PushKey(DIK_R)) {
+		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		StageData::Reset();
 	}
 	// フラグ
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)) {

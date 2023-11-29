@@ -26,6 +26,7 @@ public:
 	};
 public:
 	StageData();
+	static void Reset();
 	static void Initialize();
 	static void BestInitialize();
 	static void Update();
