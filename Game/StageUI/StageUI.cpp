@@ -19,6 +19,7 @@ StageUI::StageUI() {
 	teces_[SpriteNames::kLStickRight] = TextureManager::Load("Resources/Textures/LstickRight.png");
 	teces_[SpriteNames::kWallJumpLeft] = TextureManager::Load("Resources/Textures/wallJumpLeft.png");
 	teces_[SpriteNames::kWallJumpRight] = TextureManager::Load("Resources/Textures/wallJumpRight.png");
+	teces_[SpriteNames::kPressing] = TextureManager::Load("Resources/Textures/longButton.png");
 
 	aTeces_[TexType::kEmpty] = teces_[SpriteNames::kJumpUi];
 	aTeces_[TexType::kRight] = TextureManager::Load("Resources/Textures/jumpURighti.png");
@@ -44,6 +45,17 @@ void StageUI::Init() {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
 			if (i == SpriteNames::kWallJumpLeft || i == SpriteNames::kWallJumpRight) {
+				isDraws_[i] = true;
+			}
+			else {
+				isDraws_[i] = false;
+			}
+		}
+	}
+	else if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
+		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+
+			if (i == SpriteNames::kPressing) {
 				isDraws_[i] = true;
 			}
 			else {
