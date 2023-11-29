@@ -31,6 +31,14 @@ private:
 
 	int countFrame_;
 
+	enum TexType {
+		kEmpty,
+		kRight,
+		kCountTexType,
+	};
+
+	std::array<uint32_t, TexType::kCountTexType> aTeces_;
+
 	enum SpriteNames {
 		kJumpUi,
 		kLStickLeft,

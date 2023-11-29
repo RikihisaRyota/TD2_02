@@ -20,6 +20,9 @@ StageUI::StageUI() {
 	teces_[SpriteNames::kWallJumpLeft] = TextureManager::Load("Resources/Textures/wallJumpLeft.png");
 	teces_[SpriteNames::kWallJumpRight] = TextureManager::Load("Resources/Textures/wallJumpRight.png");
 
+	aTeces_[TexType::kEmpty] = teces_[SpriteNames::kJumpUi];
+	aTeces_[TexType::kRight] = TextureManager::Load("Resources/Textures/jumpURighti.png");
+
 	SetGlobalVariable();
 	SetPos();
 }
@@ -79,6 +82,13 @@ void StageUI::Update() {
 				isDraws_[SpriteNames::kLStickRight] = false;
 			}
 		}
+	}
+
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A) || Input::GetInstance()->PressingGamePadButton(Input::GamePadButton::A)) {
+		teces_[SpriteNames::kJumpUi] = aTeces_[TexType::kRight];
+	}
+	else {
+		teces_[SpriteNames::kJumpUi] = aTeces_[TexType::kEmpty];
 	}
 
 }
