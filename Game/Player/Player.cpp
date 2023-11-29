@@ -192,6 +192,12 @@ void Player::OnCollision() {
 		worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 		worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
 
+		worldTransform_.rotation_ = {};
+		if (!isRight_) {
+			worldTransform_.rotation_.y = std::numbers::pi_v<float>;
+		}
+
+
 		velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
 		velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
 
