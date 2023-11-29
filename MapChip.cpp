@@ -535,7 +535,7 @@ void MapChip::SetInstancing() {
 				SetInstancingBlock(InstancingBlocks::kBlockNeedleBlock, y, x);
 				break;
 			case uint32_t(UseBlocks::kMarkBlock):
-				//SetInstancingBlock(InstancingBlocks::kBlockMarkBlock, y, x);
+				SetInstancingBlock(InstancingBlocks::kBlockMarkBlock, y, x);
 				break;
 			default:
 				break;

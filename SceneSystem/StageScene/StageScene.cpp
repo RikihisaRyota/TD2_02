@@ -43,6 +43,7 @@ StageScene::StageScene() {
 	pause_ = std::make_unique<Pause>();
 	timer_ = std::make_unique<Timer>();
 	stageUi_ = std::make_unique<StageUI>();
+	stageBanner_ = std::make_unique<StageBanner>();
 #pragma endregion
 	background_->SetPlayer(player_.get());
 
@@ -57,6 +58,8 @@ StageScene::StageScene() {
 	followCamera_->SetTarget(player_->GetWorldTransform());
 	pause_->SetIsClear(player_->GetIsCollisionGaolPtr());
 	timer_->SetIsClear(player_->GetIsCollisionGaolPtr());
+
+	stageBanner_->Initialize();
 }
 
 void StageScene::Init() {
@@ -73,88 +76,90 @@ void StageScene::Init() {
 	pause_->Init();
 	timer_->Init();
 	stageUi_->Init();
+	stageBanner_->Initialize();
 }
 
 void StageScene::Update() {
-	// 入力と処理受付
-	pause_->Update();
+	stageBanner_->Update();
+	if (!stageBanner_->GetIsAnimation()) {
+		// 入力と処理受付
+		pause_->Update();
 
-	if (pause_->GetIsRetry() || player_->GetIsDead()) {
-		Init();
-		return;
-	}
-	else if (pause_->GetIsStageSelect()) {
-		sceneNo_ = SELECT;
-		return;
-	}
-
-	timer_->Update();
-	stageUi_->Update();
-
-	CollisionManager* collisionManager = CollisionManager::GetInstance();
-	collisionManager->Clear();
-#ifdef _DEBUG
-	if (Input::GetInstance()->TriggerKey(DIK_TAB)) {
-		isDebug_ ^= true;
-		if (isDebug_) {
-			int32_t x = int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / float(kBlockSize));
-			x = std::clamp(x, 16, int32_t(kMaxWidthBlockNum));
-			int32_t y = int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / float(kBlockSize));
-			y = std::clamp(y, 10, int32_t(kMaxHeightBlockNum));
-			viewProjection_.translate_.x = float(x) * float(kBlockSize);
-			viewProjection_.translate_.y = float(y) * float(kBlockSize);
-			viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
-			viewProjection_.UpdateMatrix();
+		if (pause_->GetIsRetry() || player_->GetIsDead()) {
+			Init();
+			return;
 		}
-	}
+		else if (pause_->GetIsStageSelect()) {
+			sceneNo_ = SELECT;
+			return;
+		}
+
+		timer_->Update();
+		stageUi_->Update();
+
+		CollisionManager* collisionManager = CollisionManager::GetInstance();
+		collisionManager->Clear();
+#ifdef _DEBUG
+		if (Input::GetInstance()->TriggerKey(DIK_TAB)) {
+			isDebug_ ^= true;
+			if (isDebug_) {
+				int32_t x = int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).x / float(kBlockSize));
+				x = std::clamp(x, 16, int32_t(kMaxWidthBlockNum));
+				int32_t y = int32_t(MakeTranslate(player_->GetWorldTransform()->matWorld_).y / float(kBlockSize));
+				y = std::clamp(y, 10, int32_t(kMaxHeightBlockNum));
+				viewProjection_.translate_.x = float(x) * float(kBlockSize);
+				viewProjection_.translate_.y = float(y) * float(kBlockSize);
+				viewProjection_.translate_.z = viewProjection_.kInitializeTranslate_.z;
+				viewProjection_.UpdateMatrix();
+			}
+		}
 #endif // _DEBUG
 
-	goal_->Update();
+		goal_->Update();
 
-	background_->Update();
+		background_->Update();
 
-	mapChip_->Update();
+		mapChip_->Update();
 
-	NeedleManager::GetInstance()->Update();
+		NeedleManager::GetInstance()->Update();
 
-	OutBlockManager::GetInstance()->Update();
+		OutBlockManager::GetInstance()->Update();
 
-	player_->Update();
+		player_->Update();
 
-	ItemManager::GetInstance()->Update();
+		ItemManager::GetInstance()->Update();
 
-	collisionManager->CheckCollision();
+		collisionManager->CheckCollision();
 
-	player_->ChangeStateGrip2Normal(*mapChip_.get());
+		player_->ChangeStateGrip2Normal(*mapChip_.get());
 
-	if (player_->GetIsChangeCamera()) {
-		followCamera_->SetTarget(goal_->GetWorldTransform());
-		followCamera_->ChangeCamera();
-		mapChip_->SetIsClear(true);
-	}
+		if (player_->GetIsChangeCamera()) {
+			followCamera_->SetTarget(goal_->GetWorldTransform());
+			followCamera_->ChangeCamera();
+			mapChip_->SetIsClear(true);
+		}
 
-	if (!isDebug_) {
-		followCamera_->Update();
-		viewProjection_ = followCamera_->GetViewProjection();
-	}
-	else {
-		// マップチップエディター
-		mapChipEditor_->Update();
-	}
-	// クリアフラグ
-	if (player_->GetIsClear()) {
-		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
-		sceneNo_ = CLEAR;
-	}
+		if (!isDebug_) {
+			followCamera_->Update();
+			viewProjection_ = followCamera_->GetViewProjection();
+		}
+		else {
+			// マップチップエディター
+			mapChipEditor_->Update();
+		}
+		// クリアフラグ
+		if (player_->GetIsClear()) {
+			StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+			sceneNo_ = CLEAR;
+		}
 
 #ifdef _DEBUG
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
-		StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
-		sceneNo_ = CLEAR;
-	}
+		if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::X)) {
+			StageData::SetData(timer_->GetTime(), ItemManager::GetInstance()->GetClearItemCountNum(), ItemManager::GetInstance()->GetMaxItemNum(), true, IScene::stageNo_);
+			sceneNo_ = CLEAR;
+		}
 #endif // _DEBUG
-
-
+	}
 	ParticleManager::GetInstance()->Update();
 }
 
@@ -221,6 +226,7 @@ void StageScene::Draw() {
 		pause_->Draw();
 		ItemManager::GetInstance()->DrawUI();
 	}
+	stageBanner_->Draw();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 #pragma endregion

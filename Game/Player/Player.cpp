@@ -925,7 +925,7 @@ void Player::WallDownJumpUpdate() {
 void Player::ParticleInitialize() {
 
 	emitter_ = new Emitter();
-	emitter_->aliveTime = 1;
+	emitter_->aliveTime = 600;
 	emitter_->spawn.position = worldTransform_.worldPos_;
 	emitter_->spawn.rangeX = 0.0f;
 	emitter_->spawn.rangeY = 0.0f;

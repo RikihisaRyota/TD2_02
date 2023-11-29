@@ -115,7 +115,7 @@ void Goal::SetCollider() {
 void Goal::ParticleInitialize() {
 	for (int i = 0; i < kNumParticle; i++) {
 		emitter_[i] = new Emitter();
-		emitter_[i]->aliveTime = 2;
+		emitter_[i]->aliveTime = 600;
 		emitter_[i]->spawn.position = worldTransform_.worldPos_;
 		emitter_[i]->spawn.rangeX = 0.0f;
 		emitter_[i]->spawn.rangeY = 0.0f;
