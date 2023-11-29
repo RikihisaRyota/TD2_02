@@ -127,7 +127,7 @@ void Goal::ParticleInitialize() {
 		emitter_[i]->isAlive = true;
 		particleMotion_[i] = new ParticleMotion();
 		particleMotion_[i]->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.75f,0.8f),rnd_.NextFloatRange(0.8f,1.0f) };
-		particleMotion_[i]->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.5f,0.6f),rnd_.NextFloatRange(0.0f,0.0f) };
+		particleMotion_[i]->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 		particleMotion_[i]->color.currentColor = particleMotion_[i]->color.startColor;
 		particleMotion_[i]->rotate.addRotate = { 0.0f,0.0f,0.0f };
 		particleMotion_[i]->rotate.currentRotate = { 0.0f,0.0f,0.0f };
@@ -150,6 +150,7 @@ void Goal::CreateParticle() {
 		emitter_[i]->angle.current = DegToRad(angle_ + angle);
 		particleMotion_[i]->velocity.speed = -speed_;
 		particleMotion_[i]->color.startColor = { rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.0f,0.2f),rnd_.NextFloatRange(0.75f,0.8f),rnd_.NextFloatRange(0.2f,0.5f) };
+		particleMotion_[i]->color.endColor = { rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
 		particleMotion_[i]->aliveTime.time = int32_t(worldTransform_.scale_.x * aliveTime_);
 	}
 }
