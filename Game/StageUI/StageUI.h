@@ -81,13 +81,15 @@ private:
 		kNearZ,
 		kFarZ,
 		kScale,
+		kPressingScale,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
 		"壁キックUiのz座標",
 		"移動とジャンプUiのz座標",
-		"スケール"
+		"スケール",
+		"長押し可能のスケール"
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;

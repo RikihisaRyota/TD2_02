@@ -156,11 +156,15 @@ void StageUI::SetPos()
 			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kScale];
 			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kScale];
 		}
+		else if (i == SpriteNames::kPressing) {
+			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
+			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kPressingScale] * 16;
+			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kPressingScale] * 3;
+		}
 		else {
 			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
 			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kScale] * 3;
 			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kScale];
-
 		}
 
 		worldTransforms_[i].UpdateMatrix();

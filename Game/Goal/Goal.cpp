@@ -62,8 +62,8 @@ void Goal::Update() {
 	}
 	model_->SetMaterial(*material);
 
-	angle_ -= addAngle_;
-	if (angle_ <= -360.0f) {
+	angle_ += addAngle_;
+	if (angle_ >= 360.0f) {
 		angle_ = 0.0f;
 	}
 	CreateParticle();
