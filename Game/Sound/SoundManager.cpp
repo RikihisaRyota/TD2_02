@@ -14,7 +14,7 @@ SoundManager::SoundManager() {
 	// ステージ
 	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/play.wav"));
 	// クリア
-	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/title.wav"));
+	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/clear.wav"));
 
 	playHandle_.at(kTitleScene) = audio_->SoundPlayLoopStart(soundHandle_.at(kTitleScene));
 	preScene_ = 0;
