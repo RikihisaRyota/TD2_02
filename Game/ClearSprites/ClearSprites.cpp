@@ -117,6 +117,8 @@ ClearSprites::ClearSprites() {
 
 	selectSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/select.wav");
 	starSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/star.wav");
+	clapSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/clap.wav");
+	crackerSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/cracker.wav");
 }
 
 void ClearSprites::Init() {
@@ -288,6 +290,10 @@ void ClearSprites::Update() {
 					starFlag_[1] &&
 					starFlag_[2]) {
 					CreateCompleteParticle();
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(clapSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 1.5f);
+					playHandle = Audio::GetInstance()->SoundPlayWave(crackerSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				}
 				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
 				Audio::GetInstance()->SetValume(playHandle, 1.5f);

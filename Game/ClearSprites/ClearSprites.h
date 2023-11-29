@@ -189,6 +189,8 @@ private:
 
 	int32_t selectSoundHandle_;
 	int32_t starSoundHandle_;
+	int32_t clapSoundHandle_;
+	int32_t crackerSoundHandle_;
 
 	// ステージ
 	int stageRange_ = MapChip::Stage::kStage_15;
