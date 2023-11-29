@@ -29,8 +29,8 @@ StageBanner::StageBanner() {
 	frameTextureHandle_ = TextureManager::Load("Resources/Textures/startFram.png");
 	pressAndHoldTextureHandle_ = TextureManager::Load("Resources/Textures/longButton.png");
 
-	startPosition_ = { 1920.0f,360.0f };
-	endPosition_ = { -640.0f,360.0f };
+	startPosition_ = { 2560.0f,360.0f };
+	endPosition_ = { -1280.0f,360.0f };
 	kMaxAnimationCount_ = 120.0f;
 	stageSprite_.reset(Sprite::Create(stageTextureHandle_[MapChip::Stage::kStage_1], startPosition_, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 	frameSprite_.reset(Sprite::Create(frameTextureHandle_, startPosition_, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
