@@ -39,7 +39,7 @@ StageBanner::StageBanner() {
 	stageSize_ = stageSprite_->GetSize();
 	frameSize_ = frameSprite_->GetSize();
 	pressAndHoldSize_ = pressAndHoldSprite_->GetSize();
-	frameSize_.x *= 2.0f;
+	frameSize_.x *=1.5f;
 	frameSize_.y *= 0.5f;
 	frameSprite_->SetSize(frameSize_);
 	stagePosition_ = { 0.0f,0.0f };
