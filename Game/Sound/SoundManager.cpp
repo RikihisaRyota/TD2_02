@@ -34,7 +34,7 @@ void SoundManager::Initialize() {
 void SoundManager::Update() {
 	if (!isLoop_) {
 		playHandle_.at(currentScene_) = audio_->SoundPlayLoopStart(soundHandle_.at(currentScene_));
-		audio_->SetValume(playHandle_.at(currentScene_), 0.2f);
+		audio_->SetValume(playHandle_.at(currentScene_), 0.4f);
 		isLoop_ = true;
 	}
 }

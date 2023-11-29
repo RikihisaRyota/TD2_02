@@ -389,15 +389,15 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kTimeConditionOnesPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[0]]);
+			sprite->SetTextureHandle(number_[conditionTimePlace_[0]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kTimeConditionTensPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[1]]);
+			sprite->SetTextureHandle(number_[conditionTimePlace_[1]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kTimeConditionHundredsPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[2]]);
+			sprite->SetTextureHandle(number_[conditionTimePlace_[2]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemOnesPlace:
@@ -409,11 +409,11 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemConditionOnesPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[0]]);
+			sprite->SetTextureHandle(number_[conditionItemPlace_[0]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemConditionTensPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[1]]);
+			sprite->SetTextureHandle(number_[conditionItemPlace_[1]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:
