@@ -74,25 +74,25 @@ void StageBanner::Update() {
 			isAnimation_ = false;
 		}
 	}
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+	/*if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 		animationCount_ = 0.0f;
 		isAnimation_ = true;
-	}
-	ImGui::Begin("Debug");
-	if (ImGui::TreeNode("Banner")) {
-		ImGui::DragFloat2("start", &startPosition_.x, 1.0f);
-		ImGui::DragFloat2("end", &endPosition_.x, 1.0f);
-		ImGui::DragFloat2("stagePosition_", &stagePosition_.x, 1.0f);
-		ImGui::DragFloat2("pressAndHoldPosition_", &pressAndHoldPosition_.x, 1.0f);
-		ImGui::DragFloat2("stageSize", &stageSize_.x, 1.0f);
-		ImGui::DragFloat2("frameSize", &frameSize_.x, 1.0f);
-		ImGui::DragFloat2("pressAndHoldSize", &pressAndHoldSize_.x, 1.0f);
-		/*stageSprite_->SetPosition(stagePosition_);
-		frameSprite_->SetPosition(position_);
-		pressAndHoldSprite_->SetPosition(pressAndHoldPosition_);*/
-		ImGui::TreePop();
-	}
-	ImGui::End();
+	}*/
+	//ImGui::Begin("Debug");
+	//if (ImGui::TreeNode("Banner")) {
+	//	ImGui::DragFloat2("start", &startPosition_.x, 1.0f);
+	//	ImGui::DragFloat2("end", &endPosition_.x, 1.0f);
+	//	ImGui::DragFloat2("stagePosition_", &stagePosition_.x, 1.0f);
+	//	ImGui::DragFloat2("pressAndHoldPosition_", &pressAndHoldPosition_.x, 1.0f);
+	//	ImGui::DragFloat2("stageSize", &stageSize_.x, 1.0f);
+	//	ImGui::DragFloat2("frameSize", &frameSize_.x, 1.0f);
+	//	ImGui::DragFloat2("pressAndHoldSize", &pressAndHoldSize_.x, 1.0f);
+	//	/*stageSprite_->SetPosition(stagePosition_);
+	//	frameSprite_->SetPosition(position_);
+	//	pressAndHoldSprite_->SetPosition(pressAndHoldPosition_);*/
+	//	ImGui::TreePop();
+	//}
+	//ImGui::End();
 }
 
 void StageBanner::Draw() {
