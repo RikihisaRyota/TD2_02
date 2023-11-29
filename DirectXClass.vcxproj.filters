@@ -362,7 +362,9 @@
     <ClCompile Include="Engine\ParticleUI.cpp">
       <Filter>engine\base</Filter>
     </ClCompile>
-    <ClCompile Include="Game\StageBanner\StageBanner.cpp" />
+    <ClCompile Include="Game\StageBanner\StageBanner.cpp">
+      <Filter>Game\StageBanner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -678,7 +680,9 @@
     <ClInclude Include="Engine\ParticleUI.h">
       <Filter>engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="Game\StageBanner\StageBanner.h" />
+    <ClInclude Include="Game\StageBanner\StageBanner.h">
+      <Filter>Game\StageBanner</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

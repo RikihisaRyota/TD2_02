@@ -98,6 +98,13 @@ private:
 		kSpriteCount,
 	};
 
+	enum SpriteOnOFF {
+		kOn,
+		kOff,
+
+		kCount,
+	};
+
 	std::string spriteNames_[kSpriteCount] = {
 		"黒背景の",
 		"リザルト",
@@ -194,6 +201,14 @@ private:
 	bool allClear_;
 	int32_t allClearCount_;
 
+
+	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
+	int32_t flashingCount_;
+	bool on_;
+	int32_t onMin_;
+	int32_t onMax_;
+	int32_t offMin_;
+	int32_t offMax_;
 
 	// ステージ
 	int stageRange_ = MapChip::Stage::kStage_15;

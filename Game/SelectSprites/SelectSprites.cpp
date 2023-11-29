@@ -14,8 +14,9 @@ SelectSprites::SelectSprites() {
 	blackBackground_.reset(Sprite::Create(tex, Vector2{ 640.0f,360.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.5f,0.5f }));
 	blackBackground_->SetSize({ 1280.0f,720.0f });
 
-	tex = TextureManager::Load("Resources/Textures/stageSelect.png");
-	sprites_[SpriteNames::kSelect].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	testTextureHandle_[SpriteOnOFF::kOn] = TextureManager::Load("Resources/Textures/stageSelect.png");
+	testTextureHandle_[SpriteOnOFF::kOff] = TextureManager::Load("Resources/Textures/stageSelect_off.png");
+	sprites_[SpriteNames::kSelect].reset(Sprite::Create(testTextureHandle_[SpriteOnOFF::kOn], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/decisionA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -86,10 +87,20 @@ SelectSprites::SelectSprites() {
 	timer_->Init();
 	timer_->Update();
 	drawMaxStage_ = 14;
+
+	on_ = true;
+	onMin_ = 20;
+	onMax_ = 300;
+	offMin_ = 5;
+	offMax_ = 10;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 }
 
 void SelectSprites::Init() {
 	SetGlobalVariable();
+
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+	on_ = true;
 
 	nowStage_ = IScene::stageNo_;
 
@@ -160,6 +171,19 @@ void (SelectSprites::* SelectSprites::spStateUpdateFuncTable[])() {
 };
 
 void SelectSprites::Update() {
+
+	flashingCount_--;
+	if (flashingCount_ <= 0) {
+		if (on_) {
+			sprites_[SpriteNames::kSelect]->SetTextureHandle(testTextureHandle_[kOn]);
+			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+		}
+		else {
+			sprites_[SpriteNames::kSelect]->SetTextureHandle(testTextureHandle_[kOff]);
+			flashingCount_ = rnd_.NextIntRange(offMin_, offMax_);
+		}
+		on_ ^= true;
+	}
 
 	ApplyGlobalVariable();
 

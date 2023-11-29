@@ -63,13 +63,13 @@ TitleSprites::TitleSprites() {
 	worldTransforms_.back().rotation_= { 0.0f, 0.5f, 0.0f };
 	worldTransforms_.back().UpdateMatrix();
 
-	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 	on_ = true;
 	onMin_ = 20;
 	onMax_ = 300;
 	offMin_ = 5;
 	offMax_ = 15;
 	time_ = 0.0f;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 }
 
 void TitleSprites::Init() {

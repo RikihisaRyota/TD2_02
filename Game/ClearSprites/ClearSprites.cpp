@@ -23,8 +23,9 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kBackground]->SetColor({ 0.0f,0.0f,0.0f,1.0f });
 	sprites_[SpriteNames::kBackground]->SetSize({ 1280.0f,720.0f });
 
-	tex = TextureManager::Load("Resources/Textures/result.png");
-	sprites_[SpriteNames::kResult].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	testTextureHandle_[SpriteOnOFF::kOn] = TextureManager::Load("Resources/Textures/result.png");
+	testTextureHandle_[SpriteOnOFF::kOff] = TextureManager::Load("Resources/Textures/result_off.png");
+	sprites_[SpriteNames::kResult].reset(Sprite::Create(testTextureHandle_[SpriteOnOFF::kOn], Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/clear.png");
 	sprites_[SpriteNames::kClear].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -119,6 +120,13 @@ ClearSprites::ClearSprites() {
 	starSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/star.wav");
 	clapSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/clap.wav");
 	crackerSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/cracker.wav");
+
+	on_ = true;
+	onMin_ = 20;
+	onMax_ = 300;
+	offMin_ = 5;
+	offMax_ = 10;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 }
 
 void ClearSprites::Init() {
@@ -131,6 +139,10 @@ void ClearSprites::Init() {
 	secondStarCount_ = 0.0f;
 	thirdStarCount_ = 0.0f;
 	kMaxStarCount_ = 15.0f;
+
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+	on_ = true;
+
 	for (auto& flag : createFlag_) {
 		flag = false;
 	}
@@ -367,6 +379,20 @@ void ClearSprites::Update() {
 	}
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
+	}
+
+	// フラッシュ
+	flashingCount_--;
+	if (flashingCount_ <= 0) {
+		if (on_) {
+			sprites_[SpriteNames::kResult]->SetTextureHandle(testTextureHandle_[kOn]);
+			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+		}
+		else {
+			sprites_[SpriteNames::kResult]->SetTextureHandle(testTextureHandle_[kOff]);
+			flashingCount_ = rnd_.NextIntRange(offMin_, offMax_);
+		}
+		on_ ^= true;
 	}
 #ifdef _DEBUG
 	ApplyGlobalVariable();
