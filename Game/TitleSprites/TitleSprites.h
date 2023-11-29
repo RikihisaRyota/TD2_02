@@ -80,6 +80,8 @@ private:
 	int32_t onMax_;
 	int32_t offMin_;
 	int32_t offMax_;
+	
+	float theta_;
 
 	float time_;
 	float kMaxTime_;
