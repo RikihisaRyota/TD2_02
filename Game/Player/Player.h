@@ -202,7 +202,7 @@ private:
 
 	bool kIs2Jump_ = true;
 
-	bool isPressingJump_ = ture;
+	bool isPressingJump_ = true;
 
 	bool isPressing_;
 
