@@ -267,7 +267,7 @@ void ClearSprites::Update() {
 
 		scaleTheta_ = std::fmod(scaleTheta_, 2.0f * pi);
 
-		const float amplitude = 5.0f;
+		const float amplitude = 15.0f;
 
 		float scale = std::sinf(scaleTheta_) * amplitude;
 
