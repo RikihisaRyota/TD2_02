@@ -110,6 +110,15 @@ void Player::Initialize() {
 	else {
 		isAuto_ = false;
 	}*/
+	if (isPressingJump_) {
+		if (IScene::stageNo_ == 3) {
+			isPressing_ = true;
+		}
+		else {
+			isPressing_ = false;
+		}
+	}
+
 	isAuto_ = false;
 	isReservationJump_ = false;
 	countReservationFrame_ = 0;
@@ -374,7 +383,8 @@ void Player::NormalUpdate() {
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) && !isJump_) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_ ||
+		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 2.0f);
 		if (jumpCount_ >= 1) {
@@ -623,7 +633,8 @@ void Player::GripWallUpdate() {
 			isDown_ = true;
 		}
 
-		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
+		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
+			(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 			Audio::GetInstance()->SetValume(playHandle, 2.0f);
 			if (jumpCount_ >= 1) {
@@ -1220,7 +1231,8 @@ void Player::FloarAndWallUpdate() {
 
 	Vector2 move = input->GetGamePadLStick();
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
+		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
 		Audio::GetInstance()->SetValume(playHandle, 2.0f);
 		if (jumpCount_ >= 1) {
