@@ -51,9 +51,12 @@ SelectSprites::SelectSprites() {
 	stageTeces_[7] = TextureManager::Load("Resources/Textures/stage8.png");
 	stageTeces_[8] = TextureManager::Load("Resources/Textures/stage9.png");
 	stageTeces_[9] = TextureManager::Load("Resources/Textures/stage10.png");
-	stageTeces_[10] = TextureManager::Load("Resources/Textures/stage3.png");
-	stageTeces_[11] = TextureManager::Load("Resources/Textures/stage5.png");
-	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage7.png");
+	stageTeces_[10] = TextureManager::Load("Resources/Textures/stage11.png");
+	stageTeces_[11] = TextureManager::Load("Resources/Textures/stage12.png");
+	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage13.png");
+	stageTeces_[13] = TextureManager::Load("Resources/Textures/stage14.png");
+	stageTeces_[14] = TextureManager::Load("Resources/Textures/stage15.png");
+	stageTeces_[15] = TextureManager::Load("Resources/Textures/stageEX.png");
 
 	starTeces_[StarState::kNotGet] = TextureManager::Load("Resources/Textures/starNotGet.png");
 	starTeces_[StarState::kGet] = TextureManager::Load("Resources/Textures/starGet.png");
@@ -76,12 +79,15 @@ SelectSprites::SelectSprites() {
 	timer_->SetStageNo(&nowStage_);
 	timer_->Init();
 	timer_->Update();
+	drawMaxStage_ = 14;
 }
 
 void SelectSprites::Init() {
 	SetGlobalVariable();
 
 	nowStage_ = IScene::stageNo_;
+
+	bool isClearAll = true;
 
 	for (int stage = 0; stage < MapChip::Stage::kCount; stage++) {
 		if (StageData::GetBestClearFlag(stage)) {
@@ -107,6 +113,18 @@ void SelectSprites::Init() {
 			condition_.at(stage).at(0) = false;
 			condition_.at(stage).at(1) = false;
 			condition_.at(stage).at(2) = false;
+		}
+
+		if (stage <= drawMaxStage_) {
+			if (!StageData::GetBestClearFlag(stage)) {
+				isClearAll = false;
+			}
+		}
+	}
+
+	if (isClearAll) {
+		if (drawMaxStage_ != kMaxStage_) {
+			drawMaxStage_++;
 		}
 	}
 
@@ -152,7 +170,9 @@ void SelectSprites::FarDraw() {
 
 void SelectSprites::NearDraw() {
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
-		sprites_[i]->Draw();
+		if (i != SpriteNames::kStarFram) {
+			sprites_[i]->Draw();
+		}
 	}
 
 	for (int i = 0; i < 5; i++) {
@@ -233,10 +253,10 @@ void SelectSprites::ApplyGlobalVariable() {
 void SelectSprites::SetStageNo() {
 	for (int i = 0; i < 5; i++) {
 		if (nowStage_ - 2 + i < 0) {
-			stages_[i]->SetTextureHandle(stageTeces_[kMaxStage_ + nowStage_ - 1 + i]);
+			stages_[i]->SetTextureHandle(stageTeces_[drawMaxStage_ + nowStage_ - 1 + i]);
 		}
-		else if (nowStage_ - 2 + i > kMaxStage_) {
-			if (nowStage_ == kMaxStage_ - 1) {
+		else if (nowStage_ - 2 + i > drawMaxStage_) {
+			if (nowStage_ == drawMaxStage_ - 1) {
 				stages_[i]->SetTextureHandle(stageTeces_[i - 4]);
 			}
 			else {
@@ -356,14 +376,14 @@ void SelectSprites::MoveUpdate() {
 	if (countFrame_ >= iInfo_[IItemNames::kMaxMoveFrame]) {
 		if (isRight_) {
 			nowStage_++;
-			if (nowStage_ > kMaxStage_) {
+			if (nowStage_ > drawMaxStage_) {
 				nowStage_ = 0;
 			}
 		}
 		else {
 			nowStage_--;
 			if (nowStage_ < 0) {
-				nowStage_ = kMaxStage_;
+				nowStage_ = drawMaxStage_;
 			}
 		}
 

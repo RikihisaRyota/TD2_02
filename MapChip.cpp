@@ -135,6 +135,7 @@ MapChip::MapChip() {
 		 "stage_13",
 		 "stage_14",
 		 "stage_15",
+		 "stage_16",
 	};
 
 	auto modelManager = ModelManager::GetInstance();
