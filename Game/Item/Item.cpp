@@ -251,13 +251,16 @@ void ItemManager::FirstInit() {
 		item.reset();
 		item = std::make_unique<Item>();
 	}
-	uint32_t tex = TextureManager::Load("Resources/Textures/item.png");
-	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	
+	fishTeces_[Fish::kNormal] = TextureManager::Load("Resources/Textures/item.png");
+	fishTeces_[Fish::kYellow] = TextureManager::Load("Resources/Textures/itemYellow.png");
+	sprites_[SpriteNames::kItemSprite].reset(Sprite::Create(fishTeces_[Fish::kNormal], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	itemSize_ = sprites_[SpriteNames::kItemSprite]->GetSize();
 
-	tex = TextureManager::Load("Resources/Textures/slash.png");
-	sprites_[SpriteNames::kSlash].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	slashTeces_[Fish::kNormal] = TextureManager::Load("Resources/Textures/slash.png");
+	slashTeces_[Fish::kYellow] = TextureManager::Load("Resources/Textures/slashYellow.png");
+	sprites_[SpriteNames::kSlash].reset(Sprite::Create(slashTeces_[Fish::kNormal], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	slashSize_ = sprites_[SpriteNames::kSlash]->GetSize();
 
@@ -283,6 +286,17 @@ void ItemManager::FirstInit() {
 	numTeces_[TexColor::kDark][8] = TextureManager::Load("Resources/Textures/time8.png");
 	numTeces_[TexColor::kDark][9] = TextureManager::Load("Resources/Textures/time9.png");
 
+	numTeces_[TexColor::kParfect][0] = TextureManager::Load("Resources/Textures/parfect0.png");
+	numTeces_[TexColor::kParfect][1] = TextureManager::Load("Resources/Textures/parfect1.png");
+	numTeces_[TexColor::kParfect][2] = TextureManager::Load("Resources/Textures/parfect2.png");
+	numTeces_[TexColor::kParfect][3] = TextureManager::Load("Resources/Textures/parfect3.png");
+	numTeces_[TexColor::kParfect][4] = TextureManager::Load("Resources/Textures/parfect4.png");
+	numTeces_[TexColor::kParfect][5] = TextureManager::Load("Resources/Textures/parfect5.png");
+	numTeces_[TexColor::kParfect][6] = TextureManager::Load("Resources/Textures/parfect6.png");
+	numTeces_[TexColor::kParfect][7] = TextureManager::Load("Resources/Textures/parfect7.png");
+	numTeces_[TexColor::kParfect][8] = TextureManager::Load("Resources/Textures/parfect8.png");
+	numTeces_[TexColor::kParfect][9] = TextureManager::Load("Resources/Textures/parfect9.png");
+
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
 			sprite.reset(Sprite::Create(numTeces_[TexColor::kBright][0], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -303,6 +317,7 @@ void ItemManager::Init() {
 	SetNumTeces();
 	sprites_.at(SpriteNames::kItemSprite)->SetSize(itemSize_);
 	countFrame_ = 0;
+	SetTeces();
 }
 
 void ItemManager::CreateItem(const Vector3& pos) {
@@ -311,6 +326,7 @@ void ItemManager::CreateItem(const Vector3& pos) {
 			item->Init(pos);
 			MaxItemCount_++;
 			SetNumTeces();
+			SetTeces();
 			return;
 		}
 	}
@@ -336,11 +352,18 @@ void ItemManager::SetItem(const Vector3& pos) {
 void ItemManager::SetNumTeces() {
 	if (MaxItemCount_ < 10) {
 
-		numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-		numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
-
-		numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][MaxItemCount_]);
-		numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
+		if (MaxItemCount_ == getItemCount_) {
+			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kParfect][0]);
+			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kParfect][getItemCount_]);
+			numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kParfect][0]);
+			numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kParfect][MaxItemCount_]);
+		}
+		else {
+			numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
+			numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][MaxItemCount_]);
+			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
+			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
+		}
 
 		return;
 	}
@@ -352,21 +375,49 @@ void ItemManager::SetNumTeces() {
 			drawNum = num / int(pow(10, MaxDigits - 1 - i));
 			num = num % int(pow(10, MaxDigits - 1 - i));
 
-			numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+			if (MaxItemCount_ == getItemCount_) {
+				numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kParfect][drawNum]);
+			}
+			else {
+				numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+			}
 		}
 
 		if (getItemCount_ < 10) {
-			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
-			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
+			if (MaxItemCount_ == getItemCount_) {
+				numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kParfect][0]);
+				numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kParfect][getItemCount_]);
+			}
+			else {
+				numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
+				numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
+			}
 		}
 		else {
 			num = getItemCount_;
 			for (int i = 0; i < MaxDigits; i++) {
 				drawNum = num / int(pow(10, MaxDigits - 1 - i));
 				num = num % int(pow(10, MaxDigits - 1 - i));
-				numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
+				if (MaxItemCount_ == getItemCount_) {
+					numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kParfect][drawNum]);
+				}
+				else {
+					numSprites_[DrawNumType::kGetItem][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
+				}
 			}
 		}
+	}
+}
+
+void ItemManager::SetTeces()
+{
+	if (MaxItemCount_ == getItemCount_) {
+		sprites_[SpriteNames::kSlash]->SetTextureHandle(slashTeces_[Fish::kYellow]);
+		sprites_[SpriteNames::kItemSprite]->SetTextureHandle(fishTeces_[Fish::kYellow]);
+	}
+	else {
+		sprites_[SpriteNames::kSlash]->SetTextureHandle(slashTeces_[Fish::kNormal]);
+		sprites_[SpriteNames::kItemSprite]->SetTextureHandle(fishTeces_[Fish::kNormal]);
 	}
 }
 
@@ -391,6 +442,8 @@ void ItemManager::Update() {
 	for (int i = 0; i < MaxItemCount_; i++) {
 		items_[i]->Update();
 	}
+
+	SetTeces();
 
 	/*for (const std::unique_ptr<Item>& item : items_) {
 		item->Update();
