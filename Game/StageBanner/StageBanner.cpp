@@ -29,7 +29,6 @@ StageBanner::StageBanner() {
 	frameTextureHandle_ = TextureManager::Load("Resources/Textures/startFram.png");
 	pressAndHoldTextureHandle_ = TextureManager::Load("Resources/Textures/longButton.png");
 
-	frameSize_.y *= 0.5f;
 	startPosition_ = { 1920.0f,360.0f };
 	endPosition_ = { -640.0f,360.0f };
 	kMaxAnimationCount_ = 120.0f;
@@ -40,6 +39,7 @@ StageBanner::StageBanner() {
 	stageSize_ = stageSprite_->GetSize();
 	frameSize_ = frameSprite_->GetSize();
 	pressAndHoldSize_ = pressAndHoldSprite_->GetSize();
+	frameSize_.x *= 2.0f;
 	frameSize_.y *= 0.5f;
 	frameSprite_->SetSize(frameSize_);
 	stagePosition_ = { 0.0f,0.0f };

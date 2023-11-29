@@ -10,12 +10,16 @@
 #include "SphereRenderer.h"
 #include "Model.h"
 
+#include "Audio.h"
+
 SelectScene::SelectScene()
 {
 	// カメラの初期化
 	viewProjection_.Initialize();
 
 	selectSprites_ = std::make_unique<SelectSprites>();
+
+	returnTitleSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
 }
 
 void SelectScene::Init()
@@ -28,6 +32,8 @@ void SelectScene::Update()
 
 	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::BACK)) {
 		IScene::sceneNo_ = TITLE;
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(returnTitleSoundHandle_);
+		Audio::GetInstance()->SetValume(playHandle, 0.5f);
 		return;
 	}
 

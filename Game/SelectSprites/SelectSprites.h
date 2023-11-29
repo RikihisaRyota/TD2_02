@@ -198,5 +198,6 @@ private:
 	// サウンド
 	int32_t choiceSoundHandle_;
 	int32_t selectSoundHandle_;
+	
 };
 

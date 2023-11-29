@@ -1,5 +1,6 @@
 #include "Pause.h"
 
+#include "Audio.h"
 #include "TextureManager.h"
 #include "GlobalVariables/GlobalVariables.h"
 #include "Input.h"
@@ -14,6 +15,8 @@ Pause::Pause() {
 
 	background_.reset(Sprite::Create(0, Vector2{}, { 0.0f,0.0f,0.0f,0.0f }, { 0.5f,0.5f }));
 	background_->SetSize({ 1280.0f * 2.0f,720.0f * 2.0f });
+	
+	cancelSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/cancel.wav");
 	/*for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
@@ -39,9 +42,13 @@ void Pause::Update() {
 			if (!isTransition_) {
 				if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::START)) {
 					isTransition_ = true;
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(cancelSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 0.5f);
 				}
 				else if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::BACK)) {
 					isSelect_ = true;
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(cancelSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle,0.5f);
 				}
 			}
 			else {

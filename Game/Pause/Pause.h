@@ -50,6 +50,8 @@ private:
 
 	float kMaxTime_;
 
+	int32_t cancelSoundHandle_;
+
 	enum SpriteNames {
 		kRetry,
 		kStageSelect,

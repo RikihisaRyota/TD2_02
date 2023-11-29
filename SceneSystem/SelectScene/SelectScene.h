@@ -15,7 +15,7 @@ public:
 
 private:
 	std::unique_ptr<SelectSprites> selectSprites_;
-
+	int32_t returnTitleSoundHandle_;
 	
 };
 

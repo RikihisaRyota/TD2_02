@@ -81,6 +81,7 @@ SelectSprites::SelectSprites() {
 
 	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
 	selectSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/select.wav");
+	
 
 	timer_ = std::make_unique<Timer>();
 	timer_->SetStageNo(&nowStage_);
