@@ -15,8 +15,10 @@ Timer::Timer()
 {
 	uint32_t tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTimerSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
-
+	tex = TextureManager::Load("Resources/Textures/targetTime.png");
+	sprites_[SpriteNames::kTargetTime].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 	timerSize_ = sprites_[SpriteNames::kTimerSprite]->GetSize();
+	targetSize_ = sprites_[SpriteNames::kTargetTime]->GetSize();
 
 	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/resultTime0.png");
 	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/resultTime1.png");
@@ -93,6 +95,7 @@ void Timer::SetNumTeces()
 void Timer::SetSpriteSize()
 {
 	sprites_[SpriteNames::kTimerSprite]->SetSize(timerSize_ * fInfo_[FInfoNames::kTimerScale]);
+	sprites_[SpriteNames::kTargetTime]->SetSize(targetSize_ * fInfo_[FInfoNames::kTargetScale]);
 
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {

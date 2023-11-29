@@ -48,16 +48,19 @@ private:
 
 	Vector2 timerSize_;
 	Vector2 numSize_;
+	Vector2 targetSize_;
 
 	static const int MaxDigits = 3;
 
 	enum SpriteNames {
 		kTimerSprite,
+		kTargetTime,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
 		"タイマーの",
+		"目標タイム"
 	};
 
 	enum V2ItemNames {
@@ -102,6 +105,7 @@ private:
 		kNumericInterval,
 		kTimerScale,
 		kNumScale,
+		kTargetScale,
 		kFInfoCount,
 	};
 
@@ -109,6 +113,7 @@ private:
 		"数字の間隔",
 		"タイマーのスケール",
 		"数字のスケール",
+		"目標タイムのスケール"
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;
