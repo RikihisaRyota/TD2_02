@@ -162,16 +162,19 @@ void TitleSprites::CreateParticle() {
 		emitter->aliveTime = 1;
 		emitter->flameInterval = 0;
 		emitter->spawn.position = Vector3(rnd_.NextFloatRange(0.0f, 1280.0f), rnd_.NextFloatRange(0.0f, 720.0f), 0.0f);
-		emitter->spawn.rangeX = 0.0f;
-		emitter->spawn.rangeY = 0.0f;
+		emitter->spawn.rangeX = 10.0f;
+		emitter->spawn.rangeY = 10.0f;
 		emitter->scale.startScale = { 0.0f,0.0f,0.0f };
-		emitter->scale.interimScale = { 5.0f,5.0f,5.0f };
+		emitter->scale.interimScale = { 200.0f,200.0f,200.0f };
+		emitter->randomScale.interimRandomRange = { 100.0f,100.0f,100.0f };
 		emitter->scale.endScale = { 0.0f,0.0f,0.0f };
 
-		emitter->color.startColor_ = { 0.6f,0.6f,0.1f,1.0f };
-		emitter->color.endColor_ = { 0.6f, 0.6f, 0.1f, 1.0f };
+		//emitter->color.startColor_ = { 0.6f,0.6f,0.1f,1.0f };
+		emitter->color.startBeginMinRandomColor_ = { 0.1f,0.1f ,0.1f ,0.1f };
+		emitter->color.startBeginMaxRandomColor_ = { 0.3f,0.3f ,0.3f ,0.3f };
+		emitter->color.endColor_ = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-		emitter->inOnce = 50;
+		emitter->inOnce = 5;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
 		emitter->isAlive = true;
@@ -180,10 +183,10 @@ void TitleSprites::CreateParticle() {
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
-		particleMotion->velocity.speed = 2.0f;
+		particleMotion->velocity.speed = 0.5f;
 		particleMotion->velocity.randomRange = 0.0f;
 
-		particleMotion->aliveTime.time = 60;
+		particleMotion->aliveTime.time = 180;
 		particleMotion->aliveTime.randomRange = 0;
 		particleMotion->isAlive = true;
 		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);
