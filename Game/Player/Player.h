@@ -202,6 +202,10 @@ private:
 
 	bool kIs2Jump_ = true;
 
+	bool isPressingJump_ = true;
+
+	bool isPressing_;
+
 	bool kIs2WallJump_ = true;
 
 	bool kIsWallDown_ = false;
