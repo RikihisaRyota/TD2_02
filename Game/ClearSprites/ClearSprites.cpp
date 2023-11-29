@@ -122,6 +122,8 @@ ClearSprites::ClearSprites() {
 }
 
 void ClearSprites::Init() {
+	allClear_ = false;
+	allClearCount_ = 60;
 	isAnimation_ = true;
 	animationCount_ = 0.0f;
 	kMaxAnimationCount_ = 60.0f;
@@ -201,6 +203,18 @@ void ClearSprites::Init() {
 }
 
 void ClearSprites::Update() {
+	if (allClear_) {
+		if (allClearCount_ >= 0) {
+			allClearCount_--;
+			if (rnd_.NextUIntLimit() % 20 == 0) {
+				auto playHandle = Audio::GetInstance()->SoundPlayWave(crackerSoundHandle_);
+				Audio::GetInstance()->SetValume(playHandle, 1.0f);
+			}
+		}
+		else {
+			allClear_ = false;
+		}
+	}
 	if (!isAnimation_) {
 		if (currentStageNo_ < stageRange_ &&
 			input_->GetGamePadLStick().x < 0.0f &&
@@ -289,14 +303,13 @@ void ClearSprites::Update() {
 				if (starFlag_[0] &&
 					starFlag_[1] &&
 					starFlag_[2]) {
+					allClear_ = true;
 					CreateCompleteParticle();
 					auto playHandle = Audio::GetInstance()->SoundPlayWave(clapSoundHandle_);
-					Audio::GetInstance()->SetValume(playHandle, 1.5f);
-					playHandle = Audio::GetInstance()->SoundPlayWave(crackerSoundHandle_);
-					Audio::GetInstance()->SetValume(playHandle, 1.5f);
+					//Audio::GetInstance()->SetValume(playHandle, 1.0f);
 				}
 				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
-				Audio::GetInstance()->SetValume(playHandle, 1.5f);
+				Audio::GetInstance()->SetValume(playHandle, 1.0f);
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
 				createFlag_[2] = true;
 			}

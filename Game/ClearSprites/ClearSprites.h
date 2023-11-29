@@ -191,6 +191,9 @@ private:
 	int32_t starSoundHandle_;
 	int32_t clapSoundHandle_;
 	int32_t crackerSoundHandle_;
+	bool allClear_;
+	int32_t allClearCount_;
+
 
 	// ステージ
 	int stageRange_ = MapChip::Stage::kStage_15;
