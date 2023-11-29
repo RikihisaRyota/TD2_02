@@ -227,6 +227,8 @@ private:
 
 	int countFrame_;
 
+	bool initializeParticle_;
+
 	// 死んだときのアニメーション
 	float deathAnimationTime_;
 	float MaxDeathAnimationTime;

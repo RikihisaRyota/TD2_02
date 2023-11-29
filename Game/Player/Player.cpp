@@ -123,7 +123,7 @@ void Player::Initialize() {
 	isReservationJump_ = false;
 	countReservationFrame_ = 0;
 
-	ParticleInitialize();
+	initializeParticle_ = false;
 }
 
 void Player::UpdateMatrix() {
@@ -934,36 +934,39 @@ void Player::WallDownJumpUpdate() {
 }
 
 void Player::ParticleInitialize() {
+	if (!initializeParticle_) {
+		emitter_ = new Emitter();
+		emitter_->aliveTime = 1;
+		emitter_->spawn.position = worldTransform_.worldPos_;
+		emitter_->spawn.rangeX = 0.0f;
+		emitter_->spawn.rangeY = 0.0f;
+		emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
+		emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
+		emitter_->inOnce = 2;
+		//emitter_->angle.start = DegToRad(0.0f);
+		//emitter_->angle.end = DegToRad(180.0f);
+		emitter_->isAlive = true;
+		particleMotion_ = new ParticleMotion();
+		particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
+		particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
+		particleMotion_->color.currentColor = particleMotion_->color.startColor;
+		particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
+		particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
+		//particleMotion_->velocity.speed = 1.0f;
+		//particleMotion_->velocity.randomRange = 0.0f;
+		particleMotion_->aliveTime.time = 20;
+		particleMotion_->aliveTime.randomRange = 5;
+		particleMotion_->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, particleTextureHandle_);
 
-	emitter_ = new Emitter();
-	emitter_->aliveTime = 600;
-	emitter_->spawn.position = worldTransform_.worldPos_;
-	emitter_->spawn.rangeX = 0.0f;
-	emitter_->spawn.rangeY = 0.0f;
-	emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
-	emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
-	emitter_->inOnce = 2;
-	//emitter_->angle.start = DegToRad(0.0f);
-	//emitter_->angle.end = DegToRad(180.0f);
-	emitter_->isAlive = true;
-	particleMotion_ = new ParticleMotion();
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
-	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
-	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-	particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
-	//particleMotion_->velocity.speed = 1.0f;
-	//particleMotion_->velocity.randomRange = 0.0f;
-	particleMotion_->aliveTime.time = 20;
-	particleMotion_->aliveTime.randomRange = 5;
-	particleMotion_->isAlive = true;
-	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, particleTextureHandle_);
-
-	isCreateParticle_ = true;
+		isCreateParticle_ = true;
+		initializeParticle_ = true;
+	}
 }
 
 void Player::ParticleUpdate() {
+	ParticleInitialize();
 	if (!isDead_ &&
 		state_ != State::kDeadMove) {
 		emitter_->aliveTime = 1;

@@ -92,7 +92,6 @@ void StageScene::Reset() {
 	pause_->Init();
 	timer_->Init();
 	stageUi_->Init();
-	stageBanner_->Initialize();
 }
 
 void StageScene::Update() {
@@ -102,7 +101,7 @@ void StageScene::Update() {
 		pause_->Update();
 
 		if (pause_->GetIsRetry() || player_->GetIsDead()) {
-			Init();
+			Reset();
 			return;
 		}
 		else if (pause_->GetIsStageSelect()) {
