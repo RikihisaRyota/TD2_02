@@ -169,7 +169,7 @@ void ClearSprites::Init() {
 	if (clearTime >= 99) {
 		for (int i = 0; i < 2; i++) {
 			timePlace_[i] = 9;
-			conditionTimePlace_[2 - i] = conditionTime / place;
+			conditionTimePlace_[1 - i] = conditionTime / place;
 			clearTime %= place;
 			conditionTime %= place;
 			place /= 10;
@@ -359,7 +359,6 @@ void ClearSprites::Update() {
 				//sprites_[SpriteNames::kStarSecond]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[1]) {
-				
 				CreateParticle(sprites_[SpriteNames::kStarSecond]->GetPosition());
 				createFlag_[1] = true;
 			}

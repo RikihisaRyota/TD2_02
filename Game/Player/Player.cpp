@@ -1243,7 +1243,7 @@ void Player::FloarAndWallUpdate() {
 	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
 		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 2.0f);
+		Audio::GetInstance()->SetValume(playHandle, 1.0f);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}
