@@ -1151,7 +1151,7 @@ void Player::SoundInitialize() {
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
 	clearSoundHandle_ = audio->SoundLoadWave("SE/clear.wav");
 	isChangeCamera_ = true;
-	jumpSoundValume_ = 0.4f;
+	jumpSoundValume_ = 0.3f;
 }
 
 void Player::ClearMoveInitialize() {
