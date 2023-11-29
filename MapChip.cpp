@@ -950,10 +950,10 @@ void MapChip::CheckBlockGrit(int y, int x) {
 
 void MapChip::PlayerTouchBlock() {
 	static const float kPlayerSize = 2.0f;
-	playerTouchBlockMaxX_ = int(player_->GetWorldTransform()->worldPos_.x + 1.5f) / 2;
-	playerTouchBlockMinX_ = int(player_->GetWorldTransform()->worldPos_.x - 1.5f) / 2;
-	int minY = int(player_->GetWorldTransform()->worldPos_.y - 1.0f + 1.5f) / 2;
-	int maxY = int(player_->GetWorldTransform()->worldPos_.y - 1.0f - 1.5f) / 2;
+	playerTouchBlockMaxX_ = int(player_->GetWorldTransform()->worldPos_.x + 1.1f) / 2;
+	playerTouchBlockMinX_ = int(player_->GetWorldTransform()->worldPos_.x - 1.1f) / 2;
+	int minY = int(player_->GetWorldTransform()->worldPos_.y + 1.1f) / 2;
+	int maxY = int(player_->GetWorldTransform()->worldPos_.y - 1.1f) / 2;
 	playerTouchBlockMaxY_ = kMaxHeightBlockNum - maxY;
 	playerTouchBlockMinY_ = kMaxHeightBlockNum - minY;
 }
