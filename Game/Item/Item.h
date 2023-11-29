@@ -147,6 +147,8 @@ private:
 
 	void SetNumTeces();
 
+	void SetTeces();
+
 	void SetSpriteSize();
 
 private:
@@ -162,6 +164,15 @@ private:
 	int32_t itemGetSoundHandle_;
 
 	static const int MaxDigits = 2;
+
+	enum Fish {
+		kNormal,
+		kYellow,
+		kFishCount,
+	};
+
+	std::array<uint32_t, Fish::kFishCount> fishTeces_;
+	std::array<uint32_t, Fish::kFishCount> slashTeces_;
 
 	enum SpriteNames {
 		kItemSprite,
@@ -190,6 +201,7 @@ private:
 	enum TexColor {
 		kBright,
 		kDark,
+		kParfect,
 		kColorCount,
 	};
 
