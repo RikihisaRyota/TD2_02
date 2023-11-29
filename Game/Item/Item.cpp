@@ -297,7 +297,7 @@ void ItemManager::FirstInit() {
 
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
-			sprite.reset(Sprite::Create(numTeces_[TexColor::kBright][0], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+			sprite.reset(Sprite::Create(numTeces_[TexColor::kDark][0], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 		}
 	}
 
@@ -357,8 +357,8 @@ void ItemManager::SetNumTeces() {
 			numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kParfect][MaxItemCount_]);
 		}
 		else {
-			numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kBright][0]);
-			numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kBright][MaxItemCount_]);
+			numSprites_[DrawNumType::kMaxItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
+			numSprites_[DrawNumType::kMaxItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][MaxItemCount_]);
 			numSprites_[DrawNumType::kGetItem][0]->SetTextureHandle(numTeces_[TexColor::kDark][0]);
 			numSprites_[DrawNumType::kGetItem][1]->SetTextureHandle(numTeces_[TexColor::kDark][getItemCount_]);
 		}
@@ -377,7 +377,7 @@ void ItemManager::SetNumTeces() {
 				numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kParfect][drawNum]);
 			}
 			else {
-				numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
+				numSprites_[DrawNumType::kMaxItem][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 			}
 		}
 
