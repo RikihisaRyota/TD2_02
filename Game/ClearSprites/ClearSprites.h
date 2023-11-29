@@ -191,6 +191,6 @@ private:
 	int32_t starSoundHandle_;
 
 	// ステージ
-	int stageRange_ = MapChip::Stage::kStage_10;
+	int stageRange_ = MapChip::Stage::kStage_15;
 };
 
