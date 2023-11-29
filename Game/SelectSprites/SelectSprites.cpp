@@ -377,14 +377,14 @@ void SelectSprites::SelectUpdate() {
 	}
 	else if (input->GetGamePadLStick().x >= 0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+		Audio::GetInstance()->SetValume(playHandle, 0.15f);
 
 		StateRequest(State::kMove);
 		isRight_ = true;
 	}
 	else if (input->GetGamePadLStick().x <= -0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+		Audio::GetInstance()->SetValume(playHandle, 0.15f);
 
 		StateRequest(State::kMove);
 		isRight_ = false;
