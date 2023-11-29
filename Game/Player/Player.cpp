@@ -104,12 +104,13 @@ void Player::Initialize() {
 	isClear_ = false;
 	clearTime_ = 0;
 
-	if (IScene::stageNo_ == 2 || IScene::stageNo_ == 6 || IScene::stageNo_ == 11) {
+	/*if (IScene::stageNo_ == 2 || IScene::stageNo_ == 6 || IScene::stageNo_ == 11) {
 		isAuto_ = true;
 	}
 	else {
 		isAuto_ = false;
-	}
+	}*/
+	isAuto_ = false;
 
 	ParticleInitialize();
 }
