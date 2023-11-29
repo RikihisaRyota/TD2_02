@@ -220,7 +220,7 @@ void Player::OnCollision() {
 
 void Player::SetCollider() {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
-		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ velocity_.x,velocity_.y });
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y - 0.01f }, Vector2{ velocity_.x,velocity_.y });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
