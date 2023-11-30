@@ -77,6 +77,7 @@ void StageScene::Init() {
 	timer_->Init();
 	stageUi_->Init();
 	stageBanner_->Initialize();
+	followCamera_->SetGoalPos(goal_->GetWorldTransform());
 }
 
 void StageScene::Reset() {
