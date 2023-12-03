@@ -19,6 +19,8 @@ public:
 
 	void Init(const Vector3& pos);
 
+	void MiniGameInit(const Vector3& pos);
+
 	void Update();
 	void Draw(const ViewProjection& viewProjection);
 
@@ -32,6 +34,9 @@ private:
 	{
 		kIsLife,
 		kGet,
+		kFalling,
+		kCreate,
+		kFloor,
 	};
 
 	void OnCollision() override;
@@ -44,6 +49,15 @@ private:
 
 	void IsLifeInit();
 	void IsLifeUpdate();
+
+	void CreateInit();
+	void CreateUpdate();
+
+	void FallingInit();
+	void FallingUpdate();
+
+	void FloorInit();
+	void FloorUpdate();
 
 	void GetInit();
 	void GetUpdate();
@@ -83,22 +97,28 @@ private:
 
 	enum FInfoNames {
 		kRotateSpeed,
+		kGravity,
+		kMaxSpeed,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
-		"通常時の回転速度"
+		"通常時の回転速度",
+		"重力加速度",
+		"最高速度",
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;
 
 	enum IInfoNames {
 		kTranslateFrame,
+		kCreatFrame,
 		kIInfoCount,
 	};
 
 	std::string iInfoNames_[IInfoNames::kIInfoCount] = {
 		"通常時の上下移動一往復のフレーム数",
+		"生成し始めて落ちる始めるまでのフレーム",
 	};
 
 	std::array<int, IInfoNames::kIInfoCount> iInfo_;
@@ -109,7 +129,7 @@ private:
 class ItemManager
 {
 public:
-	static const uint32_t kMaxItemNum_ = 50;
+	static const uint32_t kMaxItemNum_ = 99;
 
 	static ItemManager* GetInstance();
 
@@ -117,7 +137,11 @@ public:
 
 	void Init();
 
+	void MiniGameInit();
+
 	void CreateItem(const Vector3& pos);
+
+	void MiniGameCreateItem(const Vector3& pos);
 
 	void Update();
 

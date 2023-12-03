@@ -80,6 +80,7 @@ private:
 
 	enum V3ParameterNames {
 		kOffset, // カメラ座標のズレ
+		kMiniGamePos_,
 		kCountV3Parameter, // 末尾
 	};
 
@@ -88,6 +89,7 @@ private:
 
 	std::string v3ParameterItemNames[V3ParameterNames::kCountV3Parameter] = {
 		"カメラ座標のズレ",
+		"ミニゲームでのポジション"
 	};
 
 	// 追従対象の残像座標

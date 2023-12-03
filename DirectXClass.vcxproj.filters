@@ -103,6 +103,9 @@
     <Filter Include="Game\StageBanner">
       <UniqueIdentifier>{c6ada915-40c0-4267-b5b7-60608e2c90d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\MiniGameManager">
+      <UniqueIdentifier>{a6b8bf95-4152-4b62-8d1f-3ded4238100e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -364,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="Game\StageBanner\StageBanner.cpp">
       <Filter>Game\StageBanner</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\MiniGameManager\MiniGameManager.cpp">
+      <Filter>Game\MiniGameManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -682,6 +688,9 @@
     </ClInclude>
     <ClInclude Include="Game\StageBanner\StageBanner.h">
       <Filter>Game\StageBanner</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\MiniGameManager\MiniGameManager.h">
+      <Filter>Game\MiniGameManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

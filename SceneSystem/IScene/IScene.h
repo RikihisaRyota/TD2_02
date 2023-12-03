@@ -13,6 +13,8 @@ public:
 	// ステージ番号を管理する変数
 	static int stageNo_;
 
+	static const int MiniGameStageNo_ = 13;
+
 public:
 	// 継承先で実装される関数
 	// 抽象クラスなので純粋仮想関数とする
