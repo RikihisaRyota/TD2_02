@@ -18,6 +18,7 @@
 #include "Game/Nedle/Needle.h"
 #include "Game/Item/Item.h"
 #include "Game/Block/Block.h"
+#include "Game/MiniGameManager/MiniGameManager.h"
 
 StageScene::StageScene() {
 #pragma region 
@@ -60,6 +61,7 @@ StageScene::StageScene() {
 	timer_->SetIsClear(player_->GetIsCollisionGaolPtr());
 
 	stageBanner_->Initialize();
+	MiniGameManager::GetInstance()->FirstInit();
 }
 
 void StageScene::Init() {
@@ -78,6 +80,7 @@ void StageScene::Init() {
 	stageUi_->Init();
 	stageBanner_->Initialize();
 	followCamera_->SetGoalPos(goal_->GetWorldTransform());
+	MiniGameManager::GetInstance()->Init();
 }
 
 void StageScene::Reset() {
@@ -92,6 +95,7 @@ void StageScene::Reset() {
 	mapChip_->Initialize();
 	timer_->Init();
 	stageUi_->Init();
+	MiniGameManager::GetInstance()->Init();
 }
 
 void StageScene::Update() {
@@ -141,6 +145,8 @@ void StageScene::Update() {
 		background_->Update();
 
 		mapChip_->Update();
+
+		MiniGameManager::GetInstance()->Update();
 
 		NeedleManager::GetInstance()->Update();
 

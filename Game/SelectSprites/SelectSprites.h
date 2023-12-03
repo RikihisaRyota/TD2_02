@@ -78,7 +78,7 @@ private:
 
 	int countContinuous_;
 
-	static const int kMaxStage_ = 12;
+	static const int kMaxStage_ = 13;
 
 	int drawMaxStage_;
 

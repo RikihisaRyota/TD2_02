@@ -5,6 +5,7 @@
 #include "GlobalVariables/GlobalVariables.h"
 #include "Ease/Ease.h"
 #include <algorithm>
+#include "SceneSystem/IScene/IScene.h"
 
 FollowCamera::FollowCamera()
 {
@@ -34,22 +35,24 @@ void FollowCamera::Update() {
 
 	ApplyGlobalVariable();
 
-	if (isGoal_) {
-		ZoomUpdate();
-	}
-	else {
-		FollowUpdate();
-	}
+	if (IScene::stageNo_ != IScene::MiniGameStageNo_) {
+		if (isGoal_) {
+			ZoomUpdate();
+		}
+		else {
+			FollowUpdate();
+		}
 
-	if(is_){
-		if (goalPos_) {
-			if (viewProjection_.translate_.x > goalPos_->translate_.x) {
-				viewProjection_.translate_.x = goalPos_->translate_.x;
+		if (is_) {
+			if (goalPos_) {
+				if (viewProjection_.translate_.x > goalPos_->translate_.x) {
+					viewProjection_.translate_.x = goalPos_->translate_.x;
+				}
 			}
 		}
-	}
 
-	viewProjection_.UpdateMatrix();
+		viewProjection_.UpdateMatrix();
+	}
 
 }
 
@@ -90,9 +93,14 @@ void FollowCamera::Reset()
 
 		interTarget_ = pos;
 	}
+	if (IScene::stageNo_ == IScene::MiniGameStageNo_) {
+		viewProjection_.translate_ = v3Parameters_[kMiniGamePos_];
+	}
+	else {
+		viewProjection_.translate_ = interTarget_ + v3Parameters_[kOffset];
+	}
 
-	viewProjection_.translate_ = interTarget_ + v3Parameters_[kOffset];
-
+	viewProjection_.UpdateMatrix();
 }
 
 void FollowCamera::SetGlobalVariable()
