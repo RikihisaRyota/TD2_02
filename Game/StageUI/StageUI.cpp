@@ -52,7 +52,7 @@ void StageUI::Init() {
 			}
 		}
 	}
-	else if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
+	/*else if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
 			if (i == SpriteNames::kPressing) {
@@ -62,7 +62,7 @@ void StageUI::Init() {
 				isDraws_[i] = false;
 			}
 		}
-	}
+	}*/
 	else {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 			isDraws_[i] = false;
