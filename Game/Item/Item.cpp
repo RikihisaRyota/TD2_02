@@ -94,7 +94,7 @@ void Item::OnCollision() {
 
 void Item::SetCollider() {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
-		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ 0.0f,0.0f });
+		Vector2{ worldTransform_.scale_.x + 0.1f,worldTransform_.scale_.y + 0.1f }, Vector2{ 0.0f,0.0f });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
