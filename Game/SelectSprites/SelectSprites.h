@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include "../StageData/StageData.h"
 #include "Game/Timer/Timer.h"
+#include "Random.h"
 
 class SelectSprites {
 public:
@@ -18,6 +19,13 @@ public:
 	void NearDraw();
 
 public:
+	enum SpriteOnOFF {
+		kOn,
+		kOff,
+
+		kCount,
+	};
+
 	enum class State {
 		kSelect,
 		kMove,
@@ -70,7 +78,7 @@ private:
 
 	int countContinuous_;
 
-	static const int kMaxStage_ = 15;
+	static const int kMaxStage_ = 12;
 
 	int drawMaxStage_;
 
@@ -81,6 +89,15 @@ private:
 	int countFrame_;
 
 	float scaleTheta_;
+
+	Random::RandomNumberGenerator rnd_;
+	int32_t flashingCount_;
+	bool on_;
+	int32_t onMin_;
+	int32_t onMax_;
+	int32_t offMin_;
+	int32_t offMax_;
+	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
 
 	enum IItemNames {
 		kMaxMoveFrame,
@@ -181,5 +198,6 @@ private:
 	// サウンド
 	int32_t choiceSoundHandle_;
 	int32_t selectSoundHandle_;
+	
 };
 

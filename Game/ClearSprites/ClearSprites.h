@@ -75,10 +75,8 @@ private:
 		kClear,
 		kTimeOnesPlace,
 		kTimeTensPlace,
-		kTimeHundredsPlace,
 		kTimeConditionOnesPlace,
 		kTimeConditionTensPlace,
-		kTimeConditionHundredsPlace,
 		kItemOnesPlace,
 		kItemTensPlace,
 		kItemConditionOnesPlace,
@@ -98,6 +96,13 @@ private:
 		kSpriteCount,
 	};
 
+	enum SpriteOnOFF {
+		kOn,
+		kOff,
+
+		kCount,
+	};
+
 	std::string spriteNames_[kSpriteCount] = {
 		"黒背景の",
 		"リザルト",
@@ -106,10 +111,8 @@ private:
 		"タイム",
 		"クリアタイム一の位",
 		"クリアタイム十の位",
-		"クリアタイム百の位",
 		"クリア条件タイム一の位",
 		"クリア条件タイム十の位",
-		"クリア条件タイム百の位",
 		"クリアアイテム一の位",
 		"クリアアイテム十の位",
 		"クリア条件アイテム一の位",
@@ -154,8 +157,8 @@ private:
 
 	Random::RandomNumberGenerator rnd_;
 
-	int timePlace_[3];
-	int conditionTimePlace_[3];
+	int timePlace_[2];
+	int conditionTimePlace_[2];
 	int itemPlace_[2];
 	int conditionItemPlace_[2];
 	bool starFlag_[3];
@@ -195,7 +198,18 @@ private:
 	int32_t allClearCount_;
 
 
+	uint32_t testTextureHandle_[SpriteOnOFF::kCount];
+	int32_t flashingCount_;
+	bool on_;
+	int32_t onMin_;
+	int32_t onMax_;
+	int32_t offMin_;
+	int32_t offMax_;
+
+	bool isPlaySound_[3];
+	float playSE_;
+
 	// ステージ
-	int stageRange_ = MapChip::Stage::kStage_15;
+	int stageRange_ = MapChip::Stage::kStage_13;
 };
 

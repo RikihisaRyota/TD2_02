@@ -23,8 +23,9 @@ ClearSprites::ClearSprites() {
 	sprites_[SpriteNames::kBackground]->SetColor({ 0.0f,0.0f,0.0f,1.0f });
 	sprites_[SpriteNames::kBackground]->SetSize({ 1280.0f,720.0f });
 
-	tex = TextureManager::Load("Resources/Textures/result.png");
-	sprites_[SpriteNames::kResult].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
+	testTextureHandle_[SpriteOnOFF::kOn] = TextureManager::Load("Resources/Textures/result.png");
+	testTextureHandle_[SpriteOnOFF::kOff] = TextureManager::Load("Resources/Textures/result_off.png");
+	sprites_[SpriteNames::kResult].reset(Sprite::Create(testTextureHandle_[SpriteOnOFF::kOn], Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/clear.png");
 	sprites_[SpriteNames::kClear].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -38,12 +39,10 @@ ClearSprites::ClearSprites() {
 	tex = TextureManager::Load("Resources/Textures/time0.png");
 	sprites_[SpriteNames::kTimeOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-	sprites_[SpriteNames::kTimeHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/resultTime0.png");
 	sprites_[SpriteNames::kTimeConditionOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 	sprites_[SpriteNames::kTimeConditionTensPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
-	sprites_[SpriteNames::kTimeConditionHundredsPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/time0.png");
 	sprites_[SpriteNames::kItemOnesPlace].reset(Sprite::Create(tex, Vector2{}, Vector4{ 1.0f,1.0f,1.0f,1.0 }, Vector2{ 0.5f,0.5f }));
@@ -119,6 +118,15 @@ ClearSprites::ClearSprites() {
 	starSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/star.wav");
 	clapSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/clap.wav");
 	crackerSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/cracker.wav");
+
+	on_ = true;
+	onMin_ = 20;
+	onMax_ = 300;
+	offMin_ = 5;
+	offMax_ = 10;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+
+	playSE_ = 0.3f;
 }
 
 void ClearSprites::Init() {
@@ -131,6 +139,14 @@ void ClearSprites::Init() {
 	secondStarCount_ = 0.0f;
 	thirdStarCount_ = 0.0f;
 	kMaxStarCount_ = 15.0f;
+
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+	on_ = true;
+
+	for (int i = 0; i < 3; i++) {
+		isPlaySound_[i] = false;
+	}
+
 	for (auto& flag : createFlag_) {
 		flag = false;
 	}
@@ -149,20 +165,20 @@ void ClearSprites::Init() {
 	// 秒に直す
 	int clearTime = StageData::GetClearTime(currentStageNo_) / 60;
 	int conditionTime = StageData::GetConditionTime(currentStageNo_) / 60;
-	int place = 100;
-	if (clearTime >= 999) {
-		for (int i = 0; i < 3; i++) {
+	int place = 10;
+	if (clearTime >= 99) {
+		for (int i = 0; i < 2; i++) {
 			timePlace_[i] = 9;
-			conditionTimePlace_[2 - i] = conditionTime / place;
+			conditionTimePlace_[1 - i] = conditionTime / place;
 			clearTime %= place;
 			conditionTime %= place;
 			place /= 10;
 		}
 	}
 	else {
-		for (int i = 0; i < 3; i++) {
-			timePlace_[2 - i] = clearTime / place;
-			conditionTimePlace_[2 - i] = conditionTime / place;
+		for (int i = 0; i < 2; i++) {
+			timePlace_[1 - i] = clearTime / place;
+			conditionTimePlace_[1 - i] = conditionTime / place;
 			clearTime %= place;
 			conditionTime %= place;
 			place /= 10;
@@ -220,7 +236,7 @@ void ClearSprites::Update() {
 			input_->GetGamePadLStick().x < 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 0.3f);
+			Audio::GetInstance()->SetValume(playHandle, 0.15f);
 			switch (state_) {
 			case ClearSprites::State::kSelectStageState:
 				state_ = State::kNextStageState;
@@ -241,7 +257,7 @@ void ClearSprites::Update() {
 			input_->GetGamePadLStick().x > 0.0f &&
 			input_->GetPreGamePadLStick().x == 0.0f) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 0.8f);
+			Audio::GetInstance()->SetValume(playHandle, 0.15f);
 			switch (state_) {
 			case ClearSprites::State::kSelectStageState:
 				state_ = State::kRetryState;
@@ -297,6 +313,12 @@ void ClearSprites::Update() {
 				thirdStarCount_ += 1.0f;
 				float t = thirdStarCount_ / kMaxStarCount_;
 				sprites_[SpriteNames::kStarThird]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, thirdStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				if (!isPlaySound_[2] &&
+					t >= playSE_) {
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 1.0f);
+					isPlaySound_[2] = true;
+				}
 				//sprites_[SpriteNames::kStarThird]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[2]) {
@@ -306,10 +328,9 @@ void ClearSprites::Update() {
 					allClear_ = true;
 					CreateCompleteParticle();
 					auto playHandle = Audio::GetInstance()->SoundPlayWave(clapSoundHandle_);
-					//Audio::GetInstance()->SetValume(playHandle, 1.0f);
+					
+					Audio::GetInstance()->SetValume(playHandle, 0.8f);
 				}
-				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
-				Audio::GetInstance()->SetValume(playHandle, 1.0f);
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
 				createFlag_[2] = true;
 			}
@@ -329,11 +350,15 @@ void ClearSprites::Update() {
 				secondStarCount_ += 1.0f;
 				float t = secondStarCount_ / kMaxStarCount_;
 				sprites_[SpriteNames::kStarSecond]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, secondStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				if (!isPlaySound_[1]&&
+					t >= playSE_) {
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 1.0f);
+					isPlaySound_[1] = true;
+				}
 				//sprites_[SpriteNames::kStarSecond]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[1]) {
-				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
-				Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				CreateParticle(sprites_[SpriteNames::kStarSecond]->GetPosition());
 				createFlag_[1] = true;
 			}
@@ -352,11 +377,15 @@ void ClearSprites::Update() {
 				firstStarCount_ += 1.0f;
 				float t = firstStarCount_ / kMaxStarCount_;
 				sprites_[SpriteNames::kStarFirst]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, firstStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
+				if (!isPlaySound_[0] &&
+					t >= playSE_) {
+					auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
+					Audio::GetInstance()->SetValume(playHandle, 1.0f);
+					isPlaySound_[0] = true;
+				}
 				//sprites_[SpriteNames::kStarFirst]->SetRotation(Lerp(1080.0f, 0.0f, std::clamp(t, 0.0f, 1.0f)));
 			}
 			else if (!createFlag_[0]) {
-				auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
-				Audio::GetInstance()->SetValume(playHandle, 1.5f);
 				CreateParticle(sprites_[SpriteNames::kStarFirst]->GetPosition());
 				createFlag_[0] = true;
 			}
@@ -368,9 +397,23 @@ void ClearSprites::Update() {
 	else {
 		sprites_[SpriteNames::kStarFirst]->SetTextureHandle(star_[kFalse]);
 	}
-	//#ifdef _DEBUG
-	//	ApplyGlobalVariable();
-	//#endif // _DEBUG
+
+	// フラッシュ
+	flashingCount_--;
+	if (flashingCount_ <= 0) {
+		if (on_) {
+			sprites_[SpriteNames::kResult]->SetTextureHandle(testTextureHandle_[kOn]);
+			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+		}
+		else {
+			sprites_[SpriteNames::kResult]->SetTextureHandle(testTextureHandle_[kOff]);
+			flashingCount_ = rnd_.NextIntRange(offMin_, offMax_);
+		}
+		on_ ^= true;
+	}
+//#ifdef _DEBUG
+//	ApplyGlobalVariable();
+//#endif // _DEBUG
 }
 
 void ClearSprites::Draw() {
@@ -384,20 +427,12 @@ void ClearSprites::Draw() {
 			sprite->SetTextureHandle(number_[timePlace_[1]]);
 			sprite->Draw();
 			break;
-		case ClearSprites::kTimeHundredsPlace:
-			sprite->SetTextureHandle(number_[timePlace_[2]]);
-			sprite->Draw();
-			break;
 		case ClearSprites::kTimeConditionOnesPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[0]]);
+			sprite->SetTextureHandle(number_[conditionTimePlace_[0]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kTimeConditionTensPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[1]]);
-			sprite->Draw();
-			break;
-		case ClearSprites::kTimeConditionHundredsPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionTimePlace_[2]]);
+			sprite->SetTextureHandle(number_[conditionTimePlace_[1]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemOnesPlace:
@@ -409,11 +444,11 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemConditionOnesPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[0]]);
+			sprite->SetTextureHandle(number_[conditionItemPlace_[0]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kItemConditionTensPlace:
-			sprite->SetTextureHandle(conditionNumber_[conditionItemPlace_[1]]);
+			sprite->SetTextureHandle(number_[conditionItemPlace_[1]]);
 			sprite->Draw();
 			break;
 		case ClearSprites::kStarFirst:

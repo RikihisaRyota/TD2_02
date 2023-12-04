@@ -17,6 +17,8 @@ public:
 
 	void SetTarget(const WorldTransform* target);
 
+	void SetGoalPos(const WorldTransform* target);
+
 	void ChangeCamera();
 
 	void Reset();
@@ -32,6 +34,11 @@ private:
 	void ZoomUpdate();
 
 private:
+
+	bool is_ = true;
+
+	const WorldTransform* goalPos_ = nullptr;
+
 	const WorldTransform* target_ = nullptr;
 
 	ViewProjection viewProjection_;

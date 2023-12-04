@@ -17,6 +17,7 @@ SoundManager::SoundManager() {
 	soundHandle_.emplace_back(audio_->SoundLoadWave("BGM/clear.wav"));
 
 	playHandle_.at(kTitleScene) = audio_->SoundPlayLoopStart(soundHandle_.at(kTitleScene));
+	audio_->SetValume(playHandle_.at(kTitleScene), 0.2f);
 	preScene_ = 0;
 	currentScene_ = 0;
 
@@ -34,7 +35,7 @@ void SoundManager::Initialize() {
 void SoundManager::Update() {
 	if (!isLoop_) {
 		playHandle_.at(currentScene_) = audio_->SoundPlayLoopStart(soundHandle_.at(currentScene_));
-		audio_->SetValume(playHandle_.at(currentScene_), 0.6f);
+		audio_->SetValume(playHandle_.at(currentScene_), 0.2f);
 		isLoop_ = true;
 	}
 }

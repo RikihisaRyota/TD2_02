@@ -43,6 +43,8 @@ private:
 		kBackground,
 		kTitle,
 		kDecisionA,
+		kController,
+
 		kSpriteCount,
 	};
 
@@ -50,6 +52,7 @@ private:
 		"黒背景の",
 		"タイトルの",
 		"プッシュAの",
+		"コントローラー"
 	};
 
 	enum V2ItemNames {
@@ -80,6 +83,8 @@ private:
 	int32_t onMax_;
 	int32_t offMin_;
 	int32_t offMax_;
+	
+	float theta_;
 
 	float time_;
 	float kMaxTime_;

@@ -24,7 +24,7 @@ public:
 
 	void SetStageNo(const int* no) { stage_ = no; }
 
-	const int GetTime() const { return time_; }
+	const int GetTime() const { return second_ * 60; }
 
 private:
 
@@ -48,16 +48,22 @@ private:
 
 	Vector2 timerSize_;
 	Vector2 numSize_;
+	Vector2 targetSize_;
+	Vector2 targetSpriteSize_;
 
-	static const int MaxDigits = 3;
+	static const int MaxDigits = 2;
 
 	enum SpriteNames {
 		kTimerSprite,
+		kTargetTime,
+		kTargetSprite,
 		kSpriteCount,
 	};
 
 	std::string spriteNames_[kSpriteCount] = {
 		"タイマーの",
+		"目標タイム",
+		"目標の"
 	};
 
 	enum V2ItemNames {
@@ -81,6 +87,7 @@ private:
 
 	enum DrawNumType {
 		kTimer,
+		kTarget,
 		kNumTypeCount,
 	};
 
@@ -88,6 +95,7 @@ private:
 
 	std::string numItemNames[DrawNumType::kNumTypeCount] = {
 		"数字の",
+		"目標の数字の",
 	};
 
 	std::array<Vector2, DrawNumType::kNumTypeCount> numPoses_;
@@ -102,6 +110,7 @@ private:
 		kNumericInterval,
 		kTimerScale,
 		kNumScale,
+		kTargetScale,
 		kFInfoCount,
 	};
 
@@ -109,6 +118,7 @@ private:
 		"数字の間隔",
 		"タイマーのスケール",
 		"数字のスケール",
+		"目標タイムのスケール"
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;

@@ -28,9 +28,10 @@ void ClearScene::Init() {
 
 void ClearScene::Update() {
 	// フラグ
-	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A)&&
+	if (Input::GetInstance()->PressedGamePadButton(Input::GamePadButton::A) &&
 		!clearSprites_->GetAnimationFlag()) {
-		Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		auto playHandle = Audio::GetInstance()->SoundPlayWave(choiceSoundHandle_);
+		Audio::GetInstance()->SetValume(playHandle,0.5f);
 		switch (clearSprites_->GetState()) {
 		case ClearSprites::State::kSelectStageState:
 			sceneNo_ = SELECT;

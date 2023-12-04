@@ -41,6 +41,14 @@ void FollowCamera::Update() {
 		FollowUpdate();
 	}
 
+	if(is_){
+		if (goalPos_) {
+			if (viewProjection_.translate_.x > goalPos_->translate_.x) {
+				viewProjection_.translate_.x = goalPos_->translate_.x;
+			}
+		}
+	}
+
 	viewProjection_.UpdateMatrix();
 
 }
@@ -49,6 +57,13 @@ void FollowCamera::SetTarget(const WorldTransform* target)
 {
 	target_ = target;
 	//Reset();
+}
+
+void FollowCamera::SetGoalPos(const WorldTransform* target)
+{
+	if (is_) {
+		goalPos_ = target;
+	}
 }
 
 void FollowCamera::ChangeCamera()

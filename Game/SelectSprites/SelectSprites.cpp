@@ -14,8 +14,9 @@ SelectSprites::SelectSprites() {
 	blackBackground_.reset(Sprite::Create(tex, Vector2{ 640.0f,360.0f }, { 0.0f,0.0f,0.0f,1.0f }, { 0.5f,0.5f }));
 	blackBackground_->SetSize({ 1280.0f,720.0f });
 
-	tex = TextureManager::Load("Resources/Textures/stageSelect.png");
-	sprites_[SpriteNames::kSelect].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	testTextureHandle_[SpriteOnOFF::kOn] = TextureManager::Load("Resources/Textures/stageSelect.png");
+	testTextureHandle_[SpriteOnOFF::kOff] = TextureManager::Load("Resources/Textures/stageSelect_off.png");
+	sprites_[SpriteNames::kSelect].reset(Sprite::Create(testTextureHandle_[SpriteOnOFF::kOn], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
 	tex = TextureManager::Load("Resources/Textures/decisionA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
@@ -60,9 +61,9 @@ SelectSprites::SelectSprites() {
 	stageTeces_[10] = TextureManager::Load("Resources/Textures/stage11.png");
 	stageTeces_[11] = TextureManager::Load("Resources/Textures/stage12.png");
 	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage13.png");
-	stageTeces_[13] = TextureManager::Load("Resources/Textures/stage14.png");
+	/*stageTeces_[13] = TextureManager::Load("Resources/Textures/stage14.png");
 	stageTeces_[14] = TextureManager::Load("Resources/Textures/stage15.png");
-	stageTeces_[15] = TextureManager::Load("Resources/Textures/stageEX.png");
+	stageTeces_[15] = TextureManager::Load("Resources/Textures/stageEX.png");*/
 
 	starTeces_[StarState::kNotGet] = TextureManager::Load("Resources/Textures/starNotGet.png");
 	starTeces_[StarState::kGet] = TextureManager::Load("Resources/Textures/starGet.png");
@@ -80,16 +81,27 @@ SelectSprites::SelectSprites() {
 
 	choiceSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/choice.wav");
 	selectSoundHandle_ = Audio::GetInstance()->SoundLoadWave("SE/select.wav");
+	
 
 	timer_ = std::make_unique<Timer>();
 	timer_->SetStageNo(&nowStage_);
 	timer_->Init();
 	timer_->Update();
-	drawMaxStage_ = 14;
+	drawMaxStage_ = 12;
+
+	on_ = true;
+	onMin_ = 20;
+	onMax_ = 300;
+	offMin_ = 5;
+	offMax_ = 10;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 }
 
 void SelectSprites::Init() {
 	SetGlobalVariable();
+
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+	on_ = true;
 
 	nowStage_ = IScene::stageNo_;
 
@@ -160,6 +172,19 @@ void (SelectSprites::* SelectSprites::spStateUpdateFuncTable[])() {
 };
 
 void SelectSprites::Update() {
+
+	flashingCount_--;
+	if (flashingCount_ <= 0) {
+		if (on_) {
+			sprites_[SpriteNames::kSelect]->SetTextureHandle(testTextureHandle_[kOn]);
+			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
+		}
+		else {
+			sprites_[SpriteNames::kSelect]->SetTextureHandle(testTextureHandle_[kOff]);
+			flashingCount_ = rnd_.NextIntRange(offMin_, offMax_);
+		}
+		on_ ^= true;
+	}
 
 	ApplyGlobalVariable();
 
@@ -352,14 +377,14 @@ void SelectSprites::SelectUpdate() {
 	}
 	else if (input->GetGamePadLStick().x >= 0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+		Audio::GetInstance()->SetValume(playHandle, 0.15f);
 
 		StateRequest(State::kMove);
 		isRight_ = true;
 	}
 	else if (input->GetGamePadLStick().x <= -0.3 && (isReleasedStick_ || countContinuous_ >= 2)) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 0.3f);
+		Audio::GetInstance()->SetValume(playHandle, 0.15f);
 
 		StateRequest(State::kMove);
 		isRight_ = false;

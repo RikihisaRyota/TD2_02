@@ -202,6 +202,10 @@ private:
 
 	bool kIs2Jump_ = true;
 
+	bool isPressingJump_ = true;
+
+	bool isPressing_;
+
 	bool kIs2WallJump_ = true;
 
 	bool kIsWallDown_ = false;
@@ -222,6 +226,8 @@ private:
 	float clearRot_;
 
 	int countFrame_;
+
+	bool initializeParticle_;
 
 	// 死んだときのアニメーション
 	float deathAnimationTime_;
@@ -328,8 +334,11 @@ private:
 	int32_t jumpSoundHandle_;
 	int32_t deathSoundHandle_;
 	int32_t clearSoundHandle_;
+	float jumpSoundValume_;
 
 	// クリアフラグ
 	bool isClear_;
 	int clearTime_;
+
+
 };

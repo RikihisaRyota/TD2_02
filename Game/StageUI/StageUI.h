@@ -45,6 +45,7 @@ private:
 		kLStickRight,
 		kWallJumpLeft,
 		kWallJumpRight,
+		kPressing,
 		kSpriteCount,
 	};
 
@@ -54,6 +55,7 @@ private:
 		"Lスティック右の",
 		"左壁キックの",
 		"右壁キックの",
+		"長押し可能の"
 	};
 
 	enum V2ItemNames {
@@ -79,13 +81,15 @@ private:
 		kNearZ,
 		kFarZ,
 		kScale,
+		kPressingScale,
 		kFInfoCount,
 	};
 
 	std::string fInfoNames_[FInfoNames::kFInfoCount] = {
 		"壁キックUiのz座標",
 		"移動とジャンプUiのz座標",
-		"スケール"
+		"スケール",
+		"長押し可能のスケール"
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;

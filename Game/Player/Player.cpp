@@ -110,11 +110,20 @@ void Player::Initialize() {
 	else {
 		isAuto_ = false;
 	}*/
+	if (isPressingJump_) {
+		if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
+			isPressing_ = true;
+		}
+		else {
+			isPressing_ = false;
+		}
+	}
+
 	isAuto_ = false;
 	isReservationJump_ = false;
 	countReservationFrame_ = 0;
 
-	ParticleInitialize();
+	initializeParticle_ = false;
 }
 
 void Player::UpdateMatrix() {
@@ -182,6 +191,9 @@ void Player::OnCollision() {
 
 		worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
 		worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
+
+		worldTransform_.rotation_.z = 0.0f;
+
 
 		velocity_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].x;
 		velocity_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2VELOCITY].y;
@@ -374,9 +386,10 @@ void Player::NormalUpdate() {
 
 	move.x *= parameters_[FloatParameterNames::kMoveSpeed];
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) && !isJump_) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_ ||
+		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) && !isJump_) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 2.0f);
+		Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}
@@ -570,7 +583,7 @@ void Player::GripWallUpdate() {
 
 		if (input->PressingGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 2.0f);
+			Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -581,7 +594,7 @@ void Player::GripWallUpdate() {
 		}
 		else if (input->ReleasedGamePadButton(Input::GamePadButton::A)) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 2.0f);
+			Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 			if (jumpCount_ >= 1) {
 				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 			}
@@ -618,20 +631,21 @@ void Player::GripWallUpdate() {
 
 	}
 	else {
-		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime] || isDown_ || move.y <= -0.5f) {
+		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime] || isDown_ || move.y <= -0.3f) {
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 			isDown_ = true;
 		}
 
-		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
+		if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
+			(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) {
 			auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-			Audio::GetInstance()->SetValume(playHandle, 2.0f);
-			if (jumpCount_ >= 1) {
-				Audio::GetInstance()->SetPitch(playHandle, 1.5f);
-			}
-			else {
-				Audio::GetInstance()->SetPitch(playHandle, 1.0f);
-			}
+				Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
+				if (jumpCount_ >= 1) {
+					Audio::GetInstance()->SetPitch(playHandle, 1.5f);
+				}
+				else {
+					Audio::GetInstance()->SetPitch(playHandle, 1.0f);
+				}
 			if (isRight_) {
 				// 右の壁
 				if (move.x <= -0.3f) {
@@ -923,36 +937,39 @@ void Player::WallDownJumpUpdate() {
 }
 
 void Player::ParticleInitialize() {
+	if (!initializeParticle_) {
+		emitter_ = new Emitter();
+		emitter_->aliveTime = 1;
+		emitter_->spawn.position = worldTransform_.worldPos_;
+		emitter_->spawn.rangeX = 0.0f;
+		emitter_->spawn.rangeY = 0.0f;
+		emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
+		emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
+		emitter_->inOnce = 2;
+		//emitter_->angle.start = DegToRad(0.0f);
+		//emitter_->angle.end = DegToRad(180.0f);
+		emitter_->isAlive = true;
+		particleMotion_ = new ParticleMotion();
+		particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
+		particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
+		particleMotion_->color.currentColor = particleMotion_->color.startColor;
+		particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
+		particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
+		particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
+		//particleMotion_->velocity.speed = 1.0f;
+		//particleMotion_->velocity.randomRange = 0.0f;
+		particleMotion_->aliveTime.time = 20;
+		particleMotion_->aliveTime.randomRange = 5;
+		particleMotion_->isAlive = true;
+		ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, particleTextureHandle_);
 
-	emitter_ = new Emitter();
-	emitter_->aliveTime = 1;
-	emitter_->spawn.position = worldTransform_.worldPos_;
-	emitter_->spawn.rangeX = 0.0f;
-	emitter_->spawn.rangeY = 0.0f;
-	emitter_->scale.startScale = { 1.0f,1.0f,1.0f };
-	emitter_->scale.endScale = { 0.01f,0.01f,0.01f };
-	emitter_->inOnce = 2;
-	//emitter_->angle.start = DegToRad(0.0f);
-	//emitter_->angle.end = DegToRad(180.0f);
-	emitter_->isAlive = true;
-	particleMotion_ = new ParticleMotion();
-	particleMotion_->color.startColor = { rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.02f),rnd_.NextFloatRange(0.0f,0.01f),rnd_.NextFloatRange(0.0f,0.5f) };
-	particleMotion_->color.endColor = { rnd_.NextFloatRange(0.0f,1.0f),rnd_.NextFloatRange(0.0f,0.0f),rnd_.NextFloatRange(0.0f,0.1f),rnd_.NextFloatRange(0.0f,0.0f) };
-	particleMotion_->color.currentColor = particleMotion_->color.startColor;
-	particleMotion_->rotate.addRotate = { 0.0f,0.0f,0.2f };
-	particleMotion_->rotate.currentRotate = { 0.0f,0.0f,0.0f };
-	particleMotion_->acceleration_ = { 0.0f,0.0f,0.0f };
-	//particleMotion_->velocity.speed = 1.0f;
-	//particleMotion_->velocity.randomRange = 0.0f;
-	particleMotion_->aliveTime.time = 20;
-	particleMotion_->aliveTime.randomRange = 5;
-	particleMotion_->isAlive = true;
-	ParticleManager::GetInstance()->AddParticle(emitter_, particleMotion_, particleTextureHandle_);
-
-	isCreateParticle_ = true;
+		isCreateParticle_ = true;
+		initializeParticle_ = true;
+	}
 }
 
 void Player::ParticleUpdate() {
+	ParticleInitialize();
 	if (!isDead_ &&
 		state_ != State::kDeadMove) {
 		emitter_->aliveTime = 1;
@@ -1134,6 +1151,7 @@ void Player::SoundInitialize() {
 	jumpSoundHandle_ = audio->SoundLoadWave("SE/jump.wav");
 	clearSoundHandle_ = audio->SoundLoadWave("SE/clear.wav");
 	isChangeCamera_ = true;
+	jumpSoundValume_ = 0.3f;
 }
 
 void Player::ClearMoveInitialize() {
@@ -1220,9 +1238,10 @@ void Player::FloarAndWallUpdate() {
 
 	Vector2 move = input->GetGamePadLStick();
 
-	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_)) {
+	if ((input->PressedGamePadButton(Input::GamePadButton::A) || isAuto_ || isReservationJump_) ||
+		(isPressing_ && input->PressingGamePadButton(Input::GamePadButton::A))) {
 		auto playHandle = Audio::GetInstance()->SoundPlayWave(jumpSoundHandle_);
-		Audio::GetInstance()->SetValume(playHandle, 2.0f);
+		Audio::GetInstance()->SetValume(playHandle, jumpSoundValume_);
 		if (jumpCount_ >= 1) {
 			Audio::GetInstance()->SetPitch(playHandle, 1.5f);
 		}

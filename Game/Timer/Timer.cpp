@@ -15,19 +15,24 @@ Timer::Timer()
 {
 	uint32_t tex = TextureManager::Load("Resources/Textures/time.png");
 	sprites_[SpriteNames::kTimerSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
-
+	tex = TextureManager::Load("Resources/Textures/targetTime.png");
+	sprites_[SpriteNames::kTargetTime].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	tex = TextureManager::Load("Resources/Textures/target.png");
+	sprites_[SpriteNames::kTargetSprite].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 	timerSize_ = sprites_[SpriteNames::kTimerSprite]->GetSize();
+	targetSize_ = sprites_[SpriteNames::kTargetTime]->GetSize();
+	targetSpriteSize_ = sprites_[SpriteNames::kTargetSprite]->GetSize();
 
-	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/resultTime0.png");
-	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/resultTime1.png");
-	numTeces_[TexColor::kBright][2] = TextureManager::Load("Resources/Textures/resultTime2.png");
-	numTeces_[TexColor::kBright][3] = TextureManager::Load("Resources/Textures/resultTime3.png");
-	numTeces_[TexColor::kBright][4] = TextureManager::Load("Resources/Textures/resultTime4.png");
-	numTeces_[TexColor::kBright][5] = TextureManager::Load("Resources/Textures/resultTime5.png");
-	numTeces_[TexColor::kBright][6] = TextureManager::Load("Resources/Textures/resultTime6.png");
-	numTeces_[TexColor::kBright][7] = TextureManager::Load("Resources/Textures/resultTime7.png");
-	numTeces_[TexColor::kBright][8] = TextureManager::Load("Resources/Textures/resultTime8.png");
-	numTeces_[TexColor::kBright][9] = TextureManager::Load("Resources/Textures/resultTime9.png");
+	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/timeDark0.png");
+	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/timeDark1.png");
+	numTeces_[TexColor::kBright][2] = TextureManager::Load("Resources/Textures/timeDark2.png");
+	numTeces_[TexColor::kBright][3] = TextureManager::Load("Resources/Textures/timeDark3.png");
+	numTeces_[TexColor::kBright][4] = TextureManager::Load("Resources/Textures/timeDark4.png");
+	numTeces_[TexColor::kBright][5] = TextureManager::Load("Resources/Textures/timeDark5.png");
+	numTeces_[TexColor::kBright][6] = TextureManager::Load("Resources/Textures/timeDark6.png");
+	numTeces_[TexColor::kBright][7] = TextureManager::Load("Resources/Textures/timeDark7.png");
+	numTeces_[TexColor::kBright][8] = TextureManager::Load("Resources/Textures/timeDark8.png");
+	numTeces_[TexColor::kBright][9] = TextureManager::Load("Resources/Textures/timeDark9.png");
 
 	numTeces_[TexColor::kDark][0] = TextureManager::Load("Resources/Textures/time0.png");
 	numTeces_[TexColor::kDark][1] = TextureManager::Load("Resources/Textures/time1.png");
@@ -42,7 +47,7 @@ Timer::Timer()
 
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
-			sprite.reset(Sprite::Create(numTeces_[TexColor::kBright][0], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+			sprite.reset(Sprite::Create(numTeces_[TexColor::kDark][0], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 		}
 	}
 
@@ -69,6 +74,7 @@ void Timer::Init()
 void Timer::SetNumTeces()
 {
 	int num = second_;
+	int targetNum = StageData::GetConditionTime(IScene::stageNo_) / 60;
 	int drawNum = 0;
 	for (int i = 0; i < MaxDigits; i++) {
 		drawNum = num / int(pow(10, MaxDigits - 1 - i));
@@ -76,8 +82,8 @@ void Timer::SetNumTeces()
 
 		if (isClear_) {
 
-			if (second_ <= StageData::GetConditionTime(IScene::stageNo_)) {
-				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
+			if (second_ > StageData::GetConditionTime(IScene::stageNo_) / 60) {
+				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kBright][drawNum]);
 			}
 			else {
 				numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
@@ -87,12 +93,18 @@ void Timer::SetNumTeces()
 		else {
 			numSprites_[DrawNumType::kTimer][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 		}
+
+		drawNum = targetNum / int(pow(10, MaxDigits - 1 - i));
+		targetNum = targetNum % int(pow(10, MaxDigits - 1 - i));
+
+		numSprites_[DrawNumType::kTarget][i]->SetTextureHandle(numTeces_[TexColor::kDark][drawNum]);
 	}
 }
 
 void Timer::SetSpriteSize()
 {
 	sprites_[SpriteNames::kTimerSprite]->SetSize(timerSize_ * fInfo_[FInfoNames::kTimerScale]);
+	sprites_[SpriteNames::kTargetTime]->SetSize(targetSize_ * fInfo_[FInfoNames::kTargetScale]);
 
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
@@ -112,8 +124,8 @@ void Timer::Update()
 
 			second_ = time_ / 60;
 
-			if (second_ >= 999) {
-				second_ = 999;
+			if (second_ >= 99) {
+				second_ = 99;
 			}
 			else if (second_ < 0) {
 				second_ = 0;
@@ -126,8 +138,8 @@ void Timer::Update()
 
 		second_ = StageData::GetConditionTime(*stage_) / 60;
 
-		if (second_ >= 999) {
-			second_ = 999;
+		if (second_ >= 99) {
+			second_ = 99;
 		}
 		else if (second_ < 0) {
 			second_ = 0;
@@ -215,8 +227,7 @@ void Timer::ApplyGlobalVariable()
 			numPoses_[i] = globalVariables->GetVector2Value(groupName2_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
 
 			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
-			numSprites_[i][1]->SetPosition(numPoses_[i]);
-			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 		}
 	}
 	else {
@@ -236,8 +247,7 @@ void Timer::ApplyGlobalVariable()
 			numPoses_[i] = globalVariables->GetVector2Value(groupName_, numItemNames[i] + v2ItemNames_[V2ItemNames::kPos]);
 
 			numSprites_[i][0]->SetPosition({ numPoses_[i].x - fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
-			numSprites_[i][1]->SetPosition(numPoses_[i]);
-			numSprites_[i][2]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
+			numSprites_[i][1]->SetPosition({ numPoses_[i].x + fInfo_[FInfoNames::kNumericInterval],numPoses_[i].y });
 		}
 	}
 

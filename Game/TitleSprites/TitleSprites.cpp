@@ -24,6 +24,10 @@ TitleSprites::TitleSprites() {
 	tex = TextureManager::Load("Resources/Textures/pushA.png");
 	sprites_[SpriteNames::kDecisionA].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
 
+	tex = TextureManager::Load("Resources/Textures/titleController.png");
+	sprites_[SpriteNames::kController].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+
+
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 		for (int j = 0; j < V2ItemNames::kV2ItemCount; j++) {
 			v2Info_[i][j] = {};
@@ -59,13 +63,13 @@ TitleSprites::TitleSprites() {
 	worldTransforms_.back().rotation_= { 0.0f, 0.5f, 0.0f };
 	worldTransforms_.back().UpdateMatrix();
 
-	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 	on_ = true;
 	onMin_ = 20;
 	onMax_ = 300;
 	offMin_ = 5;
 	offMax_ = 15;
 	time_ = 0.0f;
+	flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
 }
 
 void TitleSprites::Init() {
@@ -78,7 +82,7 @@ void TitleSprites::Init() {
 		model->GetMaterial()->SetMaterial(*material);
 	}
 	time_ = 0.0f;
-	kMaxTime_ = 60.0f;
+	kMaxTime_ = 90.0f;
 }
 
 void TitleSprites::Update() {
@@ -87,7 +91,6 @@ void TitleSprites::Update() {
 		if (on_) {
 			sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOn]);
 			flashingCount_ = rnd_.NextIntRange(onMin_, onMax_);
-			//CreateParticle();
 		}
 		else {
 			sprites_[SpriteNames::kTitle]->SetTextureHandle(testTextureHandle_[kOff]);
@@ -95,24 +98,31 @@ void TitleSprites::Update() {
 		}
 		on_ ^= true;
 	}
+
 	const uint16_t cycle = 60;
 
 	const float pi = std::numbers::pi_v<float>;
 
 	const float step = 2.0f * pi / cycle;
 
-	time_ += step;
+	theta_ += step;
 
-	time_ = std::fmod(time_, 2.0f * pi);
-
+	theta_ = std::fmod(theta_, 2.0f * pi);
+	
 	const float amplitude = 0.2f;
 
-	float rotate = std::sinf(time_) * amplitude;
+	float rotate = std::sinf(theta_) * amplitude;
 
 	worldTransform_.rotation_.y = 2.5f + rotate;
 	worldTransform_.UpdateMatrix();
 	for (auto& pos : worldTransforms_) {
 		pos.UpdateMatrix();
+	}
+
+	time_ += 1.0f;
+	if (time_ >= kMaxTime_) {
+		CreateParticle();
+		time_ = 0.0f;
 	}
 
 #ifdef _DEBUG
@@ -152,6 +162,7 @@ void TitleSprites::Draw(const ViewProjection& viewProjection) {
 void TitleSprites::NearDraw() {
 	sprites_[SpriteNames::kTitle]->Draw();
 	sprites_[SpriteNames::kDecisionA]->Draw();
+	sprites_[SpriteNames::kController]->Draw();
 }
 
 void TitleSprites::CreateParticle() {
@@ -162,28 +173,31 @@ void TitleSprites::CreateParticle() {
 		emitter->aliveTime = 1;
 		emitter->flameInterval = 0;
 		emitter->spawn.position = Vector3(rnd_.NextFloatRange(0.0f, 1280.0f), rnd_.NextFloatRange(0.0f, 720.0f), 0.0f);
-		emitter->spawn.rangeX = 0.0f;
-		emitter->spawn.rangeY = 0.0f;
+		emitter->spawn.rangeX = 300.0f;
+		emitter->spawn.rangeY = 300.0f;
 		emitter->scale.startScale = { 0.0f,0.0f,0.0f };
-		emitter->scale.interimScale = { 5.0f,5.0f,5.0f };
+		float scale = rnd_.NextFloatRange(150.0f,400.0f);
+		emitter->scale.interimScale = { scale ,scale ,scale };
 		emitter->scale.endScale = { 0.0f,0.0f,0.0f };
 
-		emitter->color.startColor_ = { 0.6f,0.6f,0.1f,1.0f };
-		emitter->color.endColor_ = { 0.6f, 0.6f, 0.1f, 1.0f };
+		//emitter->color.startColor_ = { 0.6f,0.6f,0.1f,1.0f };
+		emitter->color.startBeginMinRandomColor_ = { 0.1f,0.1f ,0.1f ,0.2f };
+		emitter->color.startBeginMaxRandomColor_ = { 0.2f,0.2f,0.2f,0.2f };
+		emitter->color.endColor_ = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-		emitter->inOnce = 50;
+		emitter->inOnce = 4;
 		emitter->angle.start = DegToRad(0.0f);
 		emitter->angle.end = DegToRad(360.0f);
 		emitter->isAlive = true;
 
-		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.0f };
+		particleMotion->rotate.addRotate = { 0.0f,0.0f,0.02f };
 		particleMotion->rotate.currentRotate = { 0.0f,0.0f,0.0f };
 
 		particleMotion->acceleration_ = { 0.0f,0.0f,0.0f };
-		particleMotion->velocity.speed = 2.0f;
+		particleMotion->velocity.speed = 0.0f;
 		particleMotion->velocity.randomRange = 0.0f;
 
-		particleMotion->aliveTime.time = 60;
+		particleMotion->aliveTime.time = 120;
 		particleMotion->aliveTime.randomRange = 0;
 		particleMotion->isAlive = true;
 		ParticleUIManager::GetInstance()->AddParticle(emitter, particleMotion, 0);

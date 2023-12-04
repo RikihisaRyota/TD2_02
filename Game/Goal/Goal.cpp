@@ -30,6 +30,8 @@ Goal::Goal() {
 	angle_ = 0.0f;
 	addAngle_ = 5.0f;
 	speed_ = 0.1f;
+	SetGlobalVariable();
+	worldTransform_.UpdateMatrix();
 	ParticleInitialize();
 }
 
@@ -38,8 +40,10 @@ void Goal::Initialize() {
 	angle_ = 0.0f;
 	addAngle_ = 5.0f;
 	speed_ = 0.1f;
-	ParticleInitialize();
 	SetGlobalVariable();
+	worldTransform_.UpdateMatrix();
+	ParticleInitialize();
+	
 }
 
 void Goal::Update() {
@@ -115,7 +119,7 @@ void Goal::SetCollider() {
 void Goal::ParticleInitialize() {
 	for (int i = 0; i < kNumParticle; i++) {
 		emitter_[i] = new Emitter();
-		emitter_[i]->aliveTime = 2;
+		emitter_[i]->aliveTime = 600;
 		emitter_[i]->spawn.position = worldTransform_.worldPos_;
 		emitter_[i]->spawn.rangeX = 0.0f;
 		emitter_[i]->spawn.rangeY = 0.0f;

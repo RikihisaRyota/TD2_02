@@ -100,6 +100,9 @@
     <Filter Include="Game\StageUI">
       <UniqueIdentifier>{37d6d902-329f-4fde-b173-f8d9c38df4eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\StageBanner">
+      <UniqueIdentifier>{c6ada915-40c0-4267-b5b7-60608e2c90d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -358,6 +361,9 @@
     </ClCompile>
     <ClCompile Include="Engine\ParticleUI.cpp">
       <Filter>engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\StageBanner\StageBanner.cpp">
+      <Filter>Game\StageBanner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -673,6 +679,9 @@
     </ClInclude>
     <ClInclude Include="Engine\ParticleUI.h">
       <Filter>engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\StageBanner\StageBanner.h">
+      <Filter>Game\StageBanner</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
