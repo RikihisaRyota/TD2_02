@@ -21,7 +21,6 @@
 #include "Game/Item/Item.h"
 #include "Game/Player/Player.h"
 #include "Game/Block/Block.h"
-#include "SceneSystem/IScene/IScene.h"
 
 using namespace Microsoft::WRL;
 
@@ -212,15 +211,6 @@ void MapChip::Initialize() {
 	PlayerTouchBlock();
 	SetInstancing();
 	CreateItems();
-
-	collisionAttribute_ = 0x00000000;
-	collisionMask_ = 0x00000000;
-
-	SetCollisionAttribute(kCollisionAttributeBlock);
-	SetCollisionMask(kCollisionAttributePlayer);
-	if (IScene::stageNo_ == IScene::MiniGameStageNo_) {
-		SetCollisionMask(kCollisionAttributeItem);
-	}
 }
 
 void MapChip::LoadCSV() {

@@ -14,7 +14,6 @@
 #include "ParticleUIManager.h"
 #include "ParticleShaderStruct.h"
 #include "MyMath.h"
-#include "SceneSystem/IScene/IScene.h"
 
 Item::Item() {
 	shapeType_ = std::make_unique<ColliderShapeBox2D>(BaseColliderShapeType::ColliderType::COLLIDER);
@@ -51,28 +50,6 @@ void Item::Init(const Vector3& pos) {
 	isLife_ = true;
 	isDraw_ = true;
 	stateRequest_ = State::kIsLife;
-	velocity_ = {};
-	collisionAttribute_ = 0x00000000;
-	collisionMask_ = 0x00000000;
-	SetCollisionAttribute(kCollisionAttributeItem);
-	SetCollisionMask(kCollisionAttributePlayer);
-}
-
-void Item::MiniGameInit(const Vector3& pos)
-{
-	worldTransform_.Reset();
-	worldTransform_.translate_ = pos;
-	pos_ = pos;
-	worldTransform_.UpdateMatrix();
-	isLife_ = true;
-	isDraw_ = true;
-	stateRequest_ = State::kCreate;
-
-	collisionAttribute_ = 0x00000000;
-	collisionMask_ = 0x00000000;
-	SetCollisionAttribute(kCollisionAttributeItem);
-	SetCollisionMask(kCollisionAttributePlayer);
-	SetCollisionMask(kCollisionAttributeBlock);
 }
 
 void Item::Update() {
@@ -108,32 +85,16 @@ void Item::Draw(const ViewProjection& viewProjection) {
 void Item::OnCollision() {
 
 	if (isLife_) {
-		if ((editInfo_.collisionMask_ & kCollisionAttributeOut) >= 0b1) {
-			isLife_ = false;
-			isDraw_ = false;
-			return;
-		}
-		else if ((editInfo_.collisionMask_ & kCollisionAttributePlayer) >= 0b1) {
-			isLife_ = false;
-			isDraw_ = true;
-			stateRequest_ = State::kGet;
-			ItemManager::GetInstance()->AddGetCount();
-			return;
-		}
-		else if ((editInfo_.collisionMask_ & kCollisionAttributeBlock) >= 0b1) {
-			worldTransform_.translate_.x = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].x;
-			worldTransform_.translate_.y = editInfo_.v2Paras_[Collider::EditInfo::EditEnumV2::V2POS].y;
-
-			worldTransform_.UpdateMatrix();
-			stateRequest_ = State::kFloor;
-		}
+		isLife_ = false;
+		stateRequest_ = State::kGet;
+		ItemManager::GetInstance()->AddGetCount();
 	}
 
 }
 
 void Item::SetCollider() {
 	shapeType_->SetV2Info(Vector2{ worldTransform_.translate_.x,worldTransform_.translate_.y },
-		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ velocity_.x,velocity_.y });
+		Vector2{ worldTransform_.scale_.x,worldTransform_.scale_.y }, Vector2{ 0.0f,0.0f });
 
 	CollisionManager::GetInstance()->SetCollider(this);
 }
@@ -189,92 +150,6 @@ void Item::IsLifeUpdate() {
 	worldTransform_.rotation_.y += fInfo_[FInfoNames::kRotateSpeed];
 
 	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
-}
-
-void Item::CreateInit()
-{
-	SetCollisionMask(kCollisionAttributeBlock);
-	countFrame_ = 0;
-}
-
-void Item::CreateUpdate()
-{
-
-	worldTransform_.translate_ = Ease::UseEase(pos_, { pos_.x,pos_.y - 1.9f,pos_.z },
-		countFrame_, iInfo_[IInfoNames::kCreatFrame], Ease::EaseType::EaseOutSine);
-
-	if (countFrame_ >= iInfo_[IInfoNames::kCreatFrame]) {
-		stateRequest_ = State::kFalling;
-	}
-
-	const float pi = std::numbers::pi_v<float>;
-
-	worldTransform_.rotation_.y += fInfo_[FInfoNames::kRotateSpeed];
-
-	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
-}
-
-void Item::FallingInit()
-{
-	velocity_ = {};
-}
-
-void Item::FallingUpdate()
-{
-	velocity_.y += fInfo_[FInfoNames::kGravity];
-
-	if (velocity_.y <= -fInfo_[FInfoNames::kMaxSpeed]) {
-		velocity_.y = -fInfo_[FInfoNames::kMaxSpeed];
-	}
-
-	const float pi = std::numbers::pi_v<float>;
-
-	worldTransform_.rotation_.y += fInfo_[FInfoNames::kRotateSpeed];
-
-	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
-
-	worldTransform_.translate_ += velocity_;
-}
-
-void Item::FloorInit()
-{
-	countFrame_ = 0;
-}
-
-void Item::FloorUpdate()
-{
-	countFrame_++;
-
-	const float pi = std::numbers::pi_v<float>;
-
-	worldTransform_.rotation_.y += fInfo_[FInfoNames::kRotateSpeed];
-
-	worldTransform_.rotation_.y = std::fmod(worldTransform_.rotation_.y, 2.0f * pi);
-
-	int frame = 120;
-
-	if (countFrame_ >= frame && countFrame_ < frame + 5) {
-		isDraw_ = false;
-	}
-	else if (countFrame_ >= frame + 5 && countFrame_ < frame + 10) {
-		isDraw_ = true;
-	}
-	else if (countFrame_ >= frame + 10 && countFrame_ < frame + 13) {
-		isDraw_ = false;
-	}
-	else if (countFrame_ >= frame + 13 && countFrame_ < frame + 16) {
-		isDraw_ = true;
-	}
-	else if (countFrame_ >= frame + 16 && countFrame_ < frame + 18) {
-		isDraw_ = false;
-	}
-	else if (countFrame_ >= frame + 18 && countFrame_ < frame + 20) {
-		isDraw_ = true;
-	}
-	else if (countFrame_ >= frame + 20) {
-		isDraw_ = false;
-		isLife_ = false;
-	}
 }
 
 void Item::GetInit() {
@@ -356,18 +231,12 @@ void Item::CreateGetParticle() {
 
 void (Item::* Item::spStateInitFuncTable[])() {
 	&Item::IsLifeInit,
-	&Item::GetInit,
-	&Item::FallingInit,
-	&Item::CreateInit,
-	&Item::FloorInit,
+		& Item::GetInit,
 };
 
 void (Item::* Item::spStateUpdateFuncTable[])() {
 	&Item::IsLifeUpdate,
-	&Item::GetUpdate,
-	&Item::FallingUpdate,
-	&Item::CreateUpdate,
-	&Item::FloorUpdate,
+		& Item::GetUpdate,
 };
 
 ItemManager* ItemManager::GetInstance() {
@@ -449,17 +318,6 @@ void ItemManager::Init() {
 	SetTeces();
 }
 
-void ItemManager::MiniGameInit()
-{
-	Clear();
-	SetSpriteSize();
-	SetNumTeces();
-	sprites_.at(SpriteNames::kItemSprite)->SetSize(itemSize_);
-	countFrame_ = 0;
-	MaxItemCount_ = 99;
-	SetTeces();
-}
-
 void ItemManager::CreateItem(const Vector3& pos) {
 	for (std::unique_ptr<Item>& item : items_) {
 		if (!item->IsLife()) {
@@ -467,16 +325,6 @@ void ItemManager::CreateItem(const Vector3& pos) {
 			MaxItemCount_++;
 			SetNumTeces();
 			SetTeces();
-			return;
-		}
-	}
-}
-
-void ItemManager::MiniGameCreateItem(const Vector3& pos)
-{
-	for (std::unique_ptr<Item>& item : items_) {
-		if (!item->IsLife()) {
-			item->MiniGameInit(pos);
 			return;
 		}
 	}

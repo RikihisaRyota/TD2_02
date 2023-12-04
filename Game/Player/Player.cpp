@@ -90,6 +90,8 @@ void Player::Initialize() {
 	modelWorldTransforms_.at(Parts::kTail).rotation_ = { 0.0f,0.0f,0.5f };
 	modelWorldTransforms_.at(Parts::kTail).translate_ = { -0.9f,-0.1f,0.0 };
 
+	UpdateMatrix();
+
 	jumpCount_ = 0;
 	isJump_ = true;
 	isRight_ = true;
@@ -117,17 +119,11 @@ void Player::Initialize() {
 		}
 	}
 
-	if (IScene::stageNo_ == IScene::MiniGameStageNo_) {
-		worldTransform_.translate_ = v3Parameters_[V3ParameterNames::kMinigameInitPos];
-	}
-
 	isAuto_ = false;
 	isReservationJump_ = false;
 	countReservationFrame_ = 0;
 
 	initializeParticle_ = false;
-
-	UpdateMatrix();
 }
 
 void Player::UpdateMatrix() {

@@ -87,7 +87,7 @@ SelectSprites::SelectSprites() {
 	timer_->SetStageNo(&nowStage_);
 	timer_->Init();
 	timer_->Update();
-	drawMaxStage_ = 13;
+	drawMaxStage_ = 12;
 
 	on_ = true;
 	onMin_ = 20;

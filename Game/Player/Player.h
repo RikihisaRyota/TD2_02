@@ -271,7 +271,6 @@ private:
 
 	enum V3ParameterNames {
 		kInitialPos, // 初期座標
-		kMinigameInitPos,
 		kCountV3Parameter, // 末尾
 	};
 
@@ -280,7 +279,6 @@ private:
 
 	std::string v3ParameterItemNames[V3ParameterNames::kCountV3Parameter] = {
 		"初期座標",
-		"ミニゲーム時の初期座標"
 	};
 
 	//enum V2ParameterNames {

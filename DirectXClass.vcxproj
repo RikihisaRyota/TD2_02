@@ -163,7 +163,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Game\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="Game\Goal\Goal.cpp" />
     <ClCompile Include="Game\Item\Item.cpp" />
-    <ClCompile Include="Game\MiniGameManager\MiniGameManager.cpp" />
     <ClCompile Include="Game\Nedle\Needle.cpp" />
     <ClCompile Include="Game\Pause\Pause.cpp" />
     <ClCompile Include="Game\Player\Player.cpp" />
@@ -275,7 +274,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Game\FollowCamera\FollowCamera.h" />
     <ClInclude Include="Game\Goal\Goal.h" />
     <ClInclude Include="Game\Item\Item.h" />
-    <ClInclude Include="Game\MiniGameManager\MiniGameManager.h" />
     <ClInclude Include="Game\Nedle\Needle.h" />
     <ClInclude Include="Game\Pause\Pause.h" />
     <ClInclude Include="Game\Player\Player.h" />
