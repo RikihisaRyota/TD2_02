@@ -39,7 +39,7 @@ StageBanner::StageBanner() {
 	stageSize_ = stageSprite_->GetSize();
 	frameSize_ = frameSprite_->GetSize();
 	pressAndHoldSize_ = pressAndHoldSprite_->GetSize();
-	frameSize_.x *=1.5f;
+	frameSize_.x *= 1.5f;
 	frameSize_.y *= 0.5f;
 	frameSprite_->SetSize(frameSize_);
 	stagePosition_ = { 0.0f,0.0f };
@@ -50,14 +50,14 @@ void StageBanner::Initialize() {
 	isAnimation_ = true;
 	animationCount_ = 0.0f;
 	stageSprite_->SetTextureHandle(stageTextureHandle_[IScene::stageNo_]);
-	if (IScene::stageNo_ == MapChip::Stage::kStage_4 ||
+	/*if (IScene::stageNo_ == MapChip::Stage::kStage_4 ||
 		IScene::stageNo_ == MapChip::Stage::kStage_9 ||
 		IScene::stageNo_ == MapChip::Stage::kStage_13) {
 		stagePosition_ = { 0.0f,334.0f };
 	}
-	else {
-		stagePosition_ = { 0.0f,360.0f };
-	}
+	else {*/
+	stagePosition_ = { 0.0f,360.0f };
+	/*}*/
 }
 
 void StageBanner::Update() {
@@ -67,7 +67,7 @@ void StageBanner::Update() {
 		t = 4.0f * std::pow((t - 0.5f), 3.0f) + 0.5f;
 		position_ = Lerp(startPosition_, endPosition_, t);
 
-		stageSprite_->SetPosition({ position_.x,stagePosition_.y});
+		stageSprite_->SetPosition({ position_.x,stagePosition_.y });
 		frameSprite_->SetPosition(position_);
 		pressAndHoldSprite_->SetPosition({ position_.x,pressAndHoldPosition_.y });
 		if (animationCount_ >= kMaxAnimationCount_) {
@@ -98,9 +98,9 @@ void StageBanner::Update() {
 void StageBanner::Draw() {
 	frameSprite_->Draw();
 	stageSprite_->Draw();
-	if (IScene::stageNo_ == MapChip::Stage::kStage_4 ||
+	/*if (IScene::stageNo_ == MapChip::Stage::kStage_4 ||
 		IScene::stageNo_ == MapChip::Stage::kStage_9 ||
 		IScene::stageNo_ == MapChip::Stage::kStage_13) {
 		pressAndHoldSprite_->Draw();
-	}
+	}*/
 }
