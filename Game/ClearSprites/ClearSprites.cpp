@@ -274,6 +274,24 @@ void ClearSprites::Update() {
 			sprites_[SpriteNames::kRetry]->SetSize(retrySize);
 			sprites_[SpriteNames::kNextStage]->SetSize(nextStageSize);
 		}
+		if (currentStageNo_ >= stageRange_ &&
+			input_->GetGamePadLStick().x > 0.0f &&
+			input_->GetPreGamePadLStick().x == 0.0f) {
+			auto playHandle = Audio::GetInstance()->SoundPlayWave(selectSoundHandle_);
+			Audio::GetInstance()->SetValume(playHandle, 0.15f);
+			switch (state_) {
+			case ClearSprites::State::kSelectStageState:
+				state_ = State::kRetryState;
+				break;
+			case ClearSprites::State::kRetryState:
+				state_ = State::kSelectStageState;
+				break;
+			}
+			scaleTheta_ = 0.0f;
+			sprites_[SpriteNames::kSelectStage]->SetSize(selectStageSize);
+			sprites_[SpriteNames::kRetry]->SetSize(retrySize);
+			//sprites_[SpriteNames::kNextStage]->SetSize(nextStageSize);
+		}
 
 		const float pi = std::numbers::pi_v<float>;
 
@@ -328,7 +346,7 @@ void ClearSprites::Update() {
 					allClear_ = true;
 					CreateCompleteParticle();
 					auto playHandle = Audio::GetInstance()->SoundPlayWave(clapSoundHandle_);
-					
+
 					Audio::GetInstance()->SetValume(playHandle, 0.8f);
 				}
 				CreateParticle(sprites_[SpriteNames::kStarThird]->GetPosition());
@@ -350,7 +368,7 @@ void ClearSprites::Update() {
 				secondStarCount_ += 1.0f;
 				float t = secondStarCount_ / kMaxStarCount_;
 				sprites_[SpriteNames::kStarSecond]->SetSize(Ease::UseEase(startStarSize_, endStarSize_, secondStarCount_, kMaxStarCount_, Ease::EaseType::EaseOutBounce));
-				if (!isPlaySound_[1]&&
+				if (!isPlaySound_[1] &&
 					t >= playSE_) {
 					auto playHandle = Audio::GetInstance()->SoundPlayWave(starSoundHandle_);
 					Audio::GetInstance()->SetValume(playHandle, 1.0f);
@@ -411,9 +429,9 @@ void ClearSprites::Update() {
 		}
 		on_ ^= true;
 	}
-//#ifdef _DEBUG
-//	ApplyGlobalVariable();
-//#endif // _DEBUG
+	//#ifdef _DEBUG
+	//	ApplyGlobalVariable();
+	//#endif // _DEBUG
 }
 
 void ClearSprites::Draw() {
@@ -461,44 +479,46 @@ void ClearSprites::Draw() {
 			sprite->Draw();
 			break;
 		case ClearSprites::kSelectStage:
-			if (currentStageNo_ < stageRange_) {
-				if (state_ == State::kSelectStageState) {
-					sprite->SetTextureHandle(selectStage_[kTrue]);
-				}
-				else {
-					sprite->SetTextureHandle(selectStage_[kFalse]);
-				}
+			if (state_ == State::kSelectStageState) {
+				sprite->SetTextureHandle(selectStage_[kTrue]);
 			}
 			else {
-				sprite->SetPosition(Vector2(248.0f, 600.0f));
-				sprite->SetTextureHandle(selectStage_[kTrue]);
+				sprite->SetTextureHandle(selectStage_[kFalse]);
+			}
+
+			if (currentStageNo_ >= stageRange_) {
 				sprite->SetPosition(Vector2(640.0f, 600.0f));
 			}
 			sprite->Draw();
 			break;
 		case ClearSprites::kNextStage:
-			if (currentStageNo_ < stageRange_) {
-				if (state_ == State::kNextStageState) {
-					sprite->SetTextureHandle(nextStage_[kTrue]);
-				}
-				else {
-					sprite->SetTextureHandle(nextStage_[kFalse]);
-				}
-				sprite->Draw();
+			if (state_ == State::kNextStageState) {
+				sprite->SetTextureHandle(nextStage_[kTrue]);
+			}
+			else {
+				sprite->SetTextureHandle(nextStage_[kFalse]);
+			}
 
+			if (currentStageNo_ >= stageRange_) {
+				sprite->SetPosition(Vector2(640.0f, 600.0f));
+				sprite->Draw();
+			}
+			else {
+				sprite->Draw();
 			}
 			break;
 		case ClearSprites::kRetry:
-			if (currentStageNo_ < stageRange_) {
-				if (state_ == State::kRetryState) {
-					sprite->SetTextureHandle(retry_[kTrue]);
-				}
-				else {
-					sprite->SetTextureHandle(retry_[kFalse]);
-				}
-				sprite->Draw();
-
+			if (state_ == State::kRetryState) {
+				sprite->SetTextureHandle(retry_[kTrue]);
 			}
+			else {
+				sprite->SetTextureHandle(retry_[kFalse]);
+			}
+
+			if (currentStageNo_ >= stageRange_) {
+				sprite->SetPosition(Vector2(640.0f, 600.0f));
+			}
+			sprite->Draw();
 			break;
 		case ClearSprites::kBackground:
 		case ClearSprites::kResult:
