@@ -148,12 +148,12 @@ void Timer::RemainingUpdate()
 {
 	if (IScene::sceneNo_ == STAGE) {
 		if (StageData::GetConditionTime(IScene::stageNo_) / 60 >= 20) {
-			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 12 <= second_) {
+			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 11 <= second_) {
 				easeCount_[0]++;
 			}
 		}
 		else {
-			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 7 <= second_) {
+			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 6 <= second_) {
 				easeCount_[0]++;
 			}
 		}
