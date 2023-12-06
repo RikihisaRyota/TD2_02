@@ -631,7 +631,7 @@ void Player::GripWallUpdate() {
 
 	}
 	else {
-		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime] || isDown_ || move.y <= -0.3f) {
+		if (countFrame_ >= iParameters_[IParameterNames::kGripStayTime] || isDown_ || move.y <= -0.5f) {
 			velocity_.y += parameters_[FloatParameterNames::kWallGravity];
 			isDown_ = true;
 		}
