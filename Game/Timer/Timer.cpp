@@ -23,6 +23,14 @@ Timer::Timer()
 	targetSize_ = sprites_[SpriteNames::kTargetTime]->GetSize();
 	targetSpriteSize_ = sprites_[SpriteNames::kTargetSprite]->GetSize();
 
+	tex = TextureManager::Load("Resources/Textures/upToTarget.png");
+	remainingSprites_[RemainingSpritesName::kUpToTarget].reset(Sprite::Create(tex, Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	remainingTeces_[RemainingSecond::kCount5] = TextureManager::Load("Resources/Textures/count5.png");
+	remainingSprites_[RemainingSpritesName::kRemaining].reset(Sprite::Create(remainingTeces_[RemainingSecond::kCount5], Vector2{}, { 1.0f,1.0f,1.0f,1.0f }, { 0.5f,0.5f }));
+	upToSize_ = remainingSprites_[RemainingSpritesName::kUpToTarget]->GetSize();
+	remainigSize_ = remainingSprites_[RemainingSpritesName::kRemaining]->GetSize();
+	remainingTeces_[RemainingSecond::kCount10] = TextureManager::Load("Resources/Textures/count10.png");
+
 	numTeces_[TexColor::kBright][0] = TextureManager::Load("Resources/Textures/timeDark0.png");
 	numTeces_[TexColor::kBright][1] = TextureManager::Load("Resources/Textures/timeDark1.png");
 	numTeces_[TexColor::kBright][2] = TextureManager::Load("Resources/Textures/timeDark2.png");
@@ -68,6 +76,7 @@ void Timer::Init()
 	}
 	SetSpriteSize();
 	SetNumTeces();
+	RemainingInit();
 }
 
 
@@ -106,11 +115,77 @@ void Timer::SetSpriteSize()
 	sprites_[SpriteNames::kTimerSprite]->SetSize(timerSize_ * fInfo_[FInfoNames::kTimerScale]);
 	sprites_[SpriteNames::kTargetTime]->SetSize(targetSize_ * fInfo_[FInfoNames::kTargetScale]);
 
+	remainingSprites_[RemainingSpritesName::kUpToTarget]->SetSize(upToSize_ * fInfo_[FInfoNames::kAnyScales]);
+	remainingSprites_[RemainingSpritesName::kRemaining]->SetSize(remainigSize_ * fInfo_[FInfoNames::kAnyScales]);
+
 	for (std::array<std::unique_ptr<Sprite>, MaxDigits>& spriteArray : numSprites_) {
 		for (std::unique_ptr<Sprite>& sprite : spriteArray) {
 			sprite->SetSize(numSize_ * fInfo_[FInfoNames::kNumScale]);
 		}
 	}
+}
+
+void Timer::RemainingInit()
+{
+	remainingSprites_[RemainingSpritesName::kUpToTarget]->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+	remainingSprites_[RemainingSpritesName::kRemaining]->SetColor({ 1.0f,1.0f,1.0f,0.0f });
+
+	remainingSprites_[RemainingSpritesName::kUpToTarget]->SetPosition({ fInfo_[FInfoNames::kPosX] - fInfo_[FInfoNames::kMoveLength] ,fInfo_[FInfoNames::kUpPosY] });
+	remainingSprites_[RemainingSpritesName::kRemaining]->SetPosition({ fInfo_[FInfoNames::kDownPosX] - fInfo_[FInfoNames::kMoveLength] ,fInfo_[FInfoNames::kDownPosY] });
+
+	easeCount_[0] = 0;
+	easeCount_[1] = 0;
+
+	if (StageData::GetConditionTime(IScene::stageNo_) / 60 >= 20) {
+		remainingSprites_[RemainingSpritesName::kRemaining]->SetTextureHandle(remainingTeces_[RemainingSecond::kCount10]);
+	}
+	else {
+		remainingSprites_[RemainingSpritesName::kRemaining]->SetTextureHandle(remainingTeces_[RemainingSecond::kCount5]);
+	}
+}
+
+void Timer::RemainingUpdate()
+{
+	if (IScene::sceneNo_ == STAGE) {
+		if (StageData::GetConditionTime(IScene::stageNo_) / 60 >= 20) {
+			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 12 <= second_) {
+				easeCount_[0]++;
+			}
+		}
+		else {
+			if (StageData::GetConditionTime(IScene::stageNo_) / 60 - 7 <= second_) {
+				easeCount_[0]++;
+			}
+		}
+	}
+
+	if (easeCount_[0] >= 10) {
+		easeCount_[1]++;
+	}
+
+	for (int i = 0; i < RemainingSpritesName::kRemainingSpriteCount; i++) {
+
+		float t = float(easeCount_[i] - halfEaseFrame_) / halfEaseFrame_;
+		t = t * t * t;
+
+		if (i == 0) {
+			remainingSprites_[RemainingSpritesName::kUpToTarget]->SetPosition({ fInfo_[FInfoNames::kPosX] + fInfo_[FInfoNames::kMoveLength] * t,fInfo_[FInfoNames::kUpPosY] });
+		}
+		else {
+			remainingSprites_[RemainingSpritesName::kRemaining]->SetPosition({ fInfo_[FInfoNames::kDownPosX] + fInfo_[FInfoNames::kMoveLength] * t ,fInfo_[FInfoNames::kDownPosY] });
+		}
+
+		if (easeCount_[i] <= halfEaseFrame_) {
+			remainingSprites_[i]->SetColor({ 1.0f,1.0f,1.0f,t + 1.0f });
+		}
+		else {
+			if (t > 1.0f) {
+				t = 1.0f;
+			}
+			remainingSprites_[i]->SetColor({ 1.0f,1.0f,1.0f,1.0f - t });
+		}
+	}
+
 }
 
 void Timer::Update()
@@ -148,11 +223,17 @@ void Timer::Update()
 		SetNumTeces();
 	}
 
+	RemainingUpdate();
+
 }
 
 void Timer::DrawUI()
 {
 	for (const std::unique_ptr<Sprite>& sprite : sprites_) {
+		sprite->Draw();
+	}
+
+	for (const std::unique_ptr<Sprite>& sprite : remainingSprites_) {
 		sprite->Draw();
 	}
 

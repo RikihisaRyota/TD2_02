@@ -46,6 +46,7 @@ private:
 		kWallJumpLeft,
 		kWallJumpRight,
 		kPressing,
+		kDownPress,
 		kSpriteCount,
 	};
 
@@ -55,7 +56,8 @@ private:
 		"Lスティック右の",
 		"左壁キックの",
 		"右壁キックの",
-		"長押し可能の"
+		"長押し可能の",
+		"下入力の"
 	};
 
 	enum V2ItemNames {

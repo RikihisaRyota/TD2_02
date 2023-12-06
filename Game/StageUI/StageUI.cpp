@@ -20,6 +20,7 @@ StageUI::StageUI() {
 	teces_[SpriteNames::kWallJumpLeft] = TextureManager::Load("Resources/Textures/wallJumpLeft.png");
 	teces_[SpriteNames::kWallJumpRight] = TextureManager::Load("Resources/Textures/wallJumpRight.png");
 	teces_[SpriteNames::kPressing] = TextureManager::Load("Resources/Textures/longButton.png");
+	teces_[SpriteNames::kDownPress] = TextureManager::Load("Resources/Textures/wallFall.png");
 
 	aTeces_[TexType::kEmpty] = teces_[SpriteNames::kJumpUi];
 	aTeces_[TexType::kRight] = TextureManager::Load("Resources/Textures/jumpURighti.png");
@@ -52,6 +53,17 @@ void StageUI::Init() {
 			}
 		}
 	}
+	/*else if (IScene::stageNo_ == 4) {
+		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
+
+			if (i == SpriteNames::kDownPress) {
+				isDraws_[i] = true;
+			}
+			else {
+				isDraws_[i] = false;
+			}
+		}
+	}*/
 	/*else if (IScene::stageNo_ == 3 || IScene::stageNo_ == 8 || IScene::stageNo_ == 12) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
@@ -151,7 +163,7 @@ void StageUI::ApplyGlobalVariable()
 void StageUI::SetPos()
 {
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
-		if (i == SpriteNames::kJumpUi || i == SpriteNames::kLStickLeft || i == SpriteNames::kLStickRight) {
+		if (i == SpriteNames::kJumpUi || i == SpriteNames::kLStickLeft || i == SpriteNames::kLStickRight || i == SpriteNames::kDownPress) {
 			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
 			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kScale];
 			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kScale];

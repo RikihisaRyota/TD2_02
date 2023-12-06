@@ -36,6 +36,10 @@ private:
 
 	void SetSpriteSize();
 
+	void RemainingInit();
+
+	void RemainingUpdate();
+
 private:
 
 	int time_;
@@ -50,8 +54,30 @@ private:
 	Vector2 numSize_;
 	Vector2 targetSize_;
 	Vector2 targetSpriteSize_;
+	Vector2 upToSize_;
+	Vector2 remainigSize_;
 
 	static const int MaxDigits = 2;
+
+	enum RemainingSpritesName {
+		kUpToTarget,
+		kRemaining,
+		kRemainingSpriteCount,
+	};
+
+	std::array<int, RemainingSpritesName::kRemainingSpriteCount> easeCount_;
+
+	int halfEaseFrame_ = 90;
+
+	std::array<std::unique_ptr<Sprite>, RemainingSpritesName::kRemainingSpriteCount> remainingSprites_;
+
+	enum RemainingSecond {
+		kCount5,
+		kCount10,
+		kRemainingSecondCount,
+	};
+
+	std::array<uint32_t, RemainingSecond::kRemainingSecondCount> remainingTeces_;
 
 	enum SpriteNames {
 		kTimerSprite,
@@ -111,6 +137,12 @@ private:
 		kTimerScale,
 		kNumScale,
 		kTargetScale,
+		kAnyScales,
+		kUpPosY,
+		kDownPosY,
+		kPosX,
+		kDownPosX,
+		kMoveLength,
 		kFInfoCount,
 	};
 
@@ -118,7 +150,14 @@ private:
 		"数字の間隔",
 		"タイマーのスケール",
 		"数字のスケール",
-		"目標タイムのスケール"
+		"目標タイムのスケール",
+		"残り時間のスケール",
+		"上の文字列のy座標",
+		"下の文字列のy座標",
+		"目標タイムまでのx座標",
+		"残り時間のx座標",
+		"移動距離"
+
 	};
 
 	std::array<float, FInfoNames::kFInfoCount> fInfo_;
