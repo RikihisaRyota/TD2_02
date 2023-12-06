@@ -58,9 +58,9 @@ SelectSprites::SelectSprites() {
 	stageTeces_[7] = TextureManager::Load("Resources/Textures/stage8.png");
 	stageTeces_[8] = TextureManager::Load("Resources/Textures/stage9.png");
 	stageTeces_[9] = TextureManager::Load("Resources/Textures/stage10.png");
-	stageTeces_[10] = TextureManager::Load("Resources/Textures/stage11.png");
+	/*stageTeces_[10] = TextureManager::Load("Resources/Textures/stage11.png");
 	stageTeces_[11] = TextureManager::Load("Resources/Textures/stage12.png");
-	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage13.png");
+	stageTeces_[12] = TextureManager::Load("Resources/Textures/stage13.png");*/
 	/*stageTeces_[13] = TextureManager::Load("Resources/Textures/stage14.png");
 	stageTeces_[14] = TextureManager::Load("Resources/Textures/stage15.png");
 	stageTeces_[15] = TextureManager::Load("Resources/Textures/stageEX.png");*/
@@ -87,7 +87,7 @@ SelectSprites::SelectSprites() {
 	timer_->SetStageNo(&nowStage_);
 	timer_->Init();
 	timer_->Update();
-	drawMaxStage_ = 12;
+	drawMaxStage_ = 9;
 
 	on_ = true;
 	onMin_ = 20;

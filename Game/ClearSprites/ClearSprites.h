@@ -210,6 +210,6 @@ private:
 	float playSE_;
 
 	// ステージ
-	int stageRange_ = MapChip::Stage::kStage_13;
+	int stageRange_ = MapChip::Stage::kStage_10;
 };
 

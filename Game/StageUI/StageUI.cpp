@@ -42,10 +42,10 @@ void StageUI::Init() {
 			}
 		}
 	}
-	else if (IScene::stageNo_ == 4) {
+	else if (IScene::stageNo_ == 3) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
-			if (i == SpriteNames::kWallJumpLeft || i == SpriteNames::kWallJumpRight) {
+			if (i == SpriteNames::kWallJumpLeft || i == SpriteNames::kWallJumpRight || i == SpriteNames::kDownPress) {
 				isDraws_[i] = true;
 			}
 			else {
@@ -53,7 +53,7 @@ void StageUI::Init() {
 			}
 		}
 	}
-	/*else if (IScene::stageNo_ == 4) {
+	/*else if (IScene::stageNo_ == 3) {
 		for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
 
 			if (i == SpriteNames::kDownPress) {
@@ -163,10 +163,15 @@ void StageUI::ApplyGlobalVariable()
 void StageUI::SetPos()
 {
 	for (int i = 0; i < SpriteNames::kSpriteCount; i++) {
-		if (i == SpriteNames::kJumpUi || i == SpriteNames::kLStickLeft || i == SpriteNames::kLStickRight || i == SpriteNames::kDownPress) {
+		if (i == SpriteNames::kJumpUi || i == SpriteNames::kLStickLeft || i == SpriteNames::kLStickRight) {
 			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
 			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kScale];
 			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kScale];
+		}
+		else if (i == SpriteNames::kDownPress) {
+			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
+			worldTransforms_[i].scale_.x = fInfo_[FInfoNames::kScale];
+			worldTransforms_[i].scale_.y = fInfo_[FInfoNames::kScale] * 3;
 		}
 		else if (i == SpriteNames::kPressing) {
 			worldTransforms_[i].translate_ = { v2Info_[i][V2ItemNames::kPos].x,v2Info_[i][V2ItemNames::kPos].y,fInfo_[FInfoNames::kNearZ] };
